@@ -1,4 +1,4 @@
-//RulebaseAlgorithm
+// RulebaseAlgorithm.js
 
 import { 
   bodybuildingWorkouts, 
@@ -6,6 +6,889 @@ import {
   calisthenicsWorkouts,
   medicalConditionWorkouts 
 } from '../Data/workouts';
+
+// Exercise alternatives database - same muscle groups, different equipment
+const exerciseAlternatives = {
+  // Chest exercises alternatives
+  'barbell bench press': [
+    { name: 'Dumbbell Bench Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Machine Chest Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Push Ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Cable Chest Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+  'incline barbell bench press': [
+    { name: 'Incline Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Incline Machine Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Incline Push Ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+  'decline barbell bench press': [
+    { name: 'Decline Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Decline Push Ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+  'dumbbell bench press': [
+    { name: 'Machine Chest Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Push Ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Cable Chest Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+  
+  // Back exercises alternatives
+  'barbell row': [
+    { name: 'Dumbbell Row', equipment: 'dumbbells', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Machine Row', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Cable Row', equipment: 'cable', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'T-Bar Row', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' }
+  ],
+  'lat pulldown': [
+    { name: 'Pull Ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Assisted Pull Ups', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Dumbbell Pullover', equipment: 'dumbbells', muscleGroup: 'back', difficulty: 'intermediate' }
+  ],
+  'deadlift': [
+    { name: 'Dumbbell Deadlift', equipment: 'dumbbells', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Kettlebell Deadlift', equipment: 'kettlebell', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Rack Pull', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' }
+  ],
+  
+  // Shoulder exercises alternatives
+  'barbell overhead press': [
+    { name: 'Dumbbell Shoulder Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shoulder Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Arnold Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Push Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+  ],
+  'barbell shrug': [
+    { name: 'Dumbbell Shrug', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shrug', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Farmer\'s Walk', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' }
+  ],
+  
+  // Leg exercises alternatives
+  'barbell squat': [
+    { name: 'Dumbbell Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Goblet Squat', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Machine Squat', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+  'leg press': [
+    { name: 'Dumbbell Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Step Ups', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Goblet Squat', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Bulgarian Split Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+  'barbell lunge': [
+    { name: 'Dumbbell Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Walking Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Reverse Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Step Ups', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+  
+  // Arm exercises alternatives
+  'barbell curl': [
+    { name: 'Dumbbell Curl', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Cable Curl', equipment: 'cable', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Machine Curl', equipment: 'machine', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Hammer Curl', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'beginner' }
+  ],
+  'triceps pushdown': [
+    { name: 'Dumbbell Triceps Extension', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Overhead Triceps Extension', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Bench Dips', equipment: 'bodyweight', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Close Grip Push Ups', equipment: 'bodyweight', muscleGroup: 'arms', difficulty: 'intermediate' }
+  ],
+
+  // New exercise alternatives added
+  'dumbbell flyes': [
+    { name: 'Cable Crossover', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pec Deck Machine', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Butterfly Machine', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Plate Press', equipment: 'free weights', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'cable crossover': [
+    { name: 'Dumbbell Flyes', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pec Deck Machine', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Band Crossovers', equipment: 'bands', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Incline Dumbbell Flyes', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'dips': [
+    { name: 'Bench Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Machine Dip', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Cable Pushdown', equipment: 'cable', muscleGroup: 'arms', difficulty: 'beginner' }
+  ],
+
+  'pullups': [
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Assisted Pull-up Machine', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Band Assisted Pull-ups', equipment: 'bands', muscleGroup: 'back', difficulty: 'beginner' }
+  ],
+
+  'lateral raises': [
+    { name: 'Cable Lateral Raises', equipment: 'cable', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Machine Lateral Raises', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Bent Over Lateral Raises', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Plate Raises', equipment: 'free weights', muscleGroup: 'shoulders', difficulty: 'beginner' }
+  ],
+
+  'front raises': [
+    { name: 'Cable Front Raises', equipment: 'cable', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Plate Front Raises', equipment: 'free weights', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Barbell Front Raises', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Machine Shoulder Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' }
+  ],
+
+  'face pull': [
+    { name: 'Band Face Pulls', equipment: 'bands', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Cable External Rotation', equipment: 'cable', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Bent Over Rear Delt Flyes', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Reverse Pec Deck', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' }
+  ],
+
+  'preacher curl': [
+    { name: 'Incline Dumbbell Curl', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'intermediate' },
+    { name: 'Machine Preacher Curl', equipment: 'machine', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Cable Curl', equipment: 'cable', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Concentration Curl', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'beginner' }
+  ],
+
+  'hammer curl': [
+    { name: 'Rope Hammer Curl', equipment: 'cable', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Barbell Hammer Curl', equipment: 'barbell', muscleGroup: 'arms', difficulty: 'intermediate' },
+    { name: 'Machine Curl', equipment: 'machine', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Zottman Curl', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'intermediate' }
+  ],
+
+  'skull crusher': [
+    { name: 'Cable Overhead Extension', equipment: 'cable', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Machine Triceps Extension', equipment: 'machine', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Dumbbell Skull Crusher', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'intermediate' },
+    { name: 'Close Grip Push Up', equipment: 'bodyweight', muscleGroup: 'arms', difficulty: 'beginner' }
+  ],
+
+  'overhead triceps extension': [
+    { name: 'Cable Overhead Extension', equipment: 'cable', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Machine Triceps Extension', equipment: 'machine', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Dumbbell Overhead Extension', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'intermediate' },
+    { name: 'Barbell Overhead Extension', equipment: 'barbell', muscleGroup: 'arms', difficulty: 'intermediate' }
+  ],
+
+  'legs extension': [
+    { name: 'Bodyweight Sissy Squat', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Goblet Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Step Ups', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'leg curls': [
+    { name: 'Nordic Hamstring Curl', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'advanced' },
+    { name: 'Swiss Ball Leg Curl', equipment: 'stability ball', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'calf raises': [
+    { name: 'Machine Calf Raises', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Leg Press Calf Raises', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Donkey Calf Raises', equipment: 'machine', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Barbell Calf Raises', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'lunges': [
+    { name: 'Split Squats', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Step Ups', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Bulgarian Split Squats', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Reverse Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'hack squat': [
+    { name: 'Barbell Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Dumbbell Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Leg Press', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Goblet Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'seated calf raises': [
+    { name: 'Machine Seated Calf Raises', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Dumbbell Seated Calf Raises', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Barbell Seated Calf Raises', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Single Leg Calf Raises', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'abdominal crunches': [
+    { name: 'Cable Crunches', equipment: 'cable', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Machine Crunches', equipment: 'machine', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Reverse Crunches', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Plate Crunches', equipment: 'free weights', muscleGroup: 'core', difficulty: 'intermediate' }
+  ],
+
+  // Newly added alternatives
+  'seated cable rows': [
+    { name: 'Dumbbell Rows', equipment: 'dumbbells', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Barbell Rows', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Machine Rows', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'T-Bar Rows', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' }
+  ],
+
+  'pull ups': [
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Assisted Pull-ups', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Chin-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Band Assisted Pull-ups', equipment: 'bands', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Negative Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' }
+  ],
+
+  'leg extension': [
+    { name: 'Bodyweight Sissy Squat', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Goblet Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Step Ups', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Bulgarian Split Squats', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  // Newly requested alternatives
+  'close grip bench press': [
+    { name: 'Triceps Pushdown', equipment: 'cable', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Dumbbell Triceps Extension', equipment: 'dumbbells', muscleGroup: 'arms', difficulty: 'beginner' },
+    { name: 'Close Grip Push Ups', equipment: 'bodyweight', muscleGroup: 'arms', difficulty: 'intermediate' },
+    { name: 'Skull Crushers', equipment: 'barbell', muscleGroup: 'arms', difficulty: 'intermediate' },
+    { name: 'Bench Dips', equipment: 'bodyweight', muscleGroup: 'arms', difficulty: 'beginner' }
+  ],
+
+  'dumbbell rows': [
+    { name: 'Barbell Rows', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Cable Rows', equipment: 'cable', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Machine Rows', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'T-Bar Rows', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Kettlebell Rows', equipment: 'kettlebell', muscleGroup: 'back', difficulty: 'beginner' }
+  ],
+
+  't-bar rows': [
+    { name: 'Barbell Rows', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Dumbbell Rows', equipment: 'dumbbells', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Cable Rows', equipment: 'cable', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Machine Rows', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Seated Cable Rows', equipment: 'cable', muscleGroup: 'back', difficulty: 'beginner' }
+  ],
+
+  'shrugs': [
+    { name: 'Dumbbell Shrugs', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shrugs', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Barbell Shrugs', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Farmer\'s Walk', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Upright Rows', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+  ],
+
+  // New powerlifting exercise alternatives
+  'competition bench press': [
+    { name: 'Pause Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Dumbbell Bench Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Floor Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Spoto Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'competition squat': [
+    { name: 'Pause Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Box Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Tempo Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'High Bar Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'pause bench press': [
+    { name: 'Competition Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Dumbbell Bench Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Floor Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pin Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'pause squat': [
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Box Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Tempo Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Safety Bar Squat', equipment: 'specialty bar', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'front squat': [
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Pause Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Goblet Squat', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Zercher Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'advanced' },
+    { name: 'High Bar Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'rack pulls': [
+    { name: 'Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Block Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Sumo Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Deficit Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'incline bench press': [
+    { name: 'Dumbbell Incline Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Machine Incline Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Landmine Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Push Ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Cable Incline Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'box squat': [
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Pause Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Goblet Squat', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Bulgarian Split Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'floor press': [
+    { name: 'Competition Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Dumbbell Floor Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pin Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' },
+    { name: 'Board Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'safety bar squat': [
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Goblet Squat', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Zercher Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'advanced' },
+    { name: 'High Bar Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'zercher squat': [
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Safety Bar Squat', equipment: 'specialty bar', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Goblet Squat', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Landmine Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'spoto press': [
+    { name: 'Pause Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Competition Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Dumbbell Bench Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Pin Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'tempo squat': [
+    { name: 'Pause Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Box Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'High Bar Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'block pulls': [
+    { name: 'Rack Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Sumo Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Deficit Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'reverse band bench': [
+    { name: 'Competition Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pause Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Floor Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pin Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'belt squat': [
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Goblet Squat', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Leg Press', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Hack Squat', equipment: 'machine', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'sumo deadlift': [
+    { name: 'Conventional Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Rack Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Block Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Deficit Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'pin press': [
+    { name: 'Competition Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pause Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Floor Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Spoto Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'high bar squat': [
+    { name: 'Competition Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Front Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Pause Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Box Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Tempo Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'board press': [
+    { name: 'Competition Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pause Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Close Grip Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Floor Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Pin Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'deficit deadlift': [
+    { name: 'Conventional Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Sumo Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Rack Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Block Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'conventional deadlift': [
+    { name: 'Sumo Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Rack Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Block Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Deficit Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'landmine press': [
+    { name: 'Barbell Overhead Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Dumbbell Shoulder Press', equipment: 'dumbbells', machineGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shoulder Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Push Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Arnold Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+  ],
+
+  'good mornings': [
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Stiff Leg Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Back Extension', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Reverse Hyperextension', equipment: 'machine', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Kettlebell Swing', equipment: 'kettlebell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'stiff leg deadlift': [
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Conventional Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Sumo Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Back Extension', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' }
+  ],
+
+  'romanian deadlift': [
+    { name: 'Stiff Leg Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Conventional Deadlift', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Sumo Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Back Extension', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' }
+  ],
+
+  'barbell hip thrust': [
+    { name: 'Glute Bridge', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Cable Pull Through', equipment: 'cable', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Kettlebell Swing', equipment: 'kettlebell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Machine Hip Thrust', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Band Hip Thrust', equipment: 'bands', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'cable pull through': [
+    { name: 'Barbell Hip Thrust', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Glute Bridge', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Kettlebell Swing', equipment: 'kettlebell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Machine Hip Thrust', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'glute bridge': [
+    { name: 'Barbell Hip Thrust', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Cable Pull Through', equipment: 'cable', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Machine Hip Thrust', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Band Hip Thrust', equipment: 'bands', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Single Leg Glute Bridge', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'kettlebell swing': [
+    { name: 'Barbell Hip Thrust', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Cable Pull Through', equipment: 'cable', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Glute Bridge', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Sumo Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'machine hip thrust': [
+    { name: 'Barbell Hip Thrust', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Glute Bridge', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Cable Pull Through', equipment: 'cable', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Kettlebell Swing', equipment: 'kettlebell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Band Hip Thrust', equipment: 'bands', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'band hip thrust': [
+    { name: 'Barbell Hip Thrust', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Glute Bridge', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Machine Hip Thrust', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Cable Pull Through', equipment: 'cable', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Single Leg Glute Bridge', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'single leg glute bridge': [
+    { name: 'Glute Bridge', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Barbell Hip Thrust', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Machine Hip Thrust', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Band Hip Thrust', equipment: 'bands', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Bulgarian Split Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'back extension': [
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Stiff Leg Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Reverse Hyperextension', equipment: 'machine', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Superman', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'beginner' }
+  ],
+
+  'reverse hyperextension': [
+    { name: 'Back Extension', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Stiff Leg Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Kettlebell Swing', equipment: 'kettlebell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'superman': [
+    { name: 'Back Extension', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Reverse Hyperextension', equipment: 'machine', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Bird Dog', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  'bird dog': [
+    { name: 'Superman', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Back Extension', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Reverse Hyperextension', equipment: 'machine', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' }
+  ],
+
+  // Calisthenics exercises
+  'pull-ups': [
+    { name: 'Chin-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Assisted Pull-ups', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Negative Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' }
+  ],
+
+  'push-ups': [
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Machine Chest Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Cable Chest Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'muscle-ups': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Assisted Muscle-ups', equipment: 'bands', muscleGroup: 'back', difficulty: 'advanced' },
+    { name: 'Negative Muscle-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'handstand push-ups': [
+    { name: 'Overhead Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Dumbbell Shoulder Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shoulder Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Pike Push-ups', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Handstand Hold', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'advanced' }
+  ],
+
+  'pistol squats': [
+    { name: 'Barbell Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Dumbbell Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Leg Press', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Bulgarian Split Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'l-sit': [
+    { name: 'Leg Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Hanging Leg Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Knee Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Plank', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'V-sit', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'advanced' }
+  ],
+
+  'front lever': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Tuck Front Lever', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Advanced Tuck Front Lever', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'planche': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Planche Lean', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Tuck Planche', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'human flag': [
+    { name: 'Side Plank', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Oblique Crunches', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Russian Twists', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Windshield Wipers', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'advanced' },
+    { name: 'Human Flag Progressions', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'advanced' }
+  ],
+
+  'chin-ups': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Assisted Chin-ups', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Negative Chin-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' }
+  ],
+
+  'archer push-ups': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'One-arm Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'advanced' },
+    { name: 'Decline Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'dragon flags': [
+    { name: 'Leg Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Hanging Leg Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Knee Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Reverse Crunches', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'L-sit', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' }
+  ],
+
+  'handstand hold': [
+    { name: 'Overhead Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Dumbbell Shoulder Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shoulder Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Pike Push-ups', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Wall Handstand', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+  ],
+
+  'bulgarian split squats': [
+    { name: 'Barbell Squat', equipment: 'barbell', muscleGroup: 'legs', difficulty: 'intermediate' },
+    { name: 'Dumbbell Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Leg Press', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Lunges', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
+    { name: 'Step Ups', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' }
+  ],
+
+  'back lever': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Tuck Back Lever', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Advanced Tuck Back Lever', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'one-arm push-ups': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Archer Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'advanced' },
+    { name: 'Decline Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'hanging leg raises': [
+    { name: 'Leg Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Knee Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Reverse Crunches', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'L-sit', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Dragon Flags', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'advanced' }
+  ],
+
+  'muscle-up progressions': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Assisted Muscle-ups', equipment: 'bands', muscleGroup: 'back', difficulty: 'advanced' },
+    { name: 'Negative Muscle-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'planche push-up progressions': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Planche Lean', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Tuck Planche', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'front lever rows': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Tuck Front Lever', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Advanced Tuck Front Lever', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'pseudo planche push-ups': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Planche Lean', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Tuck Planche', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  '90° push-ups': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Decline Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Handstand Push-ups', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'advanced' }
+  ],
+
+  'one-arm pull-up progressions': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Chin-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Assisted One-arm Pull-ups', equipment: 'bands', muscleGroup: 'back', difficulty: 'advanced' },
+    { name: 'Negative One-arm Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'advanced' }
+  ],
+
+  'human flag progressions': [
+    { name: 'Side Plank', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Oblique Crunches', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+    { name: 'Russian Twists', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Windshield Wipers', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'advanced' },
+    { name: 'Human Flag Training', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'advanced' }
+  ],
+
+  'ring push-ups': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Stability Ball Push-ups', equipment: 'stability ball', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Suspension Trainer Push-ups', equipment: 'suspension trainer', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'ring rows': [
+    { name: 'Pull-ups', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Lat Pulldown', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Inverted Rows', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'intermediate' },
+    { name: 'Seated Cable Rows', equipment: 'cable', muscleGroup: 'back', difficulty: 'beginner' },
+    { name: 'Dumbbell Rows', equipment: 'dumbbells', muscleGroup: 'back', difficulty: 'beginner' }
+  ],
+
+  'handstand walk': [
+    { name: 'Overhead Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Dumbbell Shoulder Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shoulder Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Handstand Hold', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'advanced' },
+    { name: 'Wall Handstand', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+  ],
+
+  'tapping push-ups': [
+    { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Clap Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Plyometric Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'advanced' }
+  ]
+};
+
+// Function to find exercise alternatives
+const findExerciseAlternatives = (exerciseName, preferredEquipment = null, fitnessLevel = 'beginner') => {
+  const normalizedName = exerciseName.toLowerCase().trim();
+  
+  // Find alternatives for the exercise
+  let alternatives = exerciseAlternatives[normalizedName] || [];
+  
+  // If no direct match, try partial matching
+  if (alternatives.length === 0) {
+    for (const [key, altList] of Object.entries(exerciseAlternatives)) {
+      if (normalizedName.includes(key) || key.includes(normalizedName)) {
+        alternatives = altList;
+        break;
+      }
+    }
+  }
+  
+  // Filter by preferred equipment if specified
+  if (preferredEquipment) {
+    alternatives = alternatives.filter(alt => 
+      alt.equipment.toLowerCase() === preferredEquipment.toLowerCase()
+    );
+  }
+  
+  // Filter by fitness level - beginners get easier alternatives
+  if (fitnessLevel === 'beginner') {
+    alternatives = alternatives.filter(alt => 
+      alt.difficulty === 'beginner' || alt.difficulty === 'intermediate'
+    );
+  }
+  
+  return alternatives.length > 0 ? alternatives : [];
+};
+
+// Function to replace exercise with alternative
+export const replaceExerciseWithAlternative = (originalExercise, alternativeExercise) => {
+  return {
+    ...originalExercise,
+    name: alternativeExercise.name,
+    equipment: alternativeExercise.equipment,
+    alternatives: undefined // Remove alternatives to avoid recursion
+  };
+};
+
+// Function to add alternatives to workout plan with button data
+export const addAlternativesToWorkoutPlan = (workoutPlan, preferredEquipment = null) => {
+  return workoutPlan.map(dayPlan => ({
+    ...dayPlan,
+    workouts: dayPlan.workouts.map(workout => {
+      const alternatives = findExerciseAlternatives(
+        workout.name, 
+        preferredEquipment, 
+        workout.difficulty || 'beginner'
+      );
+      
+      return {
+        ...workout,
+        alternatives: alternatives,
+        hasAlternatives: alternatives.length > 0,
+        alternativeButtonText: alternatives.length > 0 ? `View ${alternatives.length} Alternatives` : 'No Alternatives Available'
+      };
+    })
+  }));
+};
+
+// Function to get alternative workout plan with specific equipment
+export const getAlternativeWorkoutPlan = (originalWorkoutPlan, equipmentType, fitnessLevel = 'beginner') => {
+  const alternativePlan = originalWorkoutPlan.map(dayPlan => ({
+    ...dayPlan,
+    workouts: dayPlan.workouts.map(workout => {
+      const alternatives = findExerciseAlternatives(workout.name, equipmentType, fitnessLevel);
+      
+      if (alternatives.length > 0) {
+        // Replace with first available alternative
+        return replaceExerciseWithAlternative(workout, alternatives[0]);
+      }
+      
+      // If no alternative found, keep original
+      return workout;
+    })
+  }));
+  
+  return alternativePlan;
+};
 
 export const calculateBMR = (age, weight, height, gender) => {
   if (gender === 'male') {
@@ -79,6 +962,36 @@ const detectMedicalConditions = (medicalConditionsText) => {
   return conditions;
 };
 
+// Enhanced medical condition detection with workout preference consideration
+const detectMedicalConditionsWithPreference = (medicalConditionsText, workoutPreference) => {
+  if (!medicalConditionsText) return [];
+  
+  const conditions = [];
+  const text = medicalConditionsText.toLowerCase();
+  
+  // Check for common medical conditions
+  if (text.includes('back') || text.includes('spine') || text.includes('disc')) {
+    conditions.push('backPain');
+  }
+  if (text.includes('knee') || text.includes('joint') || text.includes('arthritis')) {
+    conditions.push('kneeProblems');
+  }
+  if (text.includes('blood pressure') || text.includes('hypertension') || text.includes('high bp')) {
+    conditions.push('hypertension');
+  }
+  if (text.includes('diabetes') || text.includes('sugar') || text.includes('blood sugar')) {
+    conditions.push('diabetes');
+  }
+  if (text.includes('heart') || text.includes('cardiac') || text.includes('cardiovascular')) {
+    conditions.push('heartDisease');
+  }
+  if (text.includes('arthritis')) {
+    conditions.push('arthritis');
+  }
+  
+  return conditions;
+};
+
 // Filter workouts based on gender to avoid redundancy and inappropriate exercises
 const filterWorkoutsByGender = (workouts, gender, workoutPreference) => {
   if (!workouts || !Array.isArray(workouts)) return workouts;
@@ -142,15 +1055,158 @@ const adjustWorkoutForGender = (workout, gender, fitnessGoal, weight) => {
   return adjustedWorkout;
 };
 
+// Function to add leg workouts for females on Monday
+const addLegWorkoutForFemale = (weeklyPlan, gender, adjustedWorkouts) => {
+  if (gender === 'female') {
+    // Find Monday in the weekly plan
+    const mondayPlan = weeklyPlan.find(day => day.day.toLowerCase() === 'monday');
+    
+    if (mondayPlan) {
+      // Filter leg workouts from available exercises
+      const legWorkouts = adjustedWorkouts.filter(workout => 
+        workout.muscleGroup && workout.muscleGroup.toLowerCase().includes('legs')
+      );
+      
+      // Add 1-2 leg workouts to Monday if available
+      if (legWorkouts.length > 0) {
+        const legsToAdd = legWorkouts.slice(0, 2); // Add up to 2 leg exercises
+        mondayPlan.workouts = [...legsToAdd, ...mondayPlan.workouts];
+        
+        // Ensure we don't exceed reasonable workout count
+        if (mondayPlan.workouts.length > 8) {
+          mondayPlan.workouts = mondayPlan.workouts.slice(0, 8);
+        }
+      }
+    }
+  }
+  
+  return weeklyPlan;
+};
+
+// Helper function to get workout type based on preference
+const getWorkoutTypeByPreference = (preference) => {
+  const preferenceMap = {
+    'bodybuilding': ['Bodybuilding', 'Upper Body Strength', 'Lower Body'],
+    'powerlifting': ['Powerlifting', 'Strength'],
+    'calisthenics': ['Calisthenics', 'Bodyweight']
+  };
+  
+  return preferenceMap[preference] || ['Strength', 'Cardio', 'Mobility'];
+};
+
+// Enhanced medical condition workout generation algorithm
+const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gender, workoutPreference) => {
+  // Use the first detected condition as primary
+  const primaryCondition = conditions[0];
+  let medicalWorkouts = medicalConditionWorkouts[primaryCondition] || [];
+  
+  // Filter medical workouts by gender
+  const genderFilteredWorkouts = filterWorkoutsByGender(medicalWorkouts, gender, 'medical');
+  
+  // Adjust intensity based on fitness level
+  let intensity = 'low';
+  if (fitnessLevel === 'intermediate') {
+    intensity = 'moderate';
+  } else if (fitnessLevel === 'advanced') {
+    intensity = 'moderate'; // Still keep it moderate for safety
+  }
+  
+  // Filter workouts by intensity first
+  const filteredWorkouts = genderFilteredWorkouts.filter(workout => workout.intensity === intensity);
+  
+  // Further filter by workout preference to maintain training style
+  let preferenceFilteredWorkouts = [];
+  
+  if (workoutPreference === 'bodybuilding') {
+    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
+      workout.type === 'Bodybuilding' || 
+      workout.type === 'Upper Body Strength' ||
+      workout.type === 'Lower Body'
+    );
+  } else if (workoutPreference === 'powerlifting') {
+    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
+      workout.type === 'Powerlifting' ||
+      workout.type.includes('Strength')
+    );
+  } else if (workoutPreference === 'calisthenics') {
+    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
+      workout.type === 'Calisthenics' ||
+      workout.type === 'Bodyweight'
+    );
+  }
+  
+  // If preference filtering gives us too few exercises, include other types
+  if (preferenceFilteredWorkouts.length < selectedDays.length * 5) {
+    const additionalWorkouts = filteredWorkouts.filter(workout => 
+      !preferenceFilteredWorkouts.includes(workout)
+    );
+    preferenceFilteredWorkouts = [...preferenceFilteredWorkouts, ...additionalWorkouts];
+  }
+  
+  // Ensure we have enough workouts (at least 5 per day)
+  const totalWorkoutsNeeded = selectedDays.length * 5;
+  let finalWorkouts = preferenceFilteredWorkouts;
+  
+  if (finalWorkouts.length < totalWorkoutsNeeded) {
+    // Add more workouts from the general medical pool if needed
+    const additionalNeeded = totalWorkoutsNeeded - finalWorkouts.length;
+    const extraWorkouts = medicalWorkouts
+      .filter(workout => !finalWorkouts.includes(workout))
+      .slice(0, additionalNeeded);
+    
+    finalWorkouts = [...finalWorkouts, ...extraWorkouts];
+  }
+  
+  // If we still don't have enough, duplicate some with modifications
+  if (finalWorkouts.length < totalWorkoutsNeeded) {
+    const duplicatesNeeded = totalWorkoutsNeeded - finalWorkouts.length;
+    const availableWorkouts = [...finalWorkouts];
+    
+    for (let i = 0; i < duplicatesNeeded; i++) {
+      const originalWorkout = availableWorkouts[i % availableWorkouts.length];
+      const modifiedWorkout = {
+        ...originalWorkout,
+        id: originalWorkout.id * 1000 + i, // Create unique ID
+        name: `${originalWorkout.name} (Variation)`,
+        description: `${originalWorkout.description} - Modified variation for extended workout`
+      };
+      finalWorkouts.push(modifiedWorkout);
+    }
+  }
+  
+  // Distribute workouts across selected days (5 per day)
+  const workoutsPerDay = 5;
+  
+  const weeklyPlan = selectedDays.map((day, index) => {
+    const startIdx = index * workoutsPerDay;
+    const endIdx = startIdx + workoutsPerDay;
+    const dayWorkouts = finalWorkouts.slice(startIdx, endIdx);
+    
+    return {
+      day,
+      workouts: dayWorkouts,
+      medicalCondition: primaryCondition,
+      intensity: intensity,
+      workoutStyle: workoutPreference,
+      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
+      totalExercises: dayWorkouts.length
+    };
+  });
+  
+  // Add alternatives to medical workout plan
+  return addAlternativesToWorkoutPlan(weeklyPlan);
+};
+
+// Enhanced main workout generation function
 export const generateInitialWorkoutPlan = (userData) => {
   const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender } = userData;
   
   // Check if user has medical conditions
   const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
   
-  // If medical conditions are detected, prioritize medical workouts
+  // If medical conditions are detected, prioritize medical workouts but maintain training style
   if (detectedConditions.length > 0) {
-    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender);
+    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender, workoutPreference);
   }
   
   let selectedWorkouts = [];
@@ -204,56 +1260,58 @@ export const generateInitialWorkoutPlan = (userData) => {
     return adjustedWorkout;
   });
   
-  // Distribute workouts across selected days
-  const workoutsPerDay = Math.ceil(adjustedWorkouts.length / selectedDays.length);
+  // Ensure we have enough workouts for 5 per day
+  const totalWorkoutsNeeded = selectedDays.length * 5;
+  let finalWorkouts = adjustedWorkouts;
   
-  const weeklyPlan = selectedDays.map((day, index) => {
-    const startIdx = index * workoutsPerDay;
-    const endIdx = startIdx + workoutsPerDay;
-    return {
-      day,
-      workouts: adjustedWorkouts.slice(startIdx, endIdx),
-      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard'
-    };
-  });
-  
-  return weeklyPlan;
-};
-
-// Generate workout plan for users with medical conditions
-const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gender) => {
-  // For simplicity, we'll use the first detected condition
-  const primaryCondition = conditions[0];
-  const medicalWorkouts = medicalConditionWorkouts[primaryCondition] || [];
-  
-  // Filter medical workouts by gender
-  const genderFilteredWorkouts = filterWorkoutsByGender(medicalWorkouts, gender, 'medical');
-  
-  // Adjust intensity based on fitness level
-  let intensity = 'low';
-  if (fitnessLevel === 'intermediate') {
-    intensity = 'moderate';
-  } else if (fitnessLevel === 'advanced') {
-    intensity = 'moderate'; // Still keep it moderate for safety
+  if (finalWorkouts.length < totalWorkoutsNeeded) {
+    // Add more workouts if needed (you might want to import additional exercises)
+    const additionalNeeded = totalWorkoutsNeeded - finalWorkouts.length;
+    // For now, we'll duplicate some workouts with modifications
+    const availableWorkouts = [...finalWorkouts];
+    
+    for (let i = 0; i < additionalNeeded; i++) {
+      const originalWorkout = availableWorkouts[i % availableWorkouts.length];
+      const modifiedWorkout = {
+        ...originalWorkout,
+        id: originalWorkout.id * 1000 + i,
+        name: `${originalWorkout.name} (Alternate)`,
+        description: `${originalWorkout.description} - Additional variation`
+      };
+      finalWorkouts.push(modifiedWorkout);
+    }
   }
   
-  // Filter workouts by intensity
-  const filteredWorkouts = genderFilteredWorkouts.filter(workout => workout.intensity === intensity);
+  // Distribute workouts across selected days (5 per day)
+  const workoutsPerDay = 5;
   
-  // Distribute workouts across selected days
-  const workoutsPerDay = Math.min(4, Math.ceil(filteredWorkouts.length / selectedDays.length));
-  
-  const weeklyPlan = selectedDays.map((day, index) => {
+  let weeklyPlan = selectedDays.map((day, index) => {
     const startIdx = index * workoutsPerDay;
     const endIdx = startIdx + workoutsPerDay;
     return {
       day,
-      workouts: filteredWorkouts.slice(startIdx, endIdx),
-      medicalCondition: primaryCondition,
-      intensity: intensity,
-      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard'
+      workouts: finalWorkouts.slice(startIdx, endIdx),
+      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
+      totalExercises: 5
     };
   });
+  
+  // Add leg workouts for females on Monday
+  weeklyPlan = addLegWorkoutForFemale(weeklyPlan, gender, adjustedWorkouts);
+  
+  // Ensure each day still has exactly 5 workouts after adding leg workouts
+  weeklyPlan = weeklyPlan.map(dayPlan => {
+    if (dayPlan.workouts.length > 5) {
+      return {
+        ...dayPlan,
+        workouts: dayPlan.workouts.slice(0, 5)
+      };
+    }
+    return dayPlan;
+  });
+  
+  // Add alternatives to each exercise with button data
+  weeklyPlan = addAlternativesToWorkoutPlan(weeklyPlan);
   
   return weeklyPlan;
 };
@@ -361,8 +1419,6 @@ export const adjustNutritionForCutting = (baseNutritionPlan, calorieReduction = 
   if (calorieReduction < 300 || calorieReduction > 500) {
     throw new Error('Calorie reduction for cutting should be between 300-500 calories');
   }
-rulebasedalgorithm  
-
 
   const { calorieIntake, proteinIntake, carbIntake, fatIntake, meals } = baseNutritionPlan;
   
@@ -402,4 +1458,33 @@ rulebasedalgorithm
     originalCalorieIntake: calorieIntake,
     calorieDeficit: calorieReduction
   };
-};  
+};
+
+// Function to get exercise alternatives for UI display
+export const getExerciseAlternativesForUI = (exerciseName, fitnessLevel = 'beginner') => {
+  const alternatives = findExerciseAlternatives(exerciseName, null, fitnessLevel);
+  
+  return {
+    originalExercise: exerciseName,
+    alternatives: alternatives,
+    hasAlternatives: alternatives.length > 0,
+    alternativeCount: alternatives.length
+  };
+};
+
+// Function to handle alternative selection from UI
+export const selectAlternativeExercise = (originalWorkoutPlan, dayIndex, workoutIndex, alternativeIndex) => {
+  const updatedPlan = [...originalWorkoutPlan];
+  const day = updatedPlan[dayIndex];
+  const workout = day.workouts[workoutIndex];
+  
+  if (workout.alternatives && workout.alternatives[alternativeIndex]) {
+    const selectedAlternative = workout.alternatives[alternativeIndex];
+    day.workouts[workoutIndex] = replaceExerciseWithAlternative(workout, selectedAlternative);
+  }
+  
+  return updatedPlan;
+};
+
+// Export the alternative functions for external use
+export { findExerciseAlternatives, exerciseAlternatives };

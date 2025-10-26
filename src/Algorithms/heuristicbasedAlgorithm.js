@@ -1,11 +1,13 @@
-
-
+// heuristicbasedAlgorithm.js
 import { 
   bodybuildingWorkouts, 
   powerliftingWorkouts, 
   calisthenicsWorkouts,
   medicalConditionWorkouts 
 } from '../Data/workouts';
+
+// Track previously provided workouts for each user
+const userWorkoutHistory = new Map();
 
 export const calculateBMR = (age, weight, height, gender) => {
   if (gender === 'male') {
@@ -79,6 +81,45 @@ const detectMedicalConditions = (medicalConditionsText) => {
   return conditions;
 };
 
+// Get user workout history
+const getUserWorkoutHistory = (userId) => {
+  return userWorkoutHistory.get(userId) || [];
+};
+
+// Add workout to user history
+const addToUserWorkoutHistory = (userId, workoutIds) => {
+  const history = getUserWorkoutHistory(userId);
+  const updatedHistory = [...new Set([...history, ...workoutIds])];
+  userWorkoutHistory.set(userId, updatedHistory);
+};
+
+// Filter out previously used workouts
+const filterOutUsedWorkouts = (workouts, userId) => {
+  const usedWorkoutIds = getUserWorkoutHistory(userId);
+  
+  if (usedWorkoutIds.length === 0) {
+    return workouts;
+  }
+  
+  // If all workouts have been used, reset history for this user
+  if (usedWorkoutIds.length >= workouts.length * 0.8) {
+    userWorkoutHistory.set(userId, []);
+    return workouts;
+  }
+  
+  return workouts.filter(workout => !usedWorkoutIds.includes(workout.id));
+};
+
+// Shuffle array to provide variety
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 // Filter workouts based on gender to avoid redundancy and inappropriate exercises
 const filterWorkoutsByGender = (workouts, gender, workoutPreference) => {
   if (!workouts || !Array.isArray(workouts)) return workouts;
@@ -143,13 +184,19 @@ const adjustWorkoutForGender = (workout, gender, fitnessGoal, weight) => {
 };
 
 // Generate workout plan for users with medical conditions
-const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gender) => {
+const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gender, userId) => {
   // For simplicity, we'll use the first detected condition
   const primaryCondition = conditions[0];
   const medicalWorkouts = medicalConditionWorkouts[primaryCondition] || [];
   
   // Filter medical workouts by gender
   const genderFilteredWorkouts = filterWorkoutsByGender(medicalWorkouts, gender, 'medical');
+  
+  // Filter out previously used workouts
+  const unusedWorkouts = filterOutUsedWorkouts(genderFilteredWorkouts, userId);
+  
+  // Shuffle for variety
+  const shuffledWorkouts = shuffleArray(unusedWorkouts.length > 0 ? unusedWorkouts : genderFilteredWorkouts);
   
   // Adjust intensity based on fitness level
   let intensity = 'low';
@@ -160,7 +207,7 @@ const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gend
   }
   
   // Filter workouts by intensity
-  const filteredWorkouts = genderFilteredWorkouts.filter(workout => workout.intensity === intensity);
+  const filteredWorkouts = shuffledWorkouts.filter(workout => workout.intensity === intensity);
   
   // Distribute workouts across selected days
   const workoutsPerDay = Math.min(4, Math.ceil(filteredWorkouts.length / selectedDays.length));
@@ -168,9 +215,17 @@ const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gend
   const weeklyPlan = selectedDays.map((day, index) => {
     const startIdx = index * workoutsPerDay;
     const endIdx = startIdx + workoutsPerDay;
+    const dayWorkouts = filteredWorkouts.slice(startIdx, endIdx);
+    
+    // Track used workout IDs
+    const workoutIds = dayWorkouts.map(workout => workout.id).filter(id => id);
+    if (workoutIds.length > 0) {
+      addToUserWorkoutHistory(userId, workoutIds);
+    }
+    
     return {
       day,
-      workouts: filteredWorkouts.slice(startIdx, endIdx),
+      workouts: dayWorkouts,
       medicalCondition: primaryCondition,
       intensity: intensity,
       genderConsideration: gender === 'female' ? 'female_optimized' : 'standard'
@@ -240,16 +295,33 @@ const increaseReps = (reps, multiplier) => {
   return reps;
 };
 
+// Get alternative exercises for variety
+const getAlternativeExercises = (baseWorkouts, muscleGroup, difficulty, gender, count = 3) => {
+  const allWorkouts = Object.values({
+    ...bodybuildingWorkouts,
+    ...powerliftingWorkouts,
+    ...calisthenicsWorkouts
+  }).flat();
+  
+  return allWorkouts
+    .filter(workout => 
+      workout.muscleGroup === muscleGroup &&
+      workout.difficulty === difficulty &&
+      workout.genderConsiderations?.[gender] !== 'not_recommended'
+    )
+    .slice(0, count);
+};
+
 // Main heuristic-based workout plan generator
 export const generateWorkoutPlan = (userData, currentPlan = null, userProgress = null) => {
-  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, preferredWorkoutDays } = userData;
+  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, preferredWorkoutDays, userId } = userData;
   
   // Check if user has medical conditions
   const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
   
   // If medical conditions are detected, prioritize medical workouts
   if (detectedConditions.length > 0) {
-    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender);
+    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender, userId);
   }
   
   // If we have progress data and current plan, adjust existing plan
@@ -263,7 +335,7 @@ export const generateWorkoutPlan = (userData, currentPlan = null, userProgress =
 
 // Adjust existing workout plan based on user progress
 export const adjustWorkoutPlan = (currentPlan, userProgress, userData) => {
-  const { fitnessGoal, weight, medicalConditions } = userData;
+  const { fitnessGoal, weight, medicalConditions, userId, gender, fitnessLevel } = userData;
   const { weightChange, performanceData } = userProgress;
   
   let adjustedPlan = JSON.parse(JSON.stringify(currentPlan));
@@ -279,6 +351,37 @@ export const adjustWorkoutPlan = (currentPlan, userProgress, userData) => {
       };
     });
   }
+  
+  // Replace some exercises with alternatives for variety
+  adjustedPlan = adjustedPlan.map(day => {
+    const newWorkouts = day.workouts.map(workout => {
+      // 30% chance to replace an exercise with an alternative for variety
+      if (Math.random() < 0.3 && workout.muscleGroup && workout.difficulty) {
+        const alternatives = getAlternativeExercises(
+          [...Object.values(bodybuildingWorkouts).flat(), ...Object.values(powerliftingWorkouts).flat(), ...Object.values(calisthenicsWorkouts).flat()],
+          workout.muscleGroup,
+          workout.difficulty,
+          gender,
+          1
+        );
+        
+        if (alternatives.length > 0) {
+          const alternative = alternatives[0];
+          // Track the new workout
+          if (alternative.id) {
+            addToUserWorkoutHistory(userId, [alternative.id]);
+          }
+          return alternative;
+        }
+      }
+      return workout;
+    });
+    
+    return {
+      ...day,
+      workouts: newWorkouts
+    };
+  });
   
   // Adjust based on weight change
   if (fitnessGoal === 'muscleGain' && weightChange < 0.5) {
@@ -367,14 +470,14 @@ export const adjustWorkoutPlan = (currentPlan, userProgress, userData) => {
 
 // Generate a completely new workout plan based on user data using heuristic approach
 const generateNewWorkoutPlan = (userData) => {
-  const { fitnessGoal, fitnessLevel, workoutPreference, selectedDays, weight, hasMedicalConditions, medicalConditions, gender } = userData;
+  const { fitnessGoal, fitnessLevel, workoutPreference, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, userId } = userData;
   
   // Check if user has medical conditions
   const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
   
   // If medical conditions are detected, prioritize medical workouts
   if (detectedConditions.length > 0) {
-    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender);
+    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender, userId);
   }
   
   let selectedWorkouts = [];
@@ -384,34 +487,48 @@ const generateNewWorkoutPlan = (userData) => {
   if (workoutPreference === 'bodybuilding') {
     if (selectedDays.length <= 3) {
       workoutSplit = ['UpperLower'];
-      selectedWorkouts = bodybuildingWorkouts.UpperLower;
+      selectedWorkouts = bodybuildingWorkouts.UpperLower || [];
     } else if (selectedDays.length <= 4) {
       workoutSplit = ['BroSplits'];
-      selectedWorkouts = bodybuildingWorkouts.BroSplits;
+      selectedWorkouts = bodybuildingWorkouts.BroSplits || [];
     } else {
       workoutSplit = ['PPL'];
-      selectedWorkouts = bodybuildingWorkouts.PPL;
+      selectedWorkouts = bodybuildingWorkouts.PPL || [];
     }
   } else if (workoutPreference === 'powerlifting') {
     workoutSplit = ['SBD'];
-    selectedWorkouts = powerliftingWorkouts;
+    selectedWorkouts = powerliftingWorkouts || [];
   } else if (workoutPreference === 'calisthenics') {
     workoutSplit = ['Bodyweight'];
-    selectedWorkouts = calisthenicsWorkouts;
+    selectedWorkouts = calisthenicsWorkouts || [];
+  }
+  
+  // Flatten workouts if they are nested
+  if (selectedWorkouts && typeof selectedWorkouts === 'object' && !Array.isArray(selectedWorkouts)) {
+    selectedWorkouts = Object.values(selectedWorkouts).flat();
   }
   
   // Filter workouts based on gender to avoid redundancy
   selectedWorkouts = filterWorkoutsByGender(selectedWorkouts, gender, workoutPreference);
   
+  // Filter out previously used workouts
+  const unusedWorkouts = filterOutUsedWorkouts(selectedWorkouts, userId);
+  
+  // Shuffle for variety - use unused workouts first, then fallback to all if needed
+  const availableWorkouts = unusedWorkouts.length > 0 ? unusedWorkouts : selectedWorkouts;
+  const shuffledWorkouts = shuffleArray(availableWorkouts);
+  
   // Adjust workout intensity based on fitness level, weight, and gender
-  const adjustedWorkouts = selectedWorkouts.map(workout => {
+  const adjustedWorkouts = shuffledWorkouts.map(workout => {
     let adjustedWorkout = adjustWorkoutForGender(workout, gender, fitnessGoal, weight);
     
     // Adjust sets based on fitness level
     if (fitnessLevel === 'beginner') {
-      adjustedWorkout.sets = Math.max(2, workout.sets - 1);
+      adjustedWorkout.sets = Math.max(2, (workout.sets || 3) - 1);
     } else if (fitnessLevel === 'advanced') {
-      adjustedWorkout.sets = workout.sets + 1;
+      adjustedWorkout.sets = (workout.sets || 3) + 1;
+    } else {
+      adjustedWorkout.sets = workout.sets || 3;
     }
     
     // Adjust reps based on goal (gender-specific adjustments already applied)
@@ -434,17 +551,27 @@ const generateNewWorkoutPlan = (userData) => {
   const weeklyPlan = selectedDays.map((day, index) => {
     const startIdx = index * workoutsPerDay;
     const endIdx = startIdx + workoutsPerDay;
+    const dayWorkouts = adjustedWorkouts.slice(startIdx, endIdx);
+    
+    // Track used workout IDs
+    const workoutIds = dayWorkouts.map(workout => workout.id).filter(id => id);
+    if (workoutIds.length > 0) {
+      addToUserWorkoutHistory(userId, workoutIds);
+    }
+    
     return {
       day,
-      workouts: adjustedWorkouts.slice(startIdx, endIdx),
-      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard'
+      workouts: dayWorkouts,
+      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
+      fitnessLevel,
+      workoutPreference
     };
   });
   
   return weeklyPlan;
 };
 
-// Nutrition plan functions
+// Nutrition plan functions (unchanged from original)
 export const generateNutritionPlan = (userData, currentPlan = null, userProgress = null) => {
   // If we have progress data and current plan, adjust existing plan
   if (currentPlan && userProgress) {
@@ -653,4 +780,13 @@ export const adjustNutritionForCutting = (baseNutritionPlan, calorieReduction = 
     originalCalorieIntake: calorieIntake,
     calorieDeficit: calorieReduction
   };
+};
+
+// Export the history management for external use if needed
+export const clearUserWorkoutHistory = (userId) => {
+  userWorkoutHistory.delete(userId);
+};
+
+export const getUserWorkoutHistoryCount = (userId) => {
+  return getUserWorkoutHistory(userId).length;
 };

@@ -362,6 +362,344 @@ export const calisthenicsWorkouts = [
   },
 ]
 
+// Calisthenics alternative exercises
+export const calisthenicsExercises = [
+  // Alternatives for Pull-ups
+  {
+    id: 1,
+    name: "Australian Pull-ups",
+    type: "pull",
+    sets: 3,
+    reps: 8,
+    rest: 60,
+    description: "Bodyweight row using a bar at waist height",
+    weightPercentage: 60,
+    popular: true,
+    trend2025: true,
+    image: "australian_pullups.jpg"
+  },
+  {
+    id: 2,
+    name: "Negative Pull-ups",
+    type: "pull",
+    sets: 3,
+    reps: 5,
+    rest: 90,
+    description: "Jump to top position and slowly lower down",
+    weightPercentage: 80,
+    popular: true,
+    trend2025: false,
+    image: "negative_pullups.jpg"
+  },
+  {
+    id: 3,
+    name: "Band Assisted Pull-ups",
+    type: "pull",
+    sets: 4,
+    reps: 6,
+    rest: 75,
+    description: "Use resistance band to assist with pull-up motion",
+    weightPercentage: 70,
+    popular: true,
+    trend2025: true,
+    image: "band_pullups.jpg"
+  },
+  {
+    id: 4,
+    name: "Commando Pull-ups",
+    type: "pull",
+    sets: 3,
+    reps: 6,
+    rest: 60,
+    description: "Close-grip pull-ups with hands facing each other",
+    weightPercentage: 85,
+    popular: false,
+    trend2025: true,
+    image: "commando_pullups.jpg"
+  },
+  {
+    id: 5,
+    name: "Typewriter Pull-ups",
+    type: "pull",
+    sets: 3,
+    reps: 4,
+    rest: 90,
+    description: "Move horizontally across the bar at the top position",
+    weightPercentage: 90,
+    popular: true,
+    trend2025: false,
+    image: "typewriter_pullups.jpg"
+  },
+
+  // Alternatives for Push-ups
+  {
+    id: 6,
+    name: "Diamond Push-ups",
+    type: "push",
+    sets: 3,
+    reps: 10,
+    rest: 60,
+    description: "Close-hand push-ups targeting triceps",
+    weightPercentage: 70,
+    popular: true,
+    trend2025: true,
+    image: "diamond_pushups.jpg"
+  },
+  {
+    id: 7,
+    name: "Decline Push-ups",
+    type: "push",
+    sets: 3,
+    reps: 12,
+    rest: 60,
+    description: "Feet elevated push-ups for upper chest",
+    weightPercentage: 75,
+    popular: true,
+    trend2025: false,
+    image: "decline_pushups.jpg"
+  },
+  {
+    id: 8,
+    name: "Wide Grip Push-ups",
+    type: "push",
+    sets: 4,
+    reps: 15,
+    rest: 45,
+    description: "Wide hand placement targeting chest",
+    weightPercentage: 65,
+    popular: false,
+    trend2025: true,
+    image: "wide_pushups.jpg"
+  },
+  {
+    id: 9,
+    name: "Hindu Push-ups",
+    type: "push",
+    sets: 3,
+    reps: 10,
+    rest: 60,
+    description: "Dynamic push-up with full body movement",
+    weightPercentage: 70,
+    popular: true,
+    trend2025: true,
+    image: "hindu_pushups.jpg"
+  },
+  {
+    id: 10,
+    name: "Pike Push-ups",
+    type: "push",
+    sets: 4,
+    reps: 8,
+    rest: 75,
+    description: "Bent-over position targeting shoulders",
+    weightPercentage: 75,
+    popular: true,
+    trend2025: false,
+    image: "pike_pushups.jpg"
+  },
+
+  // Alternatives for Muscle-ups
+  {
+    id: 11,
+    name: "High Pull-ups",
+    type: "pull",
+    sets: 4,
+    reps: 5,
+    rest: 90,
+    description: "Pull chest to bar with explosive movement",
+    weightPercentage: 85,
+    popular: true,
+    trend2025: true,
+    image: "high_pullups.jpg"
+  },
+  {
+    id: 12,
+    name: "Transition Drills",
+    type: "skill",
+    sets: 5,
+    reps: 3,
+    rest: 120,
+    description: "Practice the transition phase of muscle-up",
+    weightPercentage: 80,
+    popular: false,
+    trend2025: true,
+    image: "transition_drills.jpg"
+  },
+  {
+    id: 13,
+    name: "False Grip Pull-ups",
+    type: "pull",
+    sets: 3,
+    reps: 6,
+    rest: 90,
+    description: "Pull-ups with wrist over bar for muscle-up prep",
+    weightPercentage: 75,
+    popular: true,
+    trend2025: false,
+    image: "false_grip.jpg"
+  },
+  {
+    id: 14,
+    name: "Ring Turnover Practice",
+    type: "skill",
+    sets: 4,
+    reps: 4,
+    rest: 120,
+    description: "Practice the turnover motion on rings",
+    weightPercentage: 70,
+    popular: true,
+    trend2025: true,
+    image: "ring_turnover.jpg"
+  },
+  {
+    id: 15,
+    name: "Band Assisted Muscle-ups",
+    type: "skill",
+    sets: 4,
+    reps: 3,
+    rest: 120,
+    description: "Use band to assist full muscle-up motion",
+    weightPercentage: 65,
+    popular: true,
+    trend2025: false,
+    image: "band_muscleups.jpg"
+  },
+
+  // Alternatives for Handstand Push-ups
+  {
+    id: 16,
+    name: "Wall Walks",
+    type: "push",
+    sets: 3,
+    reps: 5,
+    rest: 90,
+    description: "Walk hands up wall into handstand position",
+    weightPercentage: 70,
+    popular: true,
+    trend2025: true,
+    image: "wall_walks.jpg"
+  },
+  {
+    id: 17,
+    name: "Pike Push-ups on Elevation",
+    type: "push",
+    sets: 4,
+    reps: 8,
+    rest: 75,
+    description: "Feet elevated pike push-ups for HSPU progression",
+    weightPercentage: 75,
+    popular: true,
+    trend2025: false,
+    image: "elevated_pike.jpg"
+  },
+  {
+    id: 18,
+    name: "Handstand Hold",
+    type: "skill",
+    sets: 5,
+    reps: 30,
+    rest: 60,
+    description: "Hold handstand position against wall for time",
+    weightPercentage: 100,
+    popular: false,
+    trend2025: true,
+    image: "handstand_hold.jpg"
+  },
+  {
+    id: 19,
+    name: "Negative Handstand Push-ups",
+    type: "push",
+    sets: 4,
+    reps: 3,
+    rest: 120,
+    description: "Lower slowly from handstand to head on floor",
+    weightPercentage: 85,
+    popular: true,
+    trend2025: true,
+    image: "negative_hspu.jpg"
+  },
+  {
+    id: 20,
+    name: "Box Assisted HSPU",
+    type: "push",
+    sets: 4,
+    reps: 6,
+    rest: 90,
+    description: "Use boxes to support legs during HSPU",
+    weightPercentage: 70,
+    popular: true,
+    trend2025: false,
+    image: "box_hspu.jpg"
+  },
+
+  // Alternatives for Pistol Squats
+  {
+    id: 21,
+    name: "Assisted Pistol Squats",
+    type: "legs",
+    sets: 3,
+    reps: 6,
+    rest: 75,
+    description: "Use support for balance during single leg squat",
+    weightPercentage: 65,
+    popular: true,
+    trend2025: true,
+    image: "assisted_pistol.jpg"
+  },
+  {
+    id: 22,
+    name: "Shrimp Squats",
+    type: "legs",
+    sets: 4,
+    reps: 8,
+    rest: 60,
+    description: "Single leg squat holding back foot with hand",
+    weightPercentage: 80,
+    popular: false,
+    trend2025: true,
+    image: "shrimp_squats.jpg"
+  },
+  {
+    id: 23,
+    name: "Step-ups",
+    type: "legs",
+    sets: 3,
+    reps: 10,
+    rest: 60,
+    description: "Single leg step onto elevated surface",
+    weightPercentage: 70,
+    popular: true,
+    trend2025: false,
+    image: "step_ups.jpg"
+  },
+  {
+    id: 24,
+    name: "Cossack Squats",
+    type: "legs",
+    sets: 4,
+    reps: 8,
+    rest: 60,
+    description: "Lateral squat with one leg straight",
+    weightPercentage: 75,
+    popular: true,
+    trend2025: true,
+    image: "cossack_squats.jpg"
+  },
+  {
+    id: 25,
+    name: "Pistol Squat Negatives",
+    type: "legs",
+    sets: 4,
+    reps: 4,
+    rest: 90,
+    description: "Slow controlled descent on single leg",
+    weightPercentage: 85,
+    popular: true,
+    trend2025: false,
+    image: "pistol_negatives.jpg"
+  }
+];
+
 // Calisthenics utility functions
 export const getCalisthenicsWorkoutById = (id) => {
   return calisthenicsWorkouts.find((workout) => workout.id === id)
@@ -371,9 +709,25 @@ export const getCalisthenicsWorkoutsByType = (type) => {
   return calisthenicsWorkouts.filter((workout) => workout.type === type)
 }
 
+export const getCalisthenicsExerciseById = (id) => {
+  return calisthenicsExercises.find((exercise) => exercise.id === id)
+}
+
+export const getCalisthenicsExercisesByType = (type) => {
+  return calisthenicsExercises.filter((exercise) => exercise.type === type)
+}
+
+// Example of how to access and use the arrays
+console.log(calisthenicsWorkouts.length); // Should output 30
+console.log(calisthenicsExercises.length); // Should output 25
+console.log(calisthenicsWorkouts[0].name); // Should output "Pull-ups"
+console.log(calisthenicsExercises[0].name); // Should output "Australian Pull-ups"
+
 export default {
   calisthenicsWorkouts,
+  calisthenicsExercises,
   getCalisthenicsWorkoutById,
   getCalisthenicsWorkoutsByType,
-  
+  getCalisthenicsExerciseById,
+  getCalisthenicsExercisesByType,
 }

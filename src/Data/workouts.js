@@ -1,6 +1,6 @@
 // workouts.js
 // Import all workout categories
-import { bodybuildingWorkouts, getBodybuildingWorkoutById, getWorkoutsByType, getBodybuildingWorkoutPlan } from './bodybuilding.js'
+import { bodybuildingWorkouts, getBodybuildingWorkoutById, getWorkoutsByType, getBodybuildingWorkoutPlan } from "./bodybuilding.js"
 import { powerliftingWorkouts, getPowerliftingWorkoutById, getPowerliftingWorkoutsByType } from './powerlifting.js'
 import { calisthenicsWorkouts, getCalisthenicsWorkoutById, getCalisthenicsWorkoutsByType } from './calisthenics.js'
 import { medicalConditionWorkouts, getMedicalWorkoutsByCondition, getMedicalWorkoutById } from './medicalConditions.js'
@@ -8,7 +8,7 @@ import { medicalConditionWorkouts, getMedicalWorkoutsByCondition, getMedicalWork
 // Enhanced workout database with additional metadata for optimal selection
 export const enhancedWorkouts = {
   bodybuilding: {
-    ...bodybuildingWorkouts,
+    workouts: bodybuildingWorkouts,
     metadata: {
       type: 'hypertrophy',
       primaryGoal: 'muscle_growth',
@@ -22,7 +22,7 @@ export const enhancedWorkouts = {
     }
   },
   powerlifting: {
-    ...powerliftingWorkouts,
+    workouts: powerliftingWorkouts,
     metadata: {
       type: 'strength',
       primaryGoal: 'max_strength',
@@ -36,7 +36,7 @@ export const enhancedWorkouts = {
     }
   },
   calisthenics: {
-    ...calisthenicsWorkouts,
+    workouts: calisthenicsWorkouts,
     metadata: {
       type: 'bodyweight',
       primaryGoal: 'functional_strength',
@@ -50,7 +50,7 @@ export const enhancedWorkouts = {
     }
   },
   medical: {
-    ...medicalConditionWorkouts,
+    workouts: medicalConditionWorkouts,
     metadata: {
       type: 'rehabilitation',
       primaryGoal: 'recovery_safety',
@@ -210,7 +210,8 @@ export const getWorkoutRecommendations = (userProfile) => {
   // Filter based on equipment availability
   if (availableEquipment && availableEquipment.length > 0) {
     recommendations = recommendations.filter(workout => {
-      const workoutEquipment = enhancedWorkouts[workout.category]?.metadata.equipmentRequired || []
+      const workoutCategory = getWorkoutCategory(workout)
+      const workoutEquipment = enhancedWorkouts[workoutCategory]?.metadata.equipmentRequired || []
       return workoutEquipment.some(equip => availableEquipment.includes(equip))
     })
   }
@@ -218,7 +219,9 @@ export const getWorkoutRecommendations = (userProfile) => {
   // Filter based on medical conditions
   if (medicalConditions && medicalConditions.length > 0) {
     recommendations = recommendations.filter(workout => {
-      const considerations = enhancedWorkouts[workout.category]?.metadata.medicalConsiderations
+      const workoutCategory = getWorkoutCategory(workout)
+      const considerations = enhancedWorkouts[workoutCategory]?.metadata.medicalConsiderations
+      if (considerations === 'all_low_risk') return true
       return medicalConditions.every(condition => 
         considerations[condition] !== 'high_risk'
       )
@@ -226,6 +229,15 @@ export const getWorkoutRecommendations = (userProfile) => {
   }
 
   return recommendations.slice(0, 10) // Return top 10 recommendations
+}
+
+// Helper function to determine workout category
+const getWorkoutCategory = (workout) => {
+  if (bodybuildingWorkouts.includes(workout)) return 'bodybuilding'
+  if (powerliftingWorkouts.includes(workout)) return 'powerlifting'
+  if (calisthenicsWorkouts.includes(workout)) return 'calisthenics'
+  if (medicalConditionWorkouts.includes(workout)) return 'medical'
+  return 'bodybuilding' // default
 }
 
 export const getTrendingWorkouts = () => {

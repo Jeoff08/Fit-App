@@ -1,42 +1,411 @@
-/* #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Additional CSS for enhanced gym theme */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+::-webkit-scrollbar-track {
+  background: #000000;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #10b981, #059669, #047857);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #34d399, #10b981, #059669);
+}
+
+/* Text selection */
+::selection {
+  background: #10b981;
+  color: #000000;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
-.card {
-  padding: 2em;
+/* Apply animations to specific elements */
+.border-green-600 {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
 
-.read-the-docs {
-  color: #888;
-} */
+/* Perspective effect */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+}
+
+/* Gradient text animation */
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Custom button styles */
+.btn-gym {
+  background: linear-gradient(45deg, #10b981, #059669, #047857);
+  border: 2px solid #34d399;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gym::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-gym:hover::before {
+  left: 100%;
+}
+
+.btn-gym:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Progress bar animation */
+.progress-bar-glow {
+  background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+  background-size: 200% 100%;
+  animation: progress-glow 2s ease-in-out infinite;
+}
+
+@keyframes progress-glow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Countdown timer animation */
+.countdown-pulse {
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+@keyframes countdown-pulse {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    text-shadow: 0 0 30px rgba(16, 185, 129, 0.8);
+  }
+}
+
+/* Equipment icon animations */
+.equipment-icon {
+  transition: all 0.3s ease;
+}
+
+.equipment-icon:hover {
+  transform: scale(1.2) rotate(10deg);
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+}
+
+/* Muscle group highlight */
+.muscle-highlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.muscle-highlight::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.muscle-highlight:hover::after {
+  left: 100%;
+}
+
+/* Rest timer notification */
+.rest-timer-alert {
+  animation: rest-alert 2s ease-in-out infinite;
+}
+
+@keyframes rest-alert {
+  0%, 100% {
+    border-color: #10b981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    border-color: #34d399;
+    box-shadow: 0 0 40px rgba(52, 211, 153, 0.6);
+  }
+}
+
+/* Completion celebration */
+.completion-glow {
+  animation: completion-glow 2s ease-in-out;
+}
+
+@keyframes completion-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Responsive design enhancements */
+@media (max-width: 768px) {
+  .mobile-gym-card {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+    border: 2px solid #10b981;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 10px 0;
+  }
+  
+  .mobile-timer {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #10b981, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Loading skeleton animation */
+.skeleton-glow {
+  background: linear-gradient(90deg, #1a1a1a 25%, #262626 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 2s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Custom checkbox for gym theme */
+.gym-checkbox {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #10b981;
+  border-radius: 6px;
+  background: #000000;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.gym-checkbox:checked {
+  background: linear-gradient(45deg, #10b981, #059669);
+  border-color: #34d399;
+}
+
+.gym-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  color: #000000;
+  font-weight: 900;
+  font-size: 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Badge styles for gym metrics */
+.gym-badge {
+  background: linear-gradient(45deg, #10b981, #059669);
+  border: 2px solid #34d399;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Navigation dots for workout progress */
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #10b981;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.progress-dot.completed {
+  background: #10b981;
+  border-color: #34d399;
+}
+
+/* App.css - Add these media queries */
+@media (max-width: 768px) {
+  .workout-header {
+    padding: 2rem 1rem !important;
+  }
+  
+  .workout-title {
+    font-size: 2.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .workout-subtitle {
+    font-size: 1.1rem !important;
+  }
+  
+  .timer-display {
+    font-size: 3rem !important;
+  }
+  
+  .exercise-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  .exercise-card {
+    padding: 1.5rem !important;
+  }
+  
+  .exercise-image {
+    width: 100% !important;
+    height: 200px !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+  
+  .button-group {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .button-group button {
+    width: 100% !important;
+  }
+  
+  .modal-content {
+    margin: 1rem !important;
+    max-height: 85vh !important;
+  }
+  
+  .view-mode-toggle {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .view-mode-toggle button {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .workout-title {
+    font-size: 2rem !important;
+  }
+  
+  .timer-display {
+    font-size: 2.5rem !important;
+  }
+  
+  .exercise-card {
+    padding: 1rem !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .day-navigation {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  
+  .completion-section {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 320px) {
+  .workout-title {
+    font-size: 1.8rem !important;
+  }
+  
+  .timer-display {
+    font-size: 2rem !important;
+  }
+  
+  .exercise-card {
+    padding: 0.75rem !important;
+  }
+}
+

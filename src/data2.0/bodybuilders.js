@@ -2752,7 +2752,7 @@ export const bodybuilders = [
   "image": "src/assets/ramon.png",
   "style": "Classic Aesthetics and Symmetry",
   "description": "Brazilian bodybuilder known for his incredible waist control, perfect symmetry, and classic physique lines. Focus on balanced development, conditioning, and aesthetic proportions.",
-  "achievements": "2023 Mr. Olympia Classic Physique 2nd place, 2022 Arnold Classic Champion, 2022 Mr. Olympia Classic Physique 3rd place, Multiple Brazilian champion",
+  "achievements": "2023 Mr. Olympia Classic Physique 2nd place, 2022 Arnold Classic Champion, 2022 Mr. Olympia Classic Physique 3rd place, Multiple Brazilian champion, Mr. Olympia Classic Physique Champion 2025",
   "career": "Brazilian classic physique sensation known for his tiny waist, incredible V-taper, and perfect proportions. Revolutionized classic physique with his aesthetic lines and championship conditioning.",
   "splits": [
     {

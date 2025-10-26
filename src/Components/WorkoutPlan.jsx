@@ -4,6 +4,8 @@ import WorkoutImage from './WorkoutImage';
 import { db } from '../Config/firebaseconfig';
 import { doc, getDoc, updateDoc, arrayUnion, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { findExerciseAlternatives } from '../Algorithms/rulebasedAlgorithms';
+import '../App.css'
 
 const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) => {
   const [currentDay, setCurrentDay] = useState(0);
@@ -35,6 +37,18 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
   const [generatedWorkoutPlan, setGeneratedWorkoutPlan] = useState(null);
   const [userId, setUserId] = useState(null);
 
+  // NEW: State for showing alternatives
+  const [showAlternatives, setShowAlternatives] = useState({});
+
+  // NEW: State for modified workouts (to track replaced exercises)
+  const [modifiedWorkouts, setModifiedWorkouts] = useState({});
+
+  // NEW: State for tracking multiple alternative selections
+  const [alternativeHistory, setAlternativeHistory] = useState({});
+
+  // NEW: State for loading alternative images
+  const [loadingAlternatives, setLoadingAlternatives] = useState({});
+
   // Load user data and applied workouts from Firestore
   useEffect(() => {
     const auth = getAuth();
@@ -61,9 +75,9 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
         const userData = userDoc.data();
         
         // Load applied workouts
-        if (userData.appliedWorkouts) {
+        if (userData.appliedWorkouts && userData.appliedWorkouts.length > 0) {
           setAppliedWorkouts(userData.appliedWorkouts);
-          if (userData.appliedWorkouts.length > 0 && !selectedAppliedWorkout) {
+          if (!selectedAppliedWorkout) {
             setSelectedAppliedWorkout(userData.appliedWorkouts[0]);
             // Set default selected day for overview mode
             const firstDayWithWorkouts = userData.appliedWorkouts[0].days.find(day => day.workouts && day.workouts.length > 0);
@@ -111,7 +125,145 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
   }, [userId, selectedAppliedWorkout]);
 
   // Determine which plan to use - generated workout, applied workout, or passed plan
-  const currentPlan = generatedWorkoutPlan || (selectedAppliedWorkout ? selectedAppliedWorkout.days : plan);
+  const currentPlan = selectedAppliedWorkout ? selectedAppliedWorkout.days : (generatedWorkoutPlan || plan);
+
+  // NEW: Function to get the current exercise (either original or modified)
+  const getCurrentExercise = (dayIndex, exerciseIndex) => {
+    const dayKey = `${dayIndex}-${exerciseIndex}`;
+    if (modifiedWorkouts[dayKey]) {
+      return modifiedWorkouts[dayKey];
+    }
+    return currentPlan[dayIndex]?.workouts?.[exerciseIndex];
+  };
+
+  // NEW: Function to toggle alternatives visibility for an exercise
+  const toggleAlternatives = async (exerciseIndex) => {
+    setShowAlternatives(prev => ({
+      ...prev,
+      [exerciseIndex]: !prev[exerciseIndex]
+    }));
+
+    // Load alternatives when showing them
+    if (!showAlternatives[exerciseIndex]) {
+      const currentExercise = getCurrentExercise(currentDay, exerciseIndex);
+      await loadAlternativeImages(currentExercise, exerciseIndex);
+    }
+  };
+
+  // NEW: Function to get alternatives for an exercise
+  const getExerciseAlternatives = (exercise) => {
+    return findExerciseAlternatives(exercise.name, null, 'beginner');
+  };
+
+  // NEW: Function to load alternative images
+  const loadAlternativeImages = async (exercise, exerciseIndex) => {
+    setLoadingAlternatives(prev => ({ ...prev, [exerciseIndex]: true }));
+    
+    // Simulate loading time for better UX
+    setTimeout(() => {
+      setLoadingAlternatives(prev => ({ ...prev, [exerciseIndex]: false }));
+    }, 500);
+  };
+
+  // NEW: Function to replace an exercise with an alternative
+  const replaceExercise = (dayIndex, exerciseIndex, alternativeExercise) => {
+    const dayKey = `${dayIndex}-${exerciseIndex}`;
+    
+    // Create the new exercise object with the same structure but with alternative data
+    const newExercise = {
+      ...alternativeExercise,
+      sets: alternativeExercise.sets || currentPlan[dayIndex].workouts[exerciseIndex].sets,
+      reps: alternativeExercise.reps || currentPlan[dayIndex].workouts[exerciseIndex].reps,
+      rest: alternativeExercise.rest || currentPlan[dayIndex].workouts[exerciseIndex].rest,
+      type: alternativeExercise.type || currentPlan[dayIndex].workouts[exerciseIndex].type
+    };
+
+    // Track alternative history
+    setAlternativeHistory(prev => {
+      const historyKey = `${dayIndex}-${exerciseIndex}`;
+      const currentHistory = prev[historyKey] || [];
+      const originalExercise = modifiedWorkouts[dayKey] || currentPlan[dayIndex].workouts[exerciseIndex];
+      
+      return {
+        ...prev,
+        [historyKey]: [...currentHistory, originalExercise]
+      };
+    });
+
+    // Update the modified workouts state
+    setModifiedWorkouts(prev => ({
+      ...prev,
+      [dayKey]: newExercise
+    }));
+
+    // Hide the alternatives section
+    setShowAlternatives(prev => ({
+      ...prev,
+      [exerciseIndex]: false
+    }));
+
+    // Reset completion status for this exercise since it's been changed
+    setCompletedExercises(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(exerciseIndex);
+      return newSet;
+    });
+    
+    setCompletedSetsCount(prev => ({
+      ...prev,
+      [exerciseIndex]: 0
+    }));
+  };
+
+  // NEW: Function to revert to previous exercise version
+  const revertExercise = (dayIndex, exerciseIndex) => {
+    const dayKey = `${dayIndex}-${exerciseIndex}`;
+    const historyKey = `${dayIndex}-${exerciseIndex}`;
+    
+    setAlternativeHistory(prev => {
+      const currentHistory = prev[historyKey] || [];
+      if (currentHistory.length === 0) return prev;
+      
+      const previousExercise = currentHistory[currentHistory.length - 1];
+      const newHistory = currentHistory.slice(0, -1);
+      
+      // Update modified workouts with previous exercise
+      setModifiedWorkouts(prevWorkouts => {
+        if (newHistory.length === 0) {
+          const { [dayKey]: removed, ...rest } = prevWorkouts;
+          return rest;
+        } else {
+          return {
+            ...prevWorkouts,
+            [dayKey]: previousExercise
+          };
+        }
+      });
+
+      // Reset completion status
+      setCompletedExercises(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(exerciseIndex);
+        return newSet;
+      });
+      
+      setCompletedSetsCount(prev => ({
+        ...prev,
+        [exerciseIndex]: 0
+      }));
+
+      return {
+        ...prev,
+        [historyKey]: newHistory
+      };
+    });
+  };
+
+  // NEW: Function to get alternative history for an exercise
+  const getAlternativeHistory = (dayIndex, exerciseIndex) => {
+    const historyKey = `${dayIndex}-${exerciseIndex}`;
+    return alternativeHistory[historyKey] || [];
+  };
 
   // Timer effects
   useEffect(() => {
@@ -144,7 +296,14 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
     if (!selectedDay || !currentPlan || currentPlan.length === 0) return [];
     
     const dayData = currentPlan.find(day => day.day === selectedDay);
-    return dayData ? dayData.workouts : [];
+    if (!dayData || !dayData.workouts) return [];
+    
+    // Return modified workouts if they exist for this day
+    return dayData.workouts.map((exercise, index) => {
+      const dayIndex = currentPlan.findIndex(day => day.day === selectedDay);
+      const dayKey = `${dayIndex}-${index}`;
+      return modifiedWorkouts[dayKey] || exercise;
+    });
   };
 
   const openExerciseModal = (exercise) => {
@@ -203,29 +362,25 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
       .map(day => day.day);
   };
 
-  if (!currentPlan || currentPlan.length === 0) {
+  if (!currentPlan || currentPlan.length === 0 || (selectedAppliedWorkout && selectedAppliedWorkout.days.every(day => !day.workouts || day.workouts.length === 0))) {
     return (
-      <div className="min-h-screen bg-black text-white font-sans p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans p-4 md:p-8">
         <header className="text-center mb-12">
-          <div className="inline-block bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-2xl mb-6 shadow-2xl">
-            <div className="bg-black rounded-2xl p-3">
-              <h1 className="text-4xl md:text-7xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-3 tracking-tighter drop-shadow-2xl">
-                MY WORKOUT PLAN
-              </h1>
-            </div>
-          </div>
+          <h1 className="text-4xl md:text-7xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-3 tracking-tighter">
+            MY WORKOUT PLAN
+          </h1>
           <p className="text-lg md:text-2xl text-green-300 max-w-3xl mx-auto leading-relaxed font-medium">
             YOUR PERSONALIZED TRAINING SCHEDULE
           </p>
         </header>
 
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-black border-4 border-green-700 rounded-3xl shadow-2xl overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-gray-700/50">
             <div className="p-8">
               <div className="text-center py-16">
                 <div className="text-8xl mb-6">💪</div>
                 <h3 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-4">NO WORKOUTS APPLIED YET</h3>
-                <p className="text-green-600 text-base md:text-lg mb-8">
+                <p className="text-green-400/80 text-base md:text-lg mb-8">
                   {appliedWorkouts.length > 0 ? 
                     "Select an applied workout or visit the Influencers section to browse and apply professional workout programs!" :
                     "Visit the Influencers section to browse and apply professional workout programs!"
@@ -244,7 +399,7 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
                         setTime(0);
                         setIsRunning(false);
                       }}
-                      className="bg-black text-white border border-green-700 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 w-full md:w-auto"
+                      className="bg-gray-700/80 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 w-full md:w-auto"
                     >
                       <option value="">Select Applied Workout</option>
                       {appliedWorkouts.map((workout) => (
@@ -257,7 +412,7 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
                 )}
                 <button 
                   onClick={() => window.location.href = '/influencers'}
-                  className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white px-6 py-4 rounded-2xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl border-2 border-green-400 text-sm md:text-base"
+                  className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white px-6 py-4 rounded-2xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-sm md:text-base border border-green-600/30"
                 >
                   BROWSE WORKOUT PROGRAMS
                 </button>
@@ -313,7 +468,7 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
         [exerciseIndex]: newCount
     }));
 
-    const totalSets = currentPlan[currentDay].workouts[exerciseIndex].sets;
+    const totalSets = getCurrentExercise(currentDay, exerciseIndex).sets;
     
     if (newCount < totalSets) {
         const seconds = parseInt(restTime, 10);
@@ -337,11 +492,14 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
     const currentWorkout = currentPlan[currentDay];
     const completedExercisesData = currentWorkout.workouts
       .filter((_, index) => completedExercises.has(index))
-      .map(exercise => ({
-        name: exercise.name,
-        sets: exercise.sets,
-        reps: exercise.reps
-      }));
+      .map((exercise, index) => {
+        const currentExercise = getCurrentExercise(currentDay, index);
+        return {
+          name: currentExercise.name,
+          sets: currentExercise.sets,
+          reps: currentExercise.reps
+        };
+      });
 
     if (completedExercisesData.length > 0 && userId) {
       const totalSets = completedExercisesData.reduce((total, exercise) => total + exercise.sets, 0);
@@ -736,616 +894,645 @@ const WorkoutPlan = ({ plan, onWorkoutComplete, userData, onProgressUpdate }) =>
     return details;
   };
 
-  // Main workout interface
+  // Media screen responsive styles
+  const responsiveStyles = `
+    @media (max-width: 768px) {
+      .workout-header {
+        padding: 2rem 1rem !important;
+      }
+      .workout-title {
+        font-size: 2.5rem !important;
+        line-height: 1.2 !important;
+      }
+      .workout-subtitle {
+        font-size: 1.125rem !important;
+        line-height: 1.5 !important;
+      }
+      .exercise-card {
+        margin-bottom: 1rem !important;
+        border-radius: 1rem !important;
+      }
+      .exercise-header {
+        padding: 1rem !important;
+      }
+      .exercise-content {
+        padding: 1rem !important;
+      }
+      .timer-section {
+        padding: 1rem !important;
+      }
+      .modal-content {
+        margin: 1rem !important;
+        border-radius: 1.5rem !important;
+      }
+      .alternative-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+      }
+      .alternative-card {
+        padding: 1rem !important;
+      }
+      .mobile-stack {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+      }
+      .mobile-full {
+        width: 100% !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .workout-title {
+        font-size: 2rem !important;
+      }
+      .workout-subtitle {
+        font-size: 1rem !important;
+      }
+      .exercise-card {
+        border-radius: 0.75rem !important;
+      }
+      .modal-content {
+        margin: 0.5rem !important;
+        border-radius: 1rem !important;
+      }
+    }
+  `;
+
   return (
-    <div className="min-h-screen bg-black text-white font-sans p-4 md:p-8">
-      <header className="text-center mb-12">
-        <div className="inline-block bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-2xl mb-6 shadow-2xl">
-          <div className="bg-black rounded-2xl p-3">
-            <h1 className="text-4xl md:text-7xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-3 tracking-tighter drop-shadow-2xl">
-              MY WORKOUT PLAN
-            </h1>
-          </div>
-        </div>
-        <p className="text-lg md:text-2xl text-green-300 max-w-3xl mx-auto leading-relaxed font-medium">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans p-4 md:p-8">
+      <style>{responsiveStyles}</style>
+      
+      <header className="text-center mb-8 md:mb-12">
+        <h1 className="text-3xl md:text-7xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-2 md:mb-3 tracking-tighter workout-title">
+          MY WORKOUT PLAN
+        </h1>
+        <p className="text-base md:text-2xl text-green-300 max-w-3xl mx-auto leading-relaxed font-medium workout-subtitle">
           YOUR PERSONALIZED TRAINING SCHEDULE
         </p>
       </header>
 
-      <div className="max-w-6xl mx-auto">
-        {/* View Mode Toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-black border border-green-800 rounded-2xl p-1 inline-flex">
-            <button
-              onClick={() => setViewMode('interactive')}
-              className={`px-6 py-3 rounded-xl font-medium transition-all ${
-                viewMode === 'interactive'
-                  ? 'bg-gradient-to-r from-green-600 to-green-800 text-white shadow-lg'
-                  : 'text-green-400 hover:text-green-300'
-              }`}
-            >
-              <i className="fas fa-dumbbell mr-2"></i>
-              Interactive Mode
-            </button>
-            <button
-              onClick={() => setViewMode('overview')}
-              className={`px-6 py-3 rounded-xl font-medium transition-all ${
-                viewMode === 'overview'
-                  ? 'bg-gradient-to-r from-green-600 to-green-800 text-white shadow-lg'
-                  : 'text-green-400 hover:text-green-300'
-              }`}
-            >
-              <i className="fas fa-list mr-2"></i>
-              Overview Mode
-            </button>
-          </div>
-        </div>
-
-        {/* Applied Workout Selector */}
-        {appliedWorkouts.length > 0 && (
-          <div className="bg-black border border-green-800 rounded-2xl p-6 mb-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex-1">
-                <label className="block text-green-400 text-sm font-medium mb-2">
-                  SELECT APPLIED WORKOUT:
-                </label>
+      <div className="max-w-7xl mx-auto">
+        {/* Workout Selection and Controls */}
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden border border-gray-700/50 mb-6 md:mb-8">
+          <div className="p-4 md:p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mobile-full">
+                {appliedWorkouts.length > 0 && (
+                  <select
+                    value={selectedAppliedWorkout ? selectedAppliedWorkout.id : ""}
+                    onChange={(e) => {
+                      const workout = appliedWorkouts.find(w => w.id === parseInt(e.target.value));
+                      setSelectedAppliedWorkout(workout);
+                      setCurrentDay(0);
+                      setCompletedExercises(new Set());
+                      setCompletedSetsCount({});
+                      setTime(0);
+                      setIsRunning(false);
+                    }}
+                    className="bg-gray-700/80 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 w-full md:w-auto"
+                  >
+                    <option value="">Select Applied Workout</option>
+                    {appliedWorkouts.map((workout) => (
+                      <option key={workout.id} value={workout.id}>
+                        {workout.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                
                 <select
-                  value={selectedAppliedWorkout ? selectedAppliedWorkout.id : ""}
+                  value={currentDay}
                   onChange={(e) => {
-                    const workout = appliedWorkouts.find(w => w.id === parseInt(e.target.value));
-                    setSelectedAppliedWorkout(workout);
-                    setCurrentDay(0);
+                    setCurrentDay(parseInt(e.target.value));
                     setCompletedExercises(new Set());
                     setCompletedSetsCount({});
                     setTime(0);
                     setIsRunning(false);
                   }}
-                  className="bg-black text-white border border-green-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                  className="bg-gray-700/80 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 w-full md:w-auto"
                 >
-                  <option value="">Select Applied Workout</option>
-                  {appliedWorkouts.map((workout) => (
-                    <option key={workout.id} value={workout.id}>
-                      {workout.name} - {workout.influencer}
+                  {currentPlan.map((day, index) => (
+                    <option key={index} value={index}>
+                      {day.day}
                     </option>
                   ))}
                 </select>
               </div>
-              {selectedAppliedWorkout && (
+              
+              <div className="flex flex-wrap gap-2 mobile-full md:w-auto">
+                <button
+                  onClick={() => setViewMode('interactive')}
+                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                    viewMode === 'interactive'
+                      ? 'bg-green-600 text-white shadow-lg'
+                      : 'bg-gray-700/80 text-gray-300 hover:bg-gray-600/80'
+                  }`}
+                >
+                  Interactive
+                </button>
+                <button
+                  onClick={() => setViewMode('overview')}
+                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                    viewMode === 'overview'
+                      ? 'bg-green-600 text-white shadow-lg'
+                      : 'bg-gray-700/80 text-gray-300 hover:bg-gray-600/80'
+                  }`}
+                >
+                  Overview
+                </button>
+              </div>
+            </div>
+
+            {selectedAppliedWorkout && (
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-green-400 font-medium">
+                  {selectedAppliedWorkout.name}
+                </div>
                 <button
                   onClick={() => handleRemoveAppliedWorkout(selectedAppliedWorkout.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition-all"
+                  className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors duration-300"
                 >
-                  <i className="fas fa-trash mr-2"></i>
                   Remove Workout
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Overview Mode */}
-        {viewMode === 'overview' && (
-          <div className="bg-black border-4 border-green-700 rounded-3xl shadow-2xl overflow-hidden">
-            <div className="p-8">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                <h2 className="text-3xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-4 md:mb-0">
-                  WORKOUT OVERVIEW
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {getAvailableDays().map((day) => (
-                    <button
-                      key={day}
-                      onClick={() => setSelectedDay(day)}
-                      className={`px-4 py-2 rounded-xl font-medium transition-all ${
-                        selectedDay === day
-                          ? 'bg-gradient-to-r from-green-600 to-green-800 text-white shadow-lg'
-                          : 'bg-gray-900 text-green-400 hover:bg-gray-800'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
+        {/* Timer Section */}
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden border border-gray-700/50 mb-6 md:mb-8">
+          <div className="p-4 md:p-6 timer-section">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="text-center md:text-left">
+                <h3 className="text-xl md:text-2xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-2">
+                  Workout Timer
+                </h3>
+                <div className="text-3xl md:text-5xl font-mono font-bold text-white">
+                  {formatTime(time)}
                 </div>
               </div>
+              
+              <div className="flex flex-wrap gap-2 justify-center mobile-stack">
+                {!isRunning ? (
+                  <button
+                    onClick={handleStartTimer}
+                    className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white px-6 py-3 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-sm md:text-base border border-green-600/30"
+                  >
+                    Start Timer
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleStopTimer}
+                    className="bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white px-6 py-3 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-sm md:text-base border border-red-600/30"
+                  >
+                    Stop Timer
+                  </button>
+                )}
+                <button
+                  onClick={handleResetTimer}
+                  className="bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-gray-900 text-white px-6 py-3 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-sm md:text-base border border-gray-600/30"
+                >
+                  Reset Timer
+                </button>
+              </div>
+            </div>
 
-              {selectedDay ? (
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-black text-green-400">{selectedDay}</h3>
-                    <button
-                      onClick={handleRemoveWorkout}
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium transition-all text-sm"
-                    >
-                      <i className="fas fa-trash mr-2"></i>
-                      Remove Day
-                    </button>
+            {/* Countdown Timer */}
+            {isCountdownRunning && (
+              <div className="mt-4 p-4 bg-yellow-500/20 rounded-xl border border-yellow-500/30">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-yellow-400 mb-2">
+                    Rest Time
                   </div>
-                  <div className="grid gap-6">
-                    {getWorkoutsForSelectedDay().map((exercise, index) => (
-                      <div key={index} className="bg-gray-900 rounded-2xl p-6 border border-green-800">
-                        <div className="flex flex-col md:flex-row gap-6">
-                          {/* Workout Image */}
-                          <div className="flex-shrink-0">
+                  <div className="text-4xl font-mono font-bold text-yellow-300">
+                    {formatTime(countdownTime)}
+                  </div>
+                  <button
+                    onClick={handleStopCountdown}
+                    className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 text-sm"
+                  >
+                    Skip Rest
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Workout Content */}
+        {viewMode === 'interactive' ? (
+          <div className="space-y-4 md:space-y-6">
+            {currentPlan[currentDay]?.workouts?.map((exercise, index) => {
+              const currentExercise = getCurrentExercise(currentDay, index);
+              const isCompleted = completedExercises.has(index);
+              const completedSets = completedSetsCount[index] || 0;
+              const totalSets = currentExercise.sets;
+              const exerciseDetails = getExerciseDetails(currentExercise);
+              const hasHistory = getAlternativeHistory(currentDay, index).length > 0;
+
+              return (
+                <div
+                  key={index}
+                  className={`bg-gray-800/50 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden border transition-all duration-500 ${
+                    isCompleted
+                      ? 'border-green-500/50 bg-green-500/10'
+                      : 'border-gray-700/50'
+                  } exercise-card`}
+                >
+                  {/* Exercise Header */}
+                  <div 
+                    className="p-4 md:p-6 cursor-pointer hover:bg-gray-700/30 transition-all duration-300 exercise-header"
+                    onClick={() => toggleExercise(index)}
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-3 h-3 rounded-full ${
+                          isCompleted ? 'bg-green-500' : 'bg-gray-500'
+                        }`} />
+                        <div>
+                          <h3 className={`text-lg md:text-xl font-black ${
+                            isCompleted 
+                              ? 'text-green-400 line-through' 
+                              : 'text-white'
+                          }`}>
+                            {currentExercise.name}
+                          </h3>
+                          <p className="text-green-400 text-sm md:text-base">
+                            {currentExercise.sets} sets × {currentExercise.reps} reps
+                            {currentExercise.rest && ` • ${currentExercise.rest} rest`}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        {hasHistory && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              revertExercise(currentDay, index);
+                            }}
+                            className="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition-colors duration-300 bg-yellow-500/20 hover:bg-yellow-500/30 px-3 py-1 rounded-lg"
+                          >
+                            Revert
+                          </button>
+                        )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleAlternatives(index);
+                          }}
+                          className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors duration-300 bg-blue-500/20 hover:bg-blue-500/30 px-3 py-1 rounded-lg"
+                        >
+                          {showAlternatives[index] ? 'Hide' : 'Alternatives'}
+                        </button>
+                        <div className={`transform transition-transform duration-300 ${
+                          expandedExercise === index ? 'rotate-180' : ''
+                        }`}>
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="mt-3">
+                      <div className="flex justify-between text-sm text-gray-400 mb-1">
+                        <span>Progress</span>
+                        <span>{completedSets}/{totalSets} sets</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${(completedSets / totalSets) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Exercise Content */}
+                  {expandedExercise === index && (
+                    <div className="p-4 md:p-6 border-t border-gray-700/50 exercise-content">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                        {/* Exercise Image and Details */}
+                        <div className="space-y-4">
+                          <div className="bg-gray-900/50 rounded-2xl p-4 border border-gray-700/50">
                             <WorkoutImage 
-                              exerciseName={exercise.name}
-                              className="w-full md:w-48 h-48 object-cover rounded-xl"
-                              alt={exercise.name}
+                              exerciseName={currentExercise.name}
+                              className="w-full h-48 md:h-64 object-cover rounded-xl"
                             />
                           </div>
                           
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start mb-4">
-                              <h4 className="text-xl font-black text-white">{exercise.name}</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <div className="bg-gray-900/50 rounded-xl p-3 text-center border border-gray-700/50">
+                              <div className="text-green-400 font-black text-lg">{currentExercise.sets}</div>
+                              <div className="text-gray-400 text-xs">SETS</div>
+                            </div>
+                            <div className="bg-gray-900/50 rounded-xl p-3 text-center border border-gray-700/50">
+                              <div className="text-green-400 font-black text-lg">{currentExercise.reps}</div>
+                              <div className="text-gray-400 text-xs">REPS</div>
+                            </div>
+                            <div className="bg-gray-900/50 rounded-xl p-3 text-center border border-gray-700/50">
+                              <div className="text-green-400 font-black text-lg">{currentExercise.rest}</div>
+                              <div className="text-gray-400 text-xs">REST</div>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => openExerciseModal(currentExercise)}
+                            className="w-full bg-gray-700/80 hover:bg-gray-600/80 text-white py-3 rounded-xl font-medium transition-all duration-300 border border-gray-600/50"
+                          >
+                            View Exercise Details
+                          </button>
+                        </div>
+
+                        {/* Controls and Alternatives */}
+                        <div className="space-y-6">
+                          {/* Completion Controls */}
+                          {!isCompleted ? (
+                            <div className="space-y-4">
                               <button
-                                onClick={() => openExerciseModal(exercise)}
-                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-medium transition-all text-sm"
+                                onClick={() => handleCompleteSet(index, currentExercise.rest)}
+                                disabled={completedSets >= totalSets}
+                                className={`w-full py-4 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-base md:text-lg border ${
+                                  completedSets >= totalSets
+                                    ? 'bg-gray-600 text-gray-400 border-gray-500'
+                                    : 'bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white border-green-600/30'
+                                }`}
                               >
-                                <i className="fas fa-info-circle mr-2"></i>
-                                Details
+                                {completedSets >= totalSets 
+                                  ? 'All Sets Completed' 
+                                  : `Complete Set ${completedSets + 1}/${totalSets}`
+                                }
+                              </button>
+                              
+                              <button
+                                onClick={() => handleCompleteExercise(index)}
+                                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-4 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-base md:text-lg border border-blue-600/30"
+                              >
+                                Mark Complete
                               </button>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                              <div className="bg-black rounded-xl p-4 text-center border border-green-800">
-                                <div className="text-green-400 text-sm font-medium mb-1">SETS</div>
-                                <div className="text-white text-xl font-black">{exercise.sets}</div>
+                          ) : (
+                            <div className="space-y-4">
+                              <div className="text-center p-4 bg-green-500/20 rounded-xl border border-green-500/30">
+                                <div className="text-green-400 font-black text-lg mb-2">Exercise Completed!</div>
+                                <div className="text-green-300 text-sm">
+                                  Great job! You've completed all {totalSets} sets.
+                                </div>
                               </div>
-                              <div className="bg-black rounded-xl p-4 text-center border border-green-800">
-                                <div className="text-green-400 text-sm font-medium mb-1">REPS</div>
-                                <div className="text-white text-xl font-black">{exercise.reps}</div>
-                              </div>
-                              <div className="bg-black rounded-xl p-4 text-center border border-green-800">
-                                <div className="text-green-400 text-sm font-medium mb-1">REST</div>
-                                <div className="text-white text-xl font-black">{exercise.rest}</div>
-                              </div>
-                              <div className="bg-black rounded-xl p-4 text-center border border-green-800">
-                                <div className="text-green-400 text-sm font-medium mb-1">TYPE</div>
-                                <div className="text-white text-xl font-black">{exercise.type}</div>
-                              </div>
+                              <button
+                                onClick={() => handleRestartExercise(index)}
+                                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white py-4 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-base md:text-lg border border-yellow-600/30"
+                              >
+                                Restart Exercise
+                              </button>
                             </div>
-                            {exercise.description && (
-                              <p className="text-green-300 text-sm leading-relaxed">{exercise.description}</p>
-                            )}
-                          </div>
+                          )}
+
+                          {/* Alternatives Section */}
+                          {showAlternatives[index] && (
+                            <div className="bg-gray-900/50 rounded-2xl p-4 border border-blue-500/30">
+                              <h4 className="text-blue-400 font-black text-lg mb-4 flex items-center gap-2">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                                </svg>
+                                Alternative Exercises
+                              </h4>
+                              
+                              {loadingAlternatives[index] ? (
+                                <div className="text-center py-8">
+                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                                  <p className="text-gray-400 mt-2">Loading alternatives...</p>
+                                </div>
+                              ) : (
+                                <div className="alternative-grid grid grid-cols-1 gap-3">
+                                  {getExerciseAlternatives(currentExercise).slice(0, 3).map((alternative, altIndex) => (
+                                    <div
+                                      key={altIndex}
+                                      className="alternative-card bg-gray-800/80 hover:bg-gray-700/80 rounded-xl p-4 border border-gray-600/50 cursor-pointer transition-all duration-300 hover:border-blue-500/50"
+                                      onClick={() => replaceExercise(currentDay, index, alternative)}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <div className="flex-shrink-0 w-12 h-12 bg-gray-700 rounded-lg overflow-hidden">
+                                          <WorkoutImage 
+                                            exerciseName={alternative.name}
+                                            className="w-full h-full object-cover"
+                                          />
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="text-white font-medium text-sm">
+                                            {alternative.name}
+                                          </div>
+                                          <div className="text-green-400 text-xs">
+                                            {alternative.sets || currentExercise.sets} sets × {alternative.reps || currentExercise.reps} reps
+                                          </div>
+                                        </div>
+                                        <div className="text-blue-400 text-xs font-medium bg-blue-500/20 px-2 py-1 rounded">
+                                          Switch
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              <p className="text-gray-400 text-xs mt-3 text-center">
+                                Click on any alternative to replace the current exercise
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">📋</div>
-                  <h3 className="text-xl font-black text-green-400 mb-2">SELECT A DAY</h3>
-                  <p className="text-green-600">Choose a day from the options above to view the workout details.</p>
+              );
+            })}
+
+            {/* Day Completion Section */}
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden border border-gray-700/50 p-6">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                  <h3 className="text-xl font-black text-white mb-2">
+                    Complete Your Workout Day
+                  </h3>
+                  <p className="text-green-400">
+                    {completedExercises.size} of {currentPlan[currentDay]?.workouts?.length} exercises completed
+                  </p>
+                </div>
+                
+                <div className="flex flex-wrap gap-3 mobile-stack">
+                  <button
+                    onClick={handleResetDay}
+                    className="bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-gray-900 text-white px-6 py-3 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-sm md:text-base border border-gray-600/30"
+                  >
+                    Reset Day
+                  </button>
+                  <button
+                    onClick={handleCompleteDay}
+                    disabled={completedExercises.size === 0}
+                    className={`px-6 py-3 rounded-xl font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-2xl text-sm md:text-base border ${
+                      completedExercises.size === 0
+                        ? 'bg-gray-600 text-gray-400 border-gray-500 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white border-green-600/30'
+                    }`}
+                  >
+                    Complete Day
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Overview Mode */
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden border border-gray-700/50">
+            <div className="p-6">
+              <h3 className="text-2xl font-black text-white mb-6">Workout Overview</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {getAvailableDays().map((day) => (
+                  <button
+                    key={day}
+                    onClick={() => setSelectedDay(day)}
+                    className={`p-4 rounded-xl text-left transition-all duration-300 border ${
+                      selectedDay === day
+                        ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                        : 'bg-gray-700/50 border-gray-600/50 text-gray-300 hover:bg-gray-600/50'
+                    }`}
+                  >
+                    <div className="font-black text-lg">{day}</div>
+                    <div className="text-sm opacity-75">
+                      {currentPlan.find(d => d.day === day)?.workouts?.length || 0} exercises
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {selectedDay && (
+                <div className="space-y-4">
+                  <h4 className="text-xl font-black text-white mb-4">{selectedDay} Workouts</h4>
+                  
+                  {getWorkoutsForSelectedDay().map((exercise, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-700/30 rounded-xl p-4 border border-gray-600/50"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h5 className="font-black text-white text-lg">{exercise.name}</h5>
+                          <p className="text-green-400">
+                            {exercise.sets} sets × {exercise.reps} reps
+                            {exercise.rest && ` • ${exercise.rest} rest`}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => openExerciseModal(exercise)}
+                          className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 text-sm"
+                        >
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           </div>
         )}
-
-        {/* Interactive Mode */}
-        {viewMode === 'interactive' && (
-          <>
-            {/* Timer Section */}
-            <div className="bg-black border-4 border-green-700 rounded-3xl shadow-2xl overflow-hidden mb-8">
-              <div className="p-8">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-                  <h2 className="text-3xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-4 md:mb-0">
-                    WORKOUT TIMER
-                  </h2>
-                  <div className="flex items-center gap-4">
-                    <div className="text-center">
-                      <div className="text-5xl md:text-7xl font-black text-green-400 font-mono">
-                        {formatTime(time)}
-                      </div>
-                      <div className="text-green-600 text-sm font-medium mt-2">SESSION TIME</div>
-                    </div>
-                    <div className="flex gap-2">
-                      {!isRunning ? (
-                        <button
-                          onClick={handleStartTimer}
-                          className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white px-6 py-3 rounded-xl font-medium transition-all"
-                        >
-                          <i className="fas fa-play mr-2"></i>
-                          Start
-                        </button>
-                      ) : (
-                        <button
-                          onClick={handleStopTimer}
-                          className="bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white px-6 py-3 rounded-xl font-medium transition-all"
-                        >
-                          <i className="fas fa-pause mr-2"></i>
-                          Pause
-                        </button>
-                      )}
-                      <button
-                        onClick={handleResetTimer}
-                        className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition-all"
-                      >
-                        <i className="fas fa-redo mr-2"></i>
-                        Reset
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Countdown Timer */}
-                {countdownTime > 0 && (
-                  <div className="bg-gradient-to-r from-green-900 to-green-700 rounded-2xl p-6 text-center mb-6 border-2 border-green-500">
-                    <div className="text-green-300 text-sm font-medium mb-2">REST TIMER</div>
-                    <div className="text-4xl md:text-6xl font-black text-white font-mono mb-4">
-                      {formatTime(countdownTime)}
-                    </div>
-                    <div className="flex justify-center gap-2">
-                      {!isCountdownRunning ? (
-                        <button
-                          onClick={() => setIsCountdownRunning(true)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-medium transition-all"
-                        >
-                          <i className="fas fa-play mr-2"></i>
-                          Resume Rest
-                        </button>
-                      ) : (
-                        <button
-                          onClick={handleStopCountdown}
-                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium transition-all"
-                        >
-                          <i className="fas fa-pause mr-2"></i>
-                          Stop Rest
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Day Navigation */}
-            <div className="bg-black border-4 border-green-700 rounded-3xl shadow-2xl overflow-hidden mb-8">
-              <div className="p-6">
-                <div className="flex flex-col md:flex-row justify-between items-center">
-                  <div className="flex items-center gap-4 mb-4 md:mb-0">
-                    <h3 className="text-xl font-black text-green-400">CURRENT DAY:</h3>
-                    <div className="bg-gradient-to-r from-green-600 to-green-800 text-white px-6 py-3 rounded-xl font-black text-lg">
-                      {currentPlan[currentDay]?.day || "No Workout Available"}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setCurrentDay(Math.max(0, currentDay - 1))}
-                      disabled={currentDay === 0}
-                      className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-medium transition-all"
-                    >
-                      <i className="fas fa-chevron-left mr-2"></i>
-                      Previous
-                    </button>
-                    <button
-                      onClick={() => setCurrentDay(Math.min(currentPlan.length - 1, currentDay + 1))}
-                      disabled={currentDay === currentPlan.length - 1}
-                      className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-medium transition-all"
-                    >
-                      Next
-                      <i className="fas fa-chevron-right ml-2"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Workout Exercises */}
-            <div className="bg-black border-4 border-green-700 rounded-3xl shadow-2xl overflow-hidden mb-8">
-              <div className="p-8">
-                <h2 className="text-3xl font-black bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent mb-8 text-center">
-                  TODAY'S WORKOUT
-                </h2>
-
-                {currentPlan[currentDay]?.workouts?.length > 0 ? (
-                  <div className="space-y-6">
-                    {currentPlan[currentDay].workouts.map((exercise, index) => {
-                      const exerciseDetails = getExerciseDetails(exercise);
-                      const isCompleted = completedExercises.has(index);
-                      const completedSets = completedSetsCount[index] || 0;
-                      const totalSets = exercise.sets;
-
-                      return (
-                        <div
-                          key={index}
-                          className={`bg-gray-900 rounded-2xl p-6 border-2 transition-all duration-300 ${
-                            isCompleted
-                              ? "border-green-500 bg-gradient-to-r from-green-900/20 to-green-800/20"
-                              : "border-green-800 hover:border-green-600"
-                          }`}
-                        >
-                          <div className="flex flex-col md:flex-row gap-6">
-                            {/* Workout Image */}
-                            <div className="flex-shrink-0">
-                              <WorkoutImage 
-                                exerciseName={exercise.name}
-                                className="w-full md:w-48 h-48 object-cover rounded-xl"
-                                alt={exercise.name}
-                              />
-                            </div>
-                            
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start mb-4">
-                                <div>
-                                  <h3 className="text-xl font-black text-white mb-2">
-                                    {exercise.name}
-                                    {isCompleted && (
-                                      <span className="ml-3 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                        <i className="fas fa-check mr-1"></i>
-                                        COMPLETED
-                                      </span>
-                                    )}
-                                  </h3>
-                                  <div className="flex flex-wrap gap-4 mb-4">
-                                    <div className="bg-black rounded-xl px-4 py-2 border border-green-800">
-                                      <div className="text-green-400 text-sm font-medium">SETS</div>
-                                      <div className="text-white text-lg font-black">{exercise.sets}</div>
-                                    </div>
-                                    <div className="bg-black rounded-xl px-4 py-2 border border-green-800">
-                                      <div className="text-green-400 text-sm font-medium">REPS</div>
-                                      <div className="text-white text-lg font-black">{exercise.reps}</div>
-                                    </div>
-                                    <div className="bg-black rounded-xl px-4 py-2 border border-green-800">
-                                      <div className="text-green-400 text-sm font-medium">REST</div>
-                                      <div className="text-white text-lg font-black">{exercise.rest}</div>
-                                    </div>
-                                    <div className="bg-black rounded-xl px-4 py-2 border border-green-800">
-                                      <div className="text-green-400 text-sm font-medium">TYPE</div>
-                                      <div className="text-white text-lg font-black">{exercise.type}</div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <button
-                                  onClick={() => openExerciseModal(exercise)}
-                                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-medium transition-all flex-shrink-0"
-                                >
-                                  <i className="fas fa-info-circle mr-2"></i>
-                                  Details
-                                </button>
-                              </div>
-
-                              {/* Progress Bar for Sets */}
-                              <div className="mb-4">
-                                <div className="flex justify-between items-center mb-2">
-                                  <span className="text-green-400 text-sm font-medium">
-                                    SETS COMPLETED: {completedSets}/{totalSets}
-                                  </span>
-                                  <span className="text-green-400 text-sm font-medium">
-                                    {Math.round((completedSets / totalSets) * 100)}%
-                                  </span>
-                                </div>
-                                <div className="w-full bg-black rounded-full h-3 border border-green-800">
-                                  <div
-                                    className="bg-gradient-to-r from-green-500 to-green-700 h-full rounded-full transition-all duration-500"
-                                    style={{ width: `${(completedSets / totalSets) * 100}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-
-                              {/* Exercise Controls */}
-                              <div className="flex flex-wrap gap-3">
-                                {!isCompleted ? (
-                                  <>
-                                    <button
-                                      onClick={() => handleCompleteSet(index, exercise.rest)}
-                                      disabled={completedSets >= totalSets}
-                                      className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-medium transition-all"
-                                    >
-                                      <i className="fas fa-check-circle mr-2"></i>
-                                      Complete Set ({completedSets + 1}/{totalSets})
-                                    </button>
-                                    <button
-                                      onClick={() => toggleExercise(index)}
-                                      className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition-all"
-                                    >
-                                      <i className={`fas ${expandedExercise === index ? 'fa-chevron-up' : 'fa-chevron-down'} mr-2`}></i>
-                                      {expandedExercise === index ? 'Less' : 'More'} Details
-                                    </button>
-                                  </>
-                                ) : (
-                                  <button
-                                    onClick={() => handleRestartExercise(index)}
-                                    className="bg-gradient-to-r from-yellow-500 to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 text-white px-6 py-3 rounded-xl font-medium transition-all"
-                                  >
-                                    <i className="fas fa-redo mr-2"></i>
-                                    Restart Exercise
-                                  </button>
-                                )}
-                              </div>
-
-                              {/* Expanded Exercise Details */}
-                              {expandedExercise === index && (
-                                <div className="mt-6 p-4 bg-black rounded-xl border border-green-800">
-                                  <h4 className="text-lg font-black text-green-400 mb-3">EXERCISE DETAILS</h4>
-                                  <p className="text-green-300 mb-4 leading-relaxed">
-                                    {exerciseDetails.description}
-                                  </p>
-                                  <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                      <h5 className="font-black text-green-400 mb-2">PROPER FORM:</h5>
-                                      <ul className="text-green-300 space-y-2">
-                                        {exerciseDetails.properForm.map((point, i) => (
-                                          <li key={i} className="flex items-start">
-                                            <i className="fas fa-check text-green-500 mt-1 mr-2 flex-shrink-0"></i>
-                                            <span>{point}</span>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                    <div>
-                                      <h5 className="font-black text-green-400 mb-2">COMMON MISTAKES:</h5>
-                                      <ul className="text-green-300 space-y-2">
-                                        {exerciseDetails.commonMistakes.map((mistake, i) => (
-                                          <li key={i} className="flex items-start">
-                                            <i className="fas fa-times text-red-500 mt-1 mr-2 flex-shrink-0"></i>
-                                            <span>{mistake}</span>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  </div>
-                                  <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-green-800">
-                                    <div>
-                                      <div className="text-green-400 text-sm font-medium">EQUIPMENT</div>
-                                      <div className="text-white font-medium">{exerciseDetails.equipment}</div>
-                                    </div>
-                                    <div>
-                                      <div className="text-green-400 text-sm font-medium">DIFFICULTY</div>
-                                      <div className="text-white font-medium">{exerciseDetails.difficulty}</div>
-                                    </div>
-                                    <div>
-                                      <div className="text-green-400 text-sm font-medium">TARGET MUSCLES</div>
-                                      <div className="text-white font-medium">
-                                        {exerciseDetails.targetMuscles.join(", ")}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="text-8xl mb-6">💪</div>
-                    <h3 className="text-2xl font-black text-green-400 mb-4">NO WORKOUTS SCHEDULED</h3>
-                    <p className="text-green-600 text-lg mb-8">
-                      This day doesn't have any workouts scheduled. Check other days or apply a new workout program.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Completion Section */}
-            <div className="bg-black border-4 border-green-700 rounded-3xl shadow-2xl overflow-hidden">
-              <div className="p-8">
-                <div className="flex flex-col md:flex-row justify-between items-center">
-                  <div className="text-center md:text-left mb-4 md:mb-0">
-                    <h3 className="text-xl font-black text-green-400 mb-2">WORKOUT PROGRESS</h3>
-                    <p className="text-green-300">
-                      Completed {completedExercises.size} out of {currentPlan[currentDay]?.workouts?.length || 0} exercises
-                    </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      onClick={handleResetDay}
-                      className="bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white px-6 py-3 rounded-xl font-medium transition-all"
-                    >
-                      <i className="fas fa-undo mr-2"></i>
-                      Reset Day
-                    </button>
-                    <button
-                      onClick={handleCompleteDay}
-                      disabled={completedExercises.size === 0}
-                      className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-medium transition-all"
-                    >
-                      <i className="fas fa-flag-checkered mr-2"></i>
-                      Complete Day & Track Progress
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
       </div>
 
-      {/* Exercise Detail Modal */}
+      {/* Exercise Details Modal */}
       {isModalOpen && selectedExercise && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-          <div className="bg-black border-4 border-green-700 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-6">
-                <h3 className="text-3xl font-black text-green-400">{selectedExercise.name}</h3>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="modal-content bg-gray-800 rounded-3xl shadow-2xl border border-gray-700/50 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-black text-white">{selectedExercise.name}</h3>
                 <button
                   onClick={closeExerciseModal}
-                  className="bg-red-600 hover:bg-red-700 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                  className="text-gray-400 hover:text-white transition-colors duration-300"
                 >
-                  <i className="fas fa-times"></i>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
+              <div className="space-y-6">
+                {/* Exercise Image */}
+                <div className="bg-gray-900/50 rounded-2xl p-4 border border-gray-700/50">
                   <WorkoutImage 
                     exerciseName={selectedExercise.name}
-                    className="w-full h-64 object-cover rounded-xl mb-4"
-                    alt={selectedExercise.name}
+                    className="w-full h-64 object-cover rounded-xl"
                   />
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-gray-900 rounded-xl p-4 text-center border border-green-800">
-                      <div className="text-green-400 text-sm font-medium mb-1">SETS</div>
-                      <div className="text-white text-xl font-black">{selectedExercise.sets}</div>
-                    </div>
-                    <div className="bg-gray-900 rounded-xl p-4 text-center border border-green-800">
-                      <div className="text-green-400 text-sm font-medium mb-1">REPS</div>
-                      <div className="text-white text-xl font-black">{selectedExercise.reps}</div>
-                    </div>
-                    <div className="bg-gray-900 rounded-xl p-4 text-center border border-green-800">
-                      <div className="text-green-400 text-sm font-medium mb-1">REST</div>
-                      <div className="text-white text-xl font-black">{selectedExercise.rest}</div>
-                    </div>
-                    <div className="bg-gray-900 rounded-xl p-4 text-center border border-green-800">
-                      <div className="text-green-400 text-sm font-medium mb-1">TYPE</div>
-                      <div className="text-white text-xl font-black">{selectedExercise.type}</div>
-                    </div>
+                </div>
+
+                {/* Exercise Details */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-gray-900/50 rounded-xl p-4 text-center border border-gray-700/50">
+                    <div className="text-green-400 font-black text-xl">{selectedExercise.sets}</div>
+                    <div className="text-gray-400 text-sm">SETS</div>
+                  </div>
+                  <div className="bg-gray-900/50 rounded-xl p-4 text-center border border-gray-700/50">
+                    <div className="text-green-400 font-black text-xl">{selectedExercise.reps}</div>
+                    <div className="text-gray-400 text-sm">REPS</div>
+                  </div>
+                  <div className="bg-gray-900/50 rounded-xl p-4 text-center border border-gray-700/50">
+                    <div className="text-green-400 font-black text-xl">{selectedExercise.rest}</div>
+                    <div className="text-gray-400 text-sm">REST</div>
                   </div>
                 </div>
 
+                {/* Exercise Description */}
                 <div>
-                  <div className="mb-6">
-                    <h4 className="text-xl font-black text-green-400 mb-3">DESCRIPTION</h4>
-                    <p className="text-green-300 leading-relaxed">
-                      {getExerciseDetails(selectedExercise).description}
-                    </p>
+                  <h4 className="text-lg font-black text-white mb-3">Description</h4>
+                  <p className="text-gray-300 leading-relaxed">
+                    {getExerciseDetails(selectedExercise).description}
+                  </p>
+                </div>
+
+                {/* Proper Form */}
+                <div>
+                  <h4 className="text-lg font-black text-white mb-3">Proper Form</h4>
+                  <ul className="space-y-2">
+                    {getExerciseDetails(selectedExercise).properForm.map((point, index) => (
+                      <li key={index} className="flex items-start gap-3 text-gray-300">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Common Mistakes */}
+                <div>
+                  <h4 className="text-lg font-black text-white mb-3">Common Mistakes</h4>
+                  <ul className="space-y-2">
+                    {getExerciseDetails(selectedExercise).commonMistakes.map((mistake, index) => (
+                      <li key={index} className="flex items-start gap-3 text-gray-300">
+                        <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0" />
+                        {mistake}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Additional Info */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-700/50">
+                    <div className="text-gray-400 text-sm mb-1">EQUIPMENT</div>
+                    <div className="text-white font-medium">{getExerciseDetails(selectedExercise).equipment}</div>
                   </div>
-
-                  <div className="grid gap-6">
-                    <div>
-                      <h4 className="text-xl font-black text-green-400 mb-3">PROPER FORM</h4>
-                      <ul className="text-green-300 space-y-2">
-                        {getExerciseDetails(selectedExercise).properForm.map((point, i) => (
-                          <li key={i} className="flex items-start">
-                            <i className="fas fa-check text-green-500 mt-1 mr-2 flex-shrink-0"></i>
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="text-xl font-black text-green-400 mb-3">COMMON MISTAKES</h4>
-                      <ul className="text-green-300 space-y-2">
-                        {getExerciseDetails(selectedExercise).commonMistakes.map((mistake, i) => (
-                          <li key={i} className="flex items-start">
-                            <i className="fas fa-times text-red-500 mt-1 mr-2 flex-shrink-0"></i>
-                            <span>{mistake}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                  <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-700/50">
+                    <div className="text-gray-400 text-sm mb-1">DIFFICULTY</div>
+                    <div className="text-white font-medium">{getExerciseDetails(selectedExercise).difficulty}</div>
                   </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-green-800">
-                <div className="text-center">
-                  <div className="text-green-400 text-sm font-medium mb-1">EQUIPMENT</div>
-                  <div className="text-white font-medium">{getExerciseDetails(selectedExercise).equipment}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-green-400 text-sm font-medium mb-1">DIFFICULTY</div>
-                  <div className="text-white font-medium">{getExerciseDetails(selectedExercise).difficulty}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-green-400 text-sm font-medium mb-1">TARGET MUSCLES</div>
-                  <div className="text-white font-medium">
-                    {getExerciseDetails(selectedExercise).targetMuscles.join(", ")}
+                  <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-700/50">
+                    <div className="text-gray-400 text-sm mb-1">TARGET MUSCLES</div>
+                    <div className="text-white font-medium">
+                      {getExerciseDetails(selectedExercise).targetMuscles.join(', ')}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -108,14 +108,17 @@ const UserForm = ({ onSubmit }) => {
 
   const renderStep1 = () => (
     <div className={`space-y-6 animate-fade-in-${animationDirection}`}>
-      <h3 className="text-xl font-bold text-green-300 mb-6 text-center tracking-wide">
+      <h3 className="text-xl font-bold text-green-300 mb-6 text-center tracking-wide border-b border-green-500/30 pb-3">
         PERSONAL INFORMATION
       </h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Age Input */}
         <div className="transform hover:scale-105 transition-transform duration-300">
-          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">AGE</label>
+          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+            <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">🎂</span>
+            AGE
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="text-green-400 text-lg">🎂</span>
@@ -125,7 +128,7 @@ const UserForm = ({ onSubmit }) => {
               name="age"
               value={userData.age}
               onChange={handleChange}
-              className="w-full bg-gray-800/90 border-2 border-green-600/30 text-white rounded-xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/20 transition-all duration-300"
+              className="w-full bg-gradient-to-b from-gray-900 to-black border-2 border-green-600/50 text-white rounded-xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/30 transition-all duration-300"
               required
               min="15"
               max="100"
@@ -135,7 +138,10 @@ const UserForm = ({ onSubmit }) => {
         
         {/* Weight Input */}
         <div className="transform hover:scale-105 transition-transform duration-300">
-          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">WEIGHT (KG)</label>
+          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+            <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">⚖️</span>
+            WEIGHT (KG)
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="text-green-400 text-lg">⚖️</span>
@@ -145,7 +151,7 @@ const UserForm = ({ onSubmit }) => {
               name="weight"
               value={userData.weight}
               onChange={handleChange}
-              className="w-full bg-gray-800/90 border-2 border-green-600/30 text-white rounded-xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/20 transition-all duration-300"
+              className="w-full bg-gradient-to-b from-gray-900 to-black border-2 border-green-600/50 text-white rounded-xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/30 transition-all duration-300"
               required
               min="30"
               max="200"
@@ -156,7 +162,10 @@ const UserForm = ({ onSubmit }) => {
         
         {/* Height Input */}
         <div className="transform hover:scale-105 transition-transform duration-300">
-          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">HEIGHT (CM)</label>
+          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+            <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">📏</span>
+            HEIGHT (CM)
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="text-green-400 text-lg">📏</span>
@@ -166,7 +175,7 @@ const UserForm = ({ onSubmit }) => {
               name="height"
               value={userData.height}
               onChange={handleChange}
-              className="w-full bg-gray-800/90 border-2 border-green-600/30 text-white rounded-xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/20 transition-all duration-300"
+              className="w-full bg-gradient-to-b from-gray-900 to-black border-2 border-green-600/50 text-white rounded-xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/30 transition-all duration-300"
               required
               min="100"
               max="250"
@@ -176,8 +185,11 @@ const UserForm = ({ onSubmit }) => {
         
         {/* Gender Select */}
         <div className="transform hover:scale-105 transition-transform duration-300">
-          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">GENDER</label>
-          <div className="grid grid-cols-3 gap-3">
+          <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+            <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">👤</span>
+            GENDER
+          </label>
+          <div className="grid grid-cols-2 gap-3">
             {genderOptions.map((option) => (
               <button
                 key={option.value}
@@ -185,10 +197,8 @@ const UserForm = ({ onSubmit }) => {
                 onClick={() => setUserData(prev => ({ ...prev, gender: option.value }))}
                 className={`p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
                   userData.gender === option.value
-                    ? userData.gender === 'male'
-                      ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-400 text-white shadow-lg'
-                      : 'bg-gradient-to-br from-green-500 to-green-600 border-green-400 text-white shadow-lg'
-                    : 'bg-gray-800/70 border-green-600/30 text-green-200 hover:border-green-500/60'
+                    ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-white shadow-lg shadow-green-500/30'
+                    : 'bg-gradient-to-b from-gray-900 to-black border-green-600/50 text-green-200 hover:border-green-500/80 hover:bg-gradient-to-br hover:from-green-900/30 hover:to-black'
                 }`}
               >
                 <div className="text-center">
@@ -203,23 +213,26 @@ const UserForm = ({ onSubmit }) => {
 
       {/* Fitness Goal Select */}
       <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">FITNESS GOAL</label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+          <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">🎯</span>
+          FITNESS GOAL
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
           {fitnessGoalOptions.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => setUserData(prev => ({ ...prev, fitnessGoal: option.value }))}
-              className={`p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+              className={`p-2 md:p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
                 userData.fitnessGoal === option.value
-                  ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-400 text-white shadow-lg'
-                  : 'bg-gray-800/70 border-green-600/30 text-green-200 hover:border-green-500/60'
+                  ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-white shadow-lg shadow-green-500/30'
+                  : 'bg-gradient-to-b from-gray-900 to-black border-green-600/50 text-green-200 hover:border-green-500/80 hover:bg-gradient-to-br hover:from-green-900/30 hover:to-black'
               }`}
             >
               <div className="text-center">
-                <div className="text-lg mb-1">{option.icon}</div>
+                <div className="text-base md:text-lg mb-1">{option.icon}</div>
                 <div className="text-xs font-bold">{option.label}</div>
-                <div className="text-xs opacity-80 mt-1">{option.description}</div>
+                <div className="text-xs opacity-80 mt-1 hidden sm:block">{option.description}</div>
               </div>
             </button>
           ))}
@@ -230,35 +243,38 @@ const UserForm = ({ onSubmit }) => {
 
   const renderStep2 = () => (
     <div className={`space-y-6 animate-fade-in-${animationDirection}`}>
-      <h3 className="text-xl font-bold text-green-300 mb-6 text-center tracking-wide">
+      <h3 className="text-xl font-bold text-green-300 mb-6 text-center tracking-wide border-b border-green-500/30 pb-3">
         FITNESS PREFERENCES
       </h3>
       
       {/* Activity Level Select */}
       <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">ACTIVITY LEVEL</label>
-        <div className="space-y-3">
+        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+          <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">🏃</span>
+          ACTIVITY LEVEL
+        </label>
+        <div className="space-y-2 md:space-y-3">
           {activityLevelOptions.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => setUserData(prev => ({ ...prev, activityLevel: option.value }))}
-              className={`w-full p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-102 text-left ${
+              className={`w-full p-3 md:p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-102 text-left ${
                 userData.activityLevel === option.value
-                  ? 'bg-gradient-to-r from-green-500 to-green-600 border-green-400 text-white shadow-lg'
-                  : 'bg-gray-800/70 border-green-600/30 text-green-200 hover:border-green-500/60'
+                  ? 'bg-gradient-to-r from-green-600 to-green-800 border-green-400 text-white shadow-lg shadow-green-500/30'
+                  : 'bg-gradient-to-b from-gray-900 to-black border-green-600/50 text-green-200 hover:border-green-500/80 hover:bg-gradient-to-br hover:from-green-900/30 hover:to-black'
               }`}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <span className="text-xl">{option.icon}</span>
+                <div className="flex items-center space-x-2 md:space-x-3">
+                  <span className="text-lg md:text-xl">{option.icon}</span>
                   <div>
                     <div className="font-bold text-sm">{option.label}</div>
-                    <div className="text-xs opacity-80">{option.description}</div>
+                    <div className="text-xs opacity-80 hidden sm:block">{option.description}</div>
                   </div>
                 </div>
                 {userData.activityLevel === option.value && (
-                  <span className="text-white">✓</span>
+                  <span className="text-white bg-green-500 rounded-full p-1">✓</span>
                 )}
               </div>
             </button>
@@ -268,8 +284,11 @@ const UserForm = ({ onSubmit }) => {
 
       {/* Workout Preference Select */}
       <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">TRAINING STYLE</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+          <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">💪</span>
+          TRAINING STYLE
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
           {workoutPreferenceOptions.map((option) => (
             <button
               key={option.value}
@@ -277,14 +296,14 @@ const UserForm = ({ onSubmit }) => {
               onClick={() => setUserData(prev => ({ ...prev, workoutPreference: option.value }))}
               className={`p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
                 userData.workoutPreference === option.value
-                  ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-400 text-white shadow-lg'
-                  : 'bg-gray-800/70 border-green-600/30 text-green-200 hover:border-green-500/60'
+                  ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-white shadow-lg shadow-green-500/30'
+                  : 'bg-gradient-to-b from-gray-900 to-black border-green-600/50 text-green-200 hover:border-green-500/80 hover:bg-gradient-to-br hover:from-green-900/30 hover:to-black'
               }`}
             >
               <div className="text-center">
                 <div className="text-lg mb-1">{option.icon}</div>
                 <div className="text-xs font-bold">{option.label}</div>
-                <div className="text-xs opacity-80 mt-1">{option.description}</div>
+                <div className="text-xs opacity-80 mt-1 hidden sm:block">{option.description}</div>
               </div>
             </button>
           ))}
@@ -293,23 +312,26 @@ const UserForm = ({ onSubmit }) => {
 
       {/* Fitness Level Select */}
       <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">EXPERIENCE LEVEL</label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+          <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">📊</span>
+          EXPERIENCE LEVEL
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           {fitnessLevelOptions.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => setUserData(prev => ({ ...prev, fitnessLevel: option.value }))}
-              className={`p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+              className={`p-2 md:p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
                 userData.fitnessLevel === option.value
-                  ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-400 text-white shadow-lg'
-                  : 'bg-gray-800/70 border-green-600/30 text-green-200 hover:border-green-500/60'
+                  ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-white shadow-lg shadow-green-500/30'
+                  : 'bg-gradient-to-b from-gray-900 to-black border-green-600/50 text-green-200 hover:border-green-500/80 hover:bg-gradient-to-br hover:from-green-900/30 hover:to-black'
               }`}
             >
               <div className="text-center">
-                <div className="text-lg mb-1">{option.icon}</div>
+                <div className="text-base md:text-lg mb-1">{option.icon}</div>
                 <div className="text-xs font-bold">{option.label}</div>
-                <div className="text-xs opacity-80 mt-1">{option.description}</div>
+                <div className="text-xs opacity-80 mt-1 hidden sm:block">{option.description}</div>
               </div>
             </button>
           ))}
@@ -318,8 +340,9 @@ const UserForm = ({ onSubmit }) => {
 
       {/* Preferred Workout Days */}
       <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide">
-          WORKOUT DAYS PER WEEK: <span className="text-green-400 font-bold text-lg">{userData.preferredWorkoutDays}</span>
+        <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
+          <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">📅</span>
+          WORKOUT DAYS PER WEEK: <span className="text-green-400 font-bold text-lg ml-2 bg-gradient-to-r from-green-500 to-green-700 px-2 py-1 rounded-lg">{userData.preferredWorkoutDays}</span>
         </label>
         <div className="px-2">
           <input
@@ -329,11 +352,11 @@ const UserForm = ({ onSubmit }) => {
             max="7"
             value={userData.preferredWorkoutDays}
             onChange={handleChange}
-            className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb-green"
+            className="w-full h-3 bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg appearance-none cursor-pointer slider-thumb-green"
           />
           <div className="flex justify-between text-xs text-green-300/80 mt-3 font-bold">
             {[1, 2, 3, 4, 5, 6, 7].map(day => (
-              <span key={day} className={day == userData.preferredWorkoutDays ? "text-green-400 text-lg" : ""}>
+              <span key={day} className={day == userData.preferredWorkoutDays ? "text-green-400 text-lg bg-gradient-to-r from-green-600 to-green-800 px-2 rounded-full" : ""}>
                 {day}
               </span>
             ))}
@@ -345,43 +368,44 @@ const UserForm = ({ onSubmit }) => {
 
   const renderStep3 = () => (
     <div className={`space-y-6 animate-fade-in-${animationDirection}`}>
-      <h3 className="text-xl font-bold text-green-300 mb-6 text-center tracking-wide">
+      <h3 className="text-xl font-bold text-green-300 mb-6 text-center tracking-wide border-b border-green-500/30 pb-3">
         WORKOUT SCHEDULE
       </h3>
       
       {/* Day Selection Grid */}
       <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="block text-sm font-bold text-green-200 mb-4 text-center tracking-wide">
+        <label className="block text-sm font-bold text-green-200 mb-4 text-center tracking-wide flex items-center justify-center">
+          <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">📋</span>
           SELECT {userData.preferredWorkoutDays} TRAINING DAY{userData.preferredWorkoutDays > 1 ? 'S' : ''}
         </label>
-        <div className="grid grid-cols-3 md:grid-cols-7 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2">
           {daysOfWeek.map((day, index) => (
             <button
               key={day}
               type="button"
               onClick={() => handleDaySelection(day)}
-              className={`p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-110 ${
+              className={`p-2 md:p-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-110 ${
                 userData.selectedDays.includes(day)
-                  ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-400 text-white shadow-lg scale-110'
-                  : 'bg-gray-800/70 border-green-600/30 text-green-200 hover:border-green-500/60'
+                  ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-white shadow-lg shadow-green-500/30 scale-110'
+                  : 'bg-gradient-to-b from-gray-900 to-black border-green-600/50 text-green-200 hover:border-green-500/80 hover:bg-gradient-to-br hover:from-green-900/30 hover:to-black'
               } ${userData.selectedDays.length >= userData.preferredWorkoutDays && !userData.selectedDays.includes(day) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               disabled={userData.selectedDays.length >= userData.preferredWorkoutDays && !userData.selectedDays.includes(day)}
             >
               <div className="text-center">
-                <div className="text-lg font-bold mb-1">{day.substring(0, 3)}</div>
+                <div className="text-sm md:text-lg font-bold mb-1">{day.substring(0, 3)}</div>
                 <div className="text-xs opacity-80">{index + 1}</div>
               </div>
             </button>
           ))}
         </div>
-        <p className="text-sm text-green-300/80 text-center mt-4 font-bold">
+        <p className="text-sm text-green-300/80 text-center mt-4 font-bold bg-gradient-to-r from-green-900/50 to-black/50 p-2 rounded-lg">
           SELECTED: {userData.selectedDays.length}/{userData.preferredWorkoutDays} DAYS
         </p>
       </div>
 
       {/* Medical Conditions */}
       <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="flex items-center cursor-pointer p-4 bg-gray-800/70 rounded-xl border-2 border-green-600/30 hover:border-green-500/40 transition-all duration-300">
+        <label className="flex items-center cursor-pointer p-3 md:p-4 bg-gradient-to-b from-gray-900 to-black rounded-xl border-2 border-green-600/50 hover:border-green-500/60 transition-all duration-300">
           <input
             type="checkbox"
             name="hasMedicalConditions"
@@ -389,19 +413,22 @@ const UserForm = ({ onSubmit }) => {
             onChange={handleChange}
             className="mr-3 accent-green-500 cursor-pointer h-5 w-5"
           />
-          <span className="text-sm font-bold text-green-200 tracking-wide">MEDICAL CONDITIONS OR INJURIES?</span>
+          <span className="text-sm font-bold text-green-200 tracking-wide flex items-center">
+            <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">🏥</span>
+            MEDICAL CONDITIONS OR INJURIES?
+          </span>
         </label>
         {userData.hasMedicalConditions && (
           <div className="mt-4 relative animate-fade-in">
             <div className="absolute inset-y-0 left-0 pl-3 pt-3 pointer-events-none">
-              <span className="text-green-400 text-lg">🏥</span>
+              <span className="text-green-400 text-lg">💊</span>
             </div>
             <textarea
               name="medicalConditions"
               value={userData.medicalConditions}
               onChange={handleChange}
               placeholder="Please describe any medical conditions, injuries, or limitations we should know about..."
-              className="w-full bg-gray-800/90 border-2 border-green-600/30 text-white rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/20 transition-all duration-300 resize-none"
+              className="w-full bg-gradient-to-b from-gray-900 to-black border-2 border-green-600/50 text-white rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/30 transition-all duration-300 resize-none"
               rows="3"
             />
           </div>
@@ -411,7 +438,7 @@ const UserForm = ({ onSubmit }) => {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative">
+    <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-black overflow-hidden relative">
       {/* Background Image with Overlay - Fixed */}
       <div className="fixed inset-0 z-0">
         <img 
@@ -419,77 +446,77 @@ const UserForm = ({ onSubmit }) => {
           alt="Gym background" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-gray-900/70 to-black/80 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-green-900/20 to-black/90 backdrop-blur-sm"></div>
       </div>
       
       {/* Main Container */}
-      <div className="max-w-4xl w-full bg-gradient-to-br from-gray-900/95 via-gray-950/90 to-black/95 rounded-3xl shadow-2xl overflow-hidden border border-green-500/30 z-10 my-8 backdrop-blur-lg relative transform hover:scale-101 transition-transform duration-500">
+      <div className="max-w-4xl w-full bg-gradient-to-br from-gray-900/95 via-green-950/50 to-black/95 rounded-3xl shadow-2xl overflow-hidden border border-green-500/50 z-10 my-4 md:my-8 backdrop-blur-lg relative transform hover:scale-101 transition-transform duration-500">
         {/* Progress Bar */}
-        <div className="bg-gray-800/50 h-2 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-gray-900 to-black h-2 relative overflow-hidden">
           <div 
-            className="bg-gradient-to-r from-green-500 to-green-600 h-full transition-all duration-700 ease-out"
+            className="bg-gradient-to-r from-green-500 via-green-600 to-green-700 h-full transition-all duration-700 ease-out shadow-lg shadow-green-500/30"
             style={{ width: `${(step / 3) * 100}%` }}
           ></div>
           <div className="absolute inset-0 flex justify-between px-4">
             {[1, 2, 3].map((num) => (
               <div key={num} className={`w-3 h-3 rounded-full border-2 transition-all duration-500 ${
-                num <= step ? 'bg-gradient-to-r from-green-500 to-green-600 border-green-400 scale-125' : 'bg-gray-700 border-gray-600'
+                num <= step ? 'bg-gradient-to-r from-green-500 to-green-700 border-green-400 scale-125 shadow-lg shadow-green-500/50' : 'bg-gray-700 border-gray-600'
               }`}></div>
             ))}
           </div>
         </div>
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-gray-900/80 via-green-900/40 to-gray-900/80 py-8 px-8 border-b border-green-500/30 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-green-500/5 to-green-500/5"></div>
-          <div className="flex items-center justify-center space-x-4 relative z-10">
-            <div className="bg-gradient-to-br from-green-500 to-green-600 p-3 rounded-full shadow-lg animate-pulse-slow">
+        <div className="bg-gradient-to-r from-gray-900/90 via-green-900/60 to-gray-900/90 py-6 md:py-8 px-4 md:px-8 border-b border-green-500/50 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-green-500/5 to-green-500/10"></div>
+          <div className="flex items-center justify-center space-x-3 md:space-x-4 relative z-10">
+            <div className="bg-gradient-to-br from-green-500 to-green-700 p-2 md:p-3 rounded-full shadow-lg shadow-green-500/50 animate-pulse-slow border border-green-400/50">
               <img 
                 src="src/assets/Kyrie-fitness gym.jpg" 
                 alt="ASH-FIT Logo" 
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
               />
             </div>
-            <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-green-400 tracking-wider">
+            <h1 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-300 via-green-400 to-green-300 tracking-wider">
               ASH<span className="text-green-400">FIT</span>
             </h1>
           </div>
-          <p className="text-green-300 text-center text-sm mt-3 font-bold tracking-widest">
+          <p className="text-green-300 text-center text-xs md:text-sm mt-2 md:mt-3 font-bold tracking-widest bg-gradient-to-r from-green-900/50 to-black/50 p-2 rounded-lg">
             STEP {step} OF 3 - {step === 1 ? 'PERSONAL INFO' : step === 2 ? 'PREFERENCES' : 'SCHEDULE'}
           </p>
         </div>
         
         {/* Form Content */}
-        <div className="px-8 py-8 bg-transparent">
-          <h2 className="text-3xl font-black text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-green-200 to-green-300 tracking-wide">
+        <div className="px-4 md:px-8 py-6 md:py-8 bg-transparent">
+          <h2 className="text-2xl md:text-3xl font-black text-center mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-r from-green-200 via-green-300 to-green-200 tracking-wide">
             FITNESS PROFILE BUILDER
           </h2>
           
           <form onSubmit={handleSubmit}>
-            <div className="min-h-96">
+            <div className="min-h-80 md:min-h-96">
               {step === 1 && renderStep1()}
               {step === 2 && renderStep2()}
               {step === 3 && renderStep3()}
             </div>
             
             {/* Navigation Buttons */}
-            <div className={`flex ${step > 1 ? 'justify-between' : 'justify-end'} mt-10`}>
+            <div className={`flex ${step > 1 ? 'justify-between' : 'justify-end'} mt-8 md:mt-10`}>
               {step > 1 && (
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="px-8 py-4 bg-gray-700/80 hover:bg-gray-600/90 text-white font-bold rounded-xl transition-all duration-300 border border-green-600/50 hover:border-green-500/60 hover:scale-105 flex items-center space-x-3 shadow-lg"
+                  className="px-6 md:px-8 py-3 md:py-4 bg-gradient-to-b from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white font-bold rounded-xl transition-all duration-300 border border-green-600/50 hover:border-green-500/80 hover:scale-105 flex items-center space-x-2 md:space-x-3 shadow-lg"
                 >
                   <span className="text-lg">←</span>
-                  <span>BACK</span>
+                  <span className="text-sm md:text-base">BACK</span>
                 </button>
               )}
               
               <button
                 type="submit"
-                className="px-10 py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-xl transition-all duration-300 shadow-2xl hover:shadow-green-500/30 hover:scale-105 flex items-center space-x-3 group"
+                className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-600 via-green-700 to-green-800 hover:from-green-700 hover:via-green-800 hover:to-green-900 text-white font-bold rounded-xl transition-all duration-300 shadow-2xl shadow-green-500/40 hover:shadow-green-500/60 hover:scale-105 flex items-center space-x-2 md:space-x-3 group border border-green-400/30"
               >
-                <span className="tracking-wide">{step === 3 ? 'GENERATE WORKOUT PLAN' : 'CONTINUE'}</span>
+                <span className="tracking-wide text-sm md:text-base">{step === 3 ? 'GENERATE PLAN' : 'CONTINUE'}</span>
                 <span className="group-hover:translate-x-1 transition-transform duration-300 text-lg">
                   {step === 3 ? '🎯' : '→'}
                 </span>
@@ -499,7 +526,7 @@ const UserForm = ({ onSubmit }) => {
         </div>
       </div>
 
-      {/* Custom CSS for animations */}
+      {/* Custom CSS for animations and mobile responsiveness */}
       <style jsx>{`
         @keyframes fadeInForward {
           from { opacity: 0; transform: translateX(50px); }
@@ -524,20 +551,20 @@ const UserForm = ({ onSubmit }) => {
           height: 20px;
           width: 20px;
           border-radius: 50%;
-          background: linear-gradient(45deg, #10b981, #22c55e);
+          background: linear-gradient(45deg, #10b981, #22c55e, #16a34a);
           cursor: pointer;
           border: 2px solid #fff;
-          box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+          box-shadow: 0 0 15px rgba(16, 185, 129, 0.7);
         }
         
         .slider-thumb-green::-moz-range-thumb {
           height: 20px;
           width: 20px;
           border-radius: 50%;
-          background: linear-gradient(45deg, #10b981, #22c55e);
+          background: linear-gradient(45deg, #10b981, #22c55e, #16a34a);
           cursor: pointer;
           border: 2px solid #fff;
-          box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+          box-shadow: 0 0 15px rgba(16, 185, 129, 0.7);
         }
         
         .hover-scale-102:hover {
@@ -553,12 +580,180 @@ const UserForm = ({ onSubmit }) => {
         }
         
         @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.8; }
+          0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+          }
+          50% { 
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.8);
+          }
         }
         
         .backdrop-blur-md {
           backdrop-filter: blur(12px);
+        }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 640px) {
+          .min-h-80 {
+            min-height: 20rem;
+          }
+          
+          .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+          }
+          
+          .py-6 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+          }
+          
+          .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+          }
+          
+          .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+          }
+          
+          .space-y-6 > * + * {
+            margin-top: 1rem;
+          }
+          
+          .gap-2 {
+            gap: 0.5rem;
+          }
+          
+          .p-2 {
+            padding: 0.5rem;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .hidden.sm\\:block {
+            display: none;
+          }
+        }
+
+        @media (min-width: 768px) {
+          .hidden.md\\:block {
+            display: block;
+          }
+          
+          .md\\:grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          
+          .md\\:grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          
+          .md\\:grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+          
+          .md\\:grid-cols-7 {
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+          }
+        }
+
+        /* Small phone adjustments */
+        @media (max-width: 380px) {
+          .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          
+          .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          
+          .text-xs {
+            font-size: 0.7rem;
+          }
+          
+          .p-2 {
+            padding: 0.4rem;
+          }
+          
+          .gap-2 {
+            gap: 0.4rem;
+          }
+        }
+
+        /* New Media Screen for Ultra-small devices */
+        @media (max-width: 320px) {
+          .min-h-screen {
+            min-height: 100vh;
+            padding: 0.5rem;
+          }
+          
+          .max-w-4xl {
+            margin: 0.25rem;
+          }
+          
+          .text-2xl {
+            font-size: 1.25rem;
+          }
+          
+          .text-xl {
+            font-size: 1.125rem;
+          }
+          
+          .grid-cols-2 {
+            grid-template-columns: 1fr;
+          }
+          
+          .grid-cols-3 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          
+          .gap-2 {
+            gap: 0.25rem;
+          }
+          
+          .p-2 {
+            padding: 0.25rem;
+          }
+          
+          .px-4 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+          
+          .py-6 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+          }
+          
+          .space-y-6 > * + * {
+            margin-top: 0.75rem;
+          }
+        }
+
+        /* Media Screen for Tablets */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .max-w-4xl {
+            max-width: 90%;
+          }
+          
+          .md\\:grid-cols-4 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          
+          .md\\:grid-cols-7 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+
+        /* Media Screen for Large screens */
+        @media (min-width: 1025px) {
+          .max-w-4xl {
+            max-width: 56rem;
+          }
         }
       `}</style>
     </div>
