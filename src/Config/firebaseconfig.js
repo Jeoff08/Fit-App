@@ -1,4 +1,3 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
@@ -6,15 +5,14 @@ import { getFirestore } from "firebase/firestore";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDflnSAYL9x0sNQPBMmEUv2aQnfAAedwKU",
-  authDomain: "fir-app-2fd3a.firebaseapp.com",
-  projectId: "fir-app-2fd3a",
-  storageBucket: "fir-app-2fd3a.firebasestorage.app",
-  messagingSenderId: "523172542485",
-  appId: "1:523172542485:web:39536b05656e6fcfe2b61c",
-  measurementId: "G-69Q93WZFNS"
+  apiKey: "AIzaSyAY7MxxnploG50dSP9InYESxpsxSrRjWWE",
+  authDomain: "fitness-application-dad09.firebaseapp.com",
+  projectId: "fitness-application-dad09",
+  storageBucket: "fitness-application-dad09.firebasestorage.app",
+  messagingSenderId: "339926986731",
+  appId: "1:339926986731:web:bccc64f75922e9437cb3ae",
+  measurementId: "G-TERLH7KR06"
 };
-
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);

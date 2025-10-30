@@ -7,6 +7,7 @@ import Register from './Components/Auth/Register';
 import UserForm from './Components/UserForm';
 import Dashboard from './Components/Dashboard';
 import { generateInitialWorkoutPlan, generateInitialNutritionPlan } from './Algorithms/rulebasedAlgorithms';
+import Chatbot from './Components/Chatbot';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -19,6 +20,8 @@ function App() {
   const [isNewUser, setIsNewUser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [appStatus, setAppStatus] = useState('loading'); // 'loading', 'auth', 'form', 'dashboard'
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -162,6 +165,7 @@ function App() {
       setShowUserForm(false);
       setIsNewUser(false);
       setAppStatus('auth');
+      setShowChatbot(false);
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -169,6 +173,18 @@ function App() {
 
   const handleToggleAuthMode = () => {
     setAuthMode(authMode === 'login' ? 'register' : 'login');
+  };
+
+  const toggleChatbot = () => {
+    setShowChatbot(!showChatbot);
+  };
+
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
   };
 
   if (loading) {
@@ -293,7 +309,7 @@ function App() {
   if (appStatus === 'dashboard' && userData) {
     return (
       <div 
-        className="min-h-screen"
+        className="min-h-screen relative"
         style={{
           backgroundImage: `url('/Kyrie-fitness gym.jpg')`,
           backgroundSize: 'cover',
@@ -303,6 +319,63 @@ function App() {
       >
         {/* Gradient overlay for dashboard */}
         <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-black to-orange-900 opacity-95"></div>
+        
+        {/* V-Coach Button - Circular with Logo and Tooltip */}
+        <div className="fixed bottom-6 right-6 z-40">
+          {/* Tooltip */}
+          {showTooltip && (
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg shadow-lg whitespace-nowrap">
+              <div className="font-bold text-green-400">ASH Virtual Coach</div>
+              <div className="text-xs text-gray-300">Click to chat with your AI fitness assistant</div>
+              {/* Tooltip arrow */}
+              <div className="absolute top-full right-4 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+            </div>
+          )}
+          
+          <button
+            onClick={toggleChatbot}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="w-16 h-16 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 flex items-center justify-center overflow-hidden border-2 border-white relative group"
+          >
+            {/* Logo Image Container */}
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1">
+              {/* Image Placeholder - You can replace this with your actual image */}
+              <div className="w-full h-full bg-gradient-to-r from-green-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-[8px] leading-tight text-center">
+                  ASH<br/>Coach
+                </span>
+                <span className="absolute opacity-100 group-hover:opacity-0 transition-opacity duration-200">
+                  💬
+                </span>
+              </div>
+              
+              {/* Alternative: If you have an actual image, use this instead */}
+              {/* <img 
+                src="/v-coach-logo.png" 
+                alt="ASH Virtual Coach" 
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback if image doesn't exist
+                  e.target.style.display = 'none';
+                }}
+              /> */}
+            </div>
+            
+            {/* Pulse animation effect */}
+            <div className="absolute inset-0 rounded-full border-2 border-white opacity-0 group-hover:opacity-100 animate-ping"></div>
+          </button>
+        </div>
+
+        {/* Chatbot Modal */}
+        {showChatbot && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+            <div className="relative w-full max-w-4xl h-[80vh] bg-white rounded-2xl shadow-2xl overflow-hidden">
+              {/* Chatbot Component with onClose prop */}
+              <Chatbot onClose={toggleChatbot} />
+            </div>
+          </div>
+        )}
         
         <div className="relative z-10">
           <Dashboard 

@@ -9,7 +9,7 @@ import {
   Timestamp 
 } from 'firebase/firestore';
 import { db } from '../Config/firebaseconfig';
-import { getFoodDatabase, } from './foodDatabase';
+import { getFoodDatabase } from './foodDatabase';
 
 const NutritionPlan = ({ plan, userId }) => {
   const [mealsPerDay, setMealsPerDay] = useState(4);
@@ -46,9 +46,33 @@ const NutritionPlan = ({ plan, userId }) => {
     setIsVisible(true);
     if (userId) {
       loadUserNutritionData();
+    } else {
+      // Load from localStorage if no userId (guest mode)
+      loadWeeklyMealPlanFromLocalStorage();
     }
     return () => setIsVisible(false);
   }, [userId]);
+
+  // Load weekly meal plan from localStorage
+  const loadWeeklyMealPlanFromLocalStorage = () => {
+    try {
+      const savedPlan = localStorage.getItem('weeklyMealPlan');
+      if (savedPlan) {
+        setWeeklyMealPlan(JSON.parse(savedPlan));
+      }
+    } catch (error) {
+      console.error('Error loading weekly meal plan from localStorage:', error);
+    }
+  };
+
+  // Save weekly meal plan to localStorage
+  const saveWeeklyMealPlanToLocalStorage = (planData) => {
+    try {
+      localStorage.setItem('weeklyMealPlan', JSON.stringify(planData));
+    } catch (error) {
+      console.error('Error saving weekly meal plan to localStorage:', error);
+    }
+  };
 
   // Load user nutrition data from Firestore
   const loadUserNutritionData = async () => {
@@ -126,7 +150,10 @@ const NutritionPlan = ({ plan, userId }) => {
       
       setWeeklyMealPlan(newWeeklyPlan);
       
-      // Save to Firestore
+      // Save to localStorage
+      saveWeeklyMealPlanToLocalStorage(newWeeklyPlan);
+      
+      // Save to Firestore if user is logged in
       if (userId) {
         await saveUserPreferences({ 
           weeklyMealPlan: newWeeklyPlan
@@ -724,10 +751,10 @@ const NutritionPlan = ({ plan, userId }) => {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
             {[
-              { label: "Calories", value: getUpdatedMetabolicValue(plan.calorieIntake, 'calories'), unit: "kcal", icon: "🔥", trend: weeklyTrends.calories },
-              { label: "Protein", value: getUpdatedMetabolicValue(plan.proteinIntake, 'protein'), unit: "g", icon: "💪", trend: weeklyTrends.protein },
-              { label: "Carbs", value: getUpdatedMetabolicValue(plan.carbIntake, 'carbs'), unit: "g", icon: "🍚", trend: weeklyTrends.carbs },
-              { label: "Fats", value: getUpdatedMetabolicValue(plan.fatIntake, 'fats'), unit: "g", icon: "🥑", trend: weeklyTrends.fats }
+              { label: "Calories", value: getInitialValue('calories'), unit: "kcal", icon: "🔥", trend: weeklyTrends.calories },
+              { label: "Protein", value: getInitialValue('protein'), unit: "g", icon: "💪", trend: weeklyTrends.protein },
+              { label: "Carbs", value: getInitialValue('carbs'), unit: "g", icon: "🍚", trend: weeklyTrends.carbs },
+              { label: "Fats", value: getInitialValue('fats'), unit: "g", icon: "🥑", trend: weeklyTrends.fats }
             ].map((item, index) => (
               <div key={index} className="bg-black/60 p-3 md:p-4 rounded-xl border border-green-500/10 backdrop-blur-sm transition-all duration-300 hover:border-green-500/30 hover:bg-black/70">
                 <div className="flex items-center justify-between mb-2">
@@ -825,131 +852,159 @@ const NutritionPlan = ({ plan, userId }) => {
                 )}
               </div>
 
-              {/* Hydration & Meal Frequency */}
-              <div className="space-y-4 md:space-y-6">               
-                <div>                 
-                  <div>
-                  </div>
-                </div>
-
-                {/* Meal Frequency */}
-                <div className="bg-gradient-to-br from-purple-900/40 to-black p-4 md:p-6 rounded-2xl border border-purple-500/20 shadow-lg">
-                  <h3 className="font-semibold mb-4 text-purple-400 text-lg md:text-xl mobile-xs-text-base">Meals Per Day</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {[3, 4, 5, 6].map(num => (
-                      <button
-                        key={num}
-                        onClick={() => handleMealsPerDayChange(num)}
-                        className={`py-2 md:py-3 px-2 md:px-4 rounded-xl transition-all duration-300 ${
-                          mealsPerDay === num
-                            ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-lg transform scale-105'
-                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
-                        }`}
-                      >
-                        <span className="text-sm md:text-base font-medium mobile-text-sm">{num}</span>
-                      </button>
-                    ))}
-                  </div>
-                  <p className="text-xs text-gray-400 mt-3 md:mt-4 text-center mobile-text-xs">
-                    {mealsPerDay === 3 && "Traditional 3 meals"}
-                    {mealsPerDay === 4 && "3 meals + 1 snack"}
-                    {mealsPerDay === 5 && "3 meals + 2 snacks"}
-                    {mealsPerDay === 6 && "Frequent feeding for athletes"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Controls */}
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 md:p-6 rounded-2xl border border-gray-700 shadow-lg">
-              <h3 className="font-semibold mb-4 text-white text-lg md:text-xl mobile-xs-text-base">Update Progress</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                {[
-                  { label: "Calories", value: "calories", icon: "🔥" },
-                  { label: "Protein", value: "protein", icon: "💪" },
-                  { label: "Carbs", value: "carbs", icon: "🍚" },
-                  { label: "Fats", value: "fats", icon: "🥑" }
-                ].map((item, index) => (
-                  <div key={index} className="bg-black/40 p-3 md:p-4 rounded-xl border border-gray-600">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs text-gray-400 mobile-text-xs">{item.label}</span>
-                      <span className="text-sm">{item.icon}</span>
+              {/* Hydration & Quick Actions */}
+              <div className="space-y-4 md:space-y-6">
+                {/* Hydration Tracker */}
+                <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 p-4 md:p-6 rounded-2xl border border-blue-500/20 shadow-lg">
+                  <h3 className="font-semibold mb-4 text-blue-400 text-lg md:text-xl mobile-xs-text-base">Hydration</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-300 mobile-text-xs">Water Intake</span>
+                      <span className="text-sm font-medium text-blue-400 mobile-text-xs">{hydrationProgress}%</span>
+                    </div>
+                    <div className="w-full bg-blue-900/30 rounded-full h-3 md:h-4 overflow-hidden border border-blue-500/20">
+                      <div 
+                        className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${hydrationProgress}%` }}
+                      ></div>
                     </div>
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => updateDailyProgress(item.value, -10)}
-                        className="flex-1 bg-red-500/20 text-red-400 py-1 md:py-2 rounded-lg text-sm transition-all duration-300 hover:bg-red-500/30 hover:text-red-300 mobile-text-xs"
+                        onClick={() => updateHydration(-10)}
+                        className="flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2 md:py-3 px-3 md:px-4 rounded-xl font-medium text-sm md:text-base transition-all duration-300 hover:from-blue-800 hover:to-blue-950 mobile-text-sm"
                       >
-                        -10
+                        -10%
                       </button>
                       <button
-                        onClick={() => updateDailyProgress(item.value, 10)}
-                        className="flex-1 bg-green-500/20 text-green-400 py-1 md:py-2 rounded-lg text-sm transition-all duration-300 hover:bg-green-500/30 hover:text-green-300 mobile-text-xs"
+                        onClick={() => updateHydration(10)}
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-blue-700 text-white py-2 md:py-3 px-3 md:px-4 rounded-xl font-medium text-sm md:text-base transition-all duration-300 hover:from-blue-600 hover:to-blue-800 mobile-text-sm"
                       >
-                        +10
+                        +10%
                       </button>
                     </div>
                   </div>
-                ))}
+                </div>
+
+                {/* Quick Progress Update */}
+                <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 md:p-6 rounded-2xl border border-gray-700 shadow-lg">
+                  <h3 className="font-semibold mb-4 text-white text-lg md:text-xl mobile-xs-text-base">Quick Update</h3>
+                  <div className="grid grid-cols-2 gap-2 md:gap-3">
+                    {[
+                      { nutrient: 'calories', label: 'Calories', icon: '🔥' },
+                      { nutrient: 'protein', label: 'Protein', icon: '💪' },
+                      { nutrient: 'carbs', label: 'Carbs', icon: '🍚' },
+                      { nutrient: 'fats', label: 'Fats', icon: '🥑' }
+                    ].map((item, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex items-center justify-center space-x-1 mb-1">
+                          <span className="text-xs">{item.icon}</span>
+                          <span className="text-xs text-gray-400 mobile-text-xs">{item.label}</span>
+                        </div>
+                        <div className="flex space-x-1">
+                          <button
+                            onClick={() => updateDailyProgress(item.nutrient, -5)}
+                            className="flex-1 bg-gradient-to-r from-red-600 to-red-800 text-white py-1 md:py-2 px-2 rounded-lg text-xs transition-all duration-300 hover:from-red-700 hover:to-red-900 mobile-text-xs"
+                          >
+                            -
+                          </button>
+                          <button
+                            onClick={() => updateDailyProgress(item.nutrient, 5)}
+                            className="flex-1 bg-gradient-to-r from-green-600 to-green-800 text-white py-1 md:py-2 px-2 rounded-lg text-xs transition-all duration-300 hover:from-green-700 hover:to-green-900 mobile-text-xs"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Meal Timing Tab */}
+        {/* Meal Time Tab */}
         {activeTab === 'meals' && (
           <div className="space-y-4 md:space-y-6">
-            <div className="bg-gradient-to-br from-blue-900/40 to-black p-4 md:p-6 rounded-2xl border border-blue-500/20 shadow-lg">
-              <h3 className="font-semibold mb-4 text-blue-400 text-lg md:text-xl mobile-xs-text-base">
-                Meal Schedule & Timing
-              </h3>
-              <div className="space-y-4 md:space-y-5">
+            {/* Meal Frequency Selector */}
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 md:p-6 rounded-2xl border border-gray-700 shadow-lg">
+              <h3 className="font-semibold mb-4 text-white text-lg md:text-xl mobile-xs-text-base">Meal Frequency</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                {[3, 4, 5, 6].map(num => (
+                  <button
+                    key={num}
+                    onClick={() => handleMealsPerDayChange(num)}
+                    className={`py-3 md:py-4 px-2 md:px-4 rounded-xl transition-all duration-300 ${
+                      mealsPerDay === num
+                        ? 'bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg transform scale-105'
+                        : 'bg-gray-700/50 text-gray-400 hover:text-white hover:bg-gray-600/50'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-lg md:text-xl font-bold mobile-text-sm">{num}</div>
+                      <div className="text-xs mobile-text-xs mt-1">Meals</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Meal Schedule */}
+            <div className="bg-gradient-to-br from-green-900/40 via-green-800/40 to-black rounded-2xl shadow-lg border border-green-500/20 p-4 md:p-6">
+              <h3 className="font-semibold mb-4 text-green-400 text-lg md:text-xl mobile-xs-text-base">Today's Meal Plan</h3>
+              <div className="space-y-3 md:space-y-4">
                 {mealSuggestions.map((meal, index) => (
-                  <div key={index} className="bg-black/40 p-4 md:p-5 rounded-xl border border-gray-600 transition-all duration-300 hover:border-blue-500/30 hover:bg-black/60">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
+                  <div key={index} className="bg-black/40 p-4 md:p-5 rounded-xl border border-green-500/10 backdrop-blur-sm transition-all duration-300 hover:border-green-500/30 hover:bg-black/60">
+                    <div className="flex items-start justify-between mobile-stack">
                       <div className="flex items-center space-x-3 md:space-x-4">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-700 p-2 md:p-3 rounded-lg shadow-lg">
-                          <span className="text-white text-sm md:text-base font-medium mobile-text-sm">
-                            {meal.time}
-                          </span>
+                        <div className="bg-gradient-to-r from-green-500 to-green-700 p-2 md:p-3 rounded-lg shadow-lg">
+                          <i className={`fas ${
+                            meal.type === 'main' ? 'fa-utensils' : 'fa-apple-alt'
+                          } text-white text-sm md:text-base`}></i>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-white text-base md:text-lg mobile-text-sm">
-                            {meal.name}
-                          </h4>
-                          <p className="text-xs text-blue-400 mt-1 mobile-text-xs">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="font-semibold text-white text-base md:text-lg mobile-text-sm">{meal.name}</span>
+                            <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full mobile-text-xs">
+                              {meal.time}
+                            </span>
+                          </div>
+                          <p className="text-xs md:text-sm text-green-300/80 mobile-text-xs max-w-md">
                             {meal.metabolicTip}
                           </p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 text-center">
-                        <div>
-                          <div className="text-xs text-gray-400 mobile-text-xs">Cal</div>
-                          <div className="text-sm font-semibold text-white mobile-text-sm">{meal.calories}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-400 mobile-text-xs">Protein</div>
-                          <div className="text-sm font-semibold text-white mobile-text-sm">{meal.protein}g</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-400 mobile-text-xs">Carbs</div>
-                          <div className="text-sm font-semibold text-white mobile-text-sm">{meal.carbs}g</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-400 mobile-text-xs">Fats</div>
-                          <div className="text-sm font-semibold text-white mobile-text-sm">{meal.fats}g</div>
+                      <div className="text-right mobile-full-width mobile-mt-2">
+                        <div className="text-xs text-gray-400 mb-1 mobile-text-xs">Target Nutrients</div>
+                        <div className="flex items-center space-x-3 md:space-x-4 mobile-justify-start mobile-mt-1">
+                          <div className="text-center">
+                            <div className="text-sm font-bold text-white mobile-text-xs">{meal.calories}</div>
+                            <div className="text-xs text-gray-400 mobile-text-xs">cal</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-sm font-bold text-blue-400 mobile-text-xs">{meal.protein}g</div>
+                            <div className="text-xs text-gray-400 mobile-text-xs">prot</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-sm font-bold text-green-400 mobile-text-xs">{meal.carbs}g</div>
+                            <div className="text-xs text-gray-400 mobile-text-xs">carbs</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-sm font-bold text-yellow-400 mobile-text-xs">{meal.fats}g</div>
+                            <div className="text-xs text-gray-400 mobile-text-xs">fats</div>
+                          </div>
                         </div>
                       </div>
                     </div>
                     
                     {/* Food Suggestions */}
-                    <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-600">
-                      <h5 className="text-xs text-gray-400 mb-2 mobile-text-xs">Suggested Foods:</h5>
+                    <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-green-500/10">
+                      <div className="text-xs text-gray-400 mb-2 mobile-text-xs">Suggested Foods:</div>
                       <div className="flex flex-wrap gap-1 md:gap-2">
                         {getFoodSuggestions(meal.type).slice(0, 3).map((food, foodIndex) => (
                           <span 
                             key={foodIndex}
-                            className="inline-block bg-gray-700/50 px-2 py-1 rounded-lg text-xs text-gray-300 mobile-text-xs"
+                            className="inline-block bg-green-500/10 text-green-400 px-2 py-1 rounded-lg text-xs border border-green-500/20 mobile-text-xs"
                           >
                             {food.name}
                           </span>
@@ -965,143 +1020,153 @@ const NutritionPlan = ({ plan, userId }) => {
 
         {/* Weekly Meal Plan Tab */}
         {activeTab === 'weekly' && (
-          <div className="space-y-4 md:space-y-6">
-            <div className="bg-gradient-to-br from-orange-900/40 to-black p-4 md:p-6 rounded-2xl border border-orange-500/20 shadow-lg">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6 space-y-3 md:space-y-0">
-                <h3 className="font-semibold text-orange-400 text-lg md:text-xl mobile-xs-text-base">
-                  Weekly Meal Plan
-                </h3>
-                <button
-                  onClick={generateWeeklyMealPlan}
-                  disabled={isGeneratingPlan}
-                  className="bg-gradient-to-r from-orange-500 to-orange-700 text-white py-2 md:py-3 px-4 md:px-6 rounded-xl font-medium text-sm md:text-base transition-all duration-300 hover:from-orange-600 hover:to-orange-800 disabled:opacity-50 mobile-text-sm mobile-full-width md:w-auto"
-                >
-                  {isGeneratingPlan ? 'Generating...' : 'Generate Weekly Plan'}
-                </button>
-              </div>
+          <div className="space-y-6">
+            {/* Generate Weekly Plan Button */}
+            <div className="text-center">
+              <button
+                onClick={generateWeeklyMealPlan}
+                disabled={isGeneratingPlan}
+                className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed mobile-full-width mobile-p-3"
+              >
+                {isGeneratingPlan ? (
+                  <span className="flex items-center justify-center">
+                    <i className="fas fa-spinner fa-spin mr-2"></i>
+                    Generating Weekly Plan...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    <i className="fas fa-calendar-plus mr-2"></i>
+                    Generate Weekly Meal Plan
+                  </span>
+                )}
+              </button>
+            </div>
 
-              {weeklyMealPlan ? (
-                <div className="space-y-4 md:space-y-6">
-                  {Object.entries(weeklyMealPlan).map(([day, meals]) => {
-                    const dailyTotals = calculateDailyTotals(meals);
-                    const deviation = calculateDailyDeviation(meals);
-                    const totalDeviation = deviation.calories + deviation.protein + deviation.carbs + deviation.fats;
-                    
-                    return (
-                      <div key={day} className="bg-black/40 p-4 md:p-5 rounded-xl border border-gray-600">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
-                          <h4 className="font-semibold text-white text-base md:text-lg capitalize mobile-text-sm">
+            {/* Weekly Meal Plan Display */}
+            {weeklyMealPlan && (
+              <div className="space-y-6">
+                <h3 className="font-semibold text-green-400 text-lg md:text-xl mobile-xs-text-base text-center">
+                  Your Weekly Meal Plan
+                </h3>
+                
+                {/* Days of the Week */}
+                {Object.entries(weeklyMealPlan).map(([day, meals]) => {
+                  const dailyTotals = calculateDailyTotals(meals);
+                  const dailyDeviation = calculateDailyDeviation(meals);
+                  const isOnTarget = dailyDeviation.calories < 50; // Within 50 calories is considered on target
+                  
+                  return (
+                    <div key={day} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
+                      <div className={`p-4 md:p-6 border-b ${
+                        isOnTarget ? 'border-green-500/30 bg-green-500/10' : 'border-yellow-500/30 bg-yellow-500/10'
+                      }`}>
+                        <div className="flex items-center justify-between mobile-stack">
+                          <h4 className="font-bold text-white text-lg md:text-xl capitalize mobile-xs-text-base">
                             {day}
                           </h4>
-                          <div className="flex items-center space-x-4 mt-2 md:mt-0">
-                            <div className="text-right">
-                              <div className="text-xs text-gray-400 mobile-text-xs">Total Calories</div>
-                              <div className="text-sm font-semibold text-white mobile-text-sm">
-                                {dailyTotals.calories} / {plan.calorieIntake}
-                              </div>
-                            </div>
-                            <div className={`px-2 py-1 rounded-full text-xs font-medium mobile-text-xs ${
-                              totalDeviation < 50 ? 'bg-green-500/20 text-green-400' : 
-                              totalDeviation < 100 ? 'bg-yellow-500/20 text-yellow-400' : 
-                              'bg-red-500/20 text-red-400'
-                            }`}>
-                              {totalDeviation < 50 ? 'Perfect' : totalDeviation < 100 ? 'Good' : 'Needs Adjust'}
-                            </div>
+                          <div className={`px-3 py-1 rounded-full text-xs font-medium mobile-text-xs ${
+                            isOnTarget 
+                              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                              : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                          }`}>
+                            {isOnTarget ? '🎯 On Target' : '⚠️ Needs Adjustment'}
                           </div>
                         </div>
                         
-                        <div className="space-y-3 md:space-y-4">
-                          {meals.map((meal, index) => (
-                            <div key={index} className="flex flex-col md:flex-row md:items-center justify-between p-3 md:p-4 bg-gray-800/30 rounded-lg border border-gray-600/50">
-                              <div className="flex items-center space-x-3 md:space-x-4 mb-2 md:mb-0">
-                                <div className="bg-gradient-to-r from-orange-500 to-orange-700 p-2 rounded-lg">
-                                  <span className="text-white text-xs md:text-sm font-medium mobile-text-xs">
-                                    {meal.time}
-                                  </span>
+                        {/* Daily Summary */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                          {[
+                            { label: 'Total Calories', value: dailyTotals.calories, target: plan.calorieIntake, unit: 'cal' },
+                            { label: 'Total Protein', value: dailyTotals.protein, target: plan.proteinIntake, unit: 'g' },
+                            { label: 'Total Carbs', value: dailyTotals.carbs, target: plan.carbIntake, unit: 'g' },
+                            { label: 'Total Fats', value: dailyTotals.fats, target: plan.fatIntake, unit: 'g' }
+                          ].map((item, index) => (
+                            <div key={index} className="text-center">
+                              <div className="text-xs text-gray-400 mobile-text-xs">{item.label}</div>
+                              <div className="text-sm font-bold text-white mobile-text-sm">{item.value}{item.unit}</div>
+                              <div className="text-xs text-gray-500 mobile-text-xs">Target: {item.target}{item.unit}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Daily Meals */}
+                      <div className="p-4 md:p-6">
+                        <div className="space-y-4">
+                          {meals.map((meal, mealIndex) => (
+                            <div key={mealIndex} className="bg-black/40 p-4 rounded-xl border border-green-500/10">
+                              <div className="flex items-start justify-between mobile-stack">
+                                <div className="flex items-center space-x-3">
+                                  <div className="bg-gradient-to-r from-green-500 to-green-700 p-2 rounded-lg">
+                                    <i className="fas fa-utensils text-white text-sm"></i>
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center space-x-2 mb-1">
+                                      <span className="font-semibold text-white text-sm">{meal.name}</span>
+                                      <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">
+                                        {meal.time}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-green-300/80">
+                                      {meal.metabolicTip}
+                                    </p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <h5 className="font-medium text-white text-sm md:text-base mobile-text-sm">
-                                    {meal.name}
-                                  </h5>
-                                  <p className="text-orange-400 text-xs mobile-text-xs">
-                                    {meal.food.name}
-                                  </p>
+                                <div className="text-right mobile-full-width mobile-mt-2">
+                                  <div className="text-xs text-gray-400 mb-1">Meal Nutrients</div>
+                                  <div className="flex items-center space-x-3 mobile-justify-start">
+                                    <div className="text-center">
+                                      <div className="text-sm font-bold text-white">{meal.calories}</div>
+                                      <div className="text-xs text-gray-400">cal</div>
+                                    </div>
+                                    <div className="text-center">
+                                      <div className="text-sm font-bold text-blue-400">{meal.protein}g</div>
+                                      <div className="text-xs text-gray-400">prot</div>
+                                    </div>
+                                    <div className="text-center">
+                                      <div className="text-sm font-bold text-green-400">{meal.carbs}g</div>
+                                      <div className="text-xs text-gray-400">carbs</div>
+                                    </div>
+                                    <div className="text-center">
+                                      <div className="text-sm font-bold text-yellow-400">{meal.fats}g</div>
+                                      <div className="text-xs text-gray-400">fats</div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 text-center">
-                                <div>
-                                  <div className="text-xs text-gray-400 mobile-text-xs">Cal</div>
-                                  <div className="text-sm font-semibold text-white mobile-text-sm">{meal.calories}</div>
-                                </div>
-                                <div>
-                                  <div className="text-xs text-gray-400 mobile-text-xs">Protein</div>
-                                  <div className="text-sm font-semibold text-white mobile-text-sm">{meal.protein}g</div>
-                                </div>
-                                <div>
-                                  <div className="text-xs text-gray-400 mobile-text-xs">Carbs</div>
-                                  <div className="text-sm font-semibold text-white mobile-text-sm">{meal.carbs}g</div>
-                                </div>
-                                <div>
-                                  <div className="text-xs text-gray-400 mobile-text-xs">Fats</div>
-                                  <div className="text-sm font-semibold text-white mobile-text-sm">{meal.fats}g</div>
+                              
+                              {/* Food Details */}
+                              <div className="mt-3 pt-3 border-t border-green-500/10">
+                                <div className="flex items-center justify-between mobile-stack">
+                                  <div>
+                                    <div className="text-xs text-gray-400 mb-1">Selected Food:</div>
+                                    <div className="text-sm font-medium text-white">
+                                      {meal.food.name}
+                                    </div>
+                                    <div className="text-xs text-gray-400 mt-1">
+                                      Portion adjusted to match daily targets
+                                    </div>
+                                  </div>
+                                  <div className="text-right mobile-full-width mobile-mt-2">
+                                    <div className="text-xs text-gray-400 mb-1">Base Nutrients (per serving)</div>
+                                    <div className="text-xs text-gray-300 space-y-1">
+                                      <div>{meal.food.caloriesPerServing} cal</div>
+                                      <div>{meal.food.proteinPerServing}g protein</div>
+                                      <div>{meal.food.carbsPerServing}g carbs</div>
+                                      <div>{meal.food.fatPerServing}g fats</div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           ))}
                         </div>
-                        
-                        {/* Daily Summary */}
-                        <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-600">
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 text-center">
-                            <div>
-                              <div className="text-xs text-gray-400 mobile-text-xs">Protein Total</div>
-                              <div className="text-sm font-semibold text-white mobile-text-sm">{dailyTotals.protein}g</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-400 mobile-text-xs">Carbs Total</div>
-                              <div className="text-sm font-semibold text-white mobile-text-sm">{dailyTotals.carbs}g</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-400 mobile-text-xs">Fats Total</div>
-                              <div className="text-sm font-semibold text-white mobile-text-sm">{dailyTotals.fats}g</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-gray-400 mobile-text-xs">Deviation</div>
-                              <div className={`text-sm font-semibold mobile-text-sm ${
-                                totalDeviation < 50 ? 'text-green-400' : 
-                                totalDeviation < 100 ? 'text-yellow-400' : 
-                                'text-red-400'
-                              }`}>
-                                {totalDeviation}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                       </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8 md:py-12">
-                  <div className="inline-block p-4 md:p-5 bg-gradient-to-r from-gray-800 to-gray-900 rounded-full mb-4 md:mb-6 shadow-inner">
-                    <i className="fas fa-calendar text-3xl md:text-4xl text-gray-500"></i>
-                  </div>
-                  <p className="text-gray-400 text-base md:text-lg mb-2 mobile-text-sm">
-                    No weekly meal plan generated yet
-                  </p>
-                  <p className="text-xs md:text-sm text-gray-500 mb-4 md:mb-6 mobile-text-xs">
-                    Click the button above to generate your personalized weekly meal plan
-                  </p>
-                  <button
-                    onClick={generateWeeklyMealPlan}
-                    disabled={isGeneratingPlan}
-                    className="bg-gradient-to-r from-orange-500 to-orange-700 text-white py-3 md:py-4 px-6 md:px-8 rounded-xl font-medium text-base md:text-lg transition-all duration-300 hover:from-orange-600 hover:to-orange-800 disabled:opacity-50 mobile-text-sm"
-                  >
-                    {isGeneratingPlan ? 'Generating...' : 'Generate Weekly Plan'}
-                  </button>
-                </div>
-              )}
-            </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>

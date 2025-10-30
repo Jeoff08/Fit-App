@@ -1,7 +1,5 @@
-// foodDatabase.js
 
-// Comprehensive food database organized by fitness goals
-const foodDatabase = {
+const localFoodDatabase = {
   // Bulking and Muscle Gain Foods (High calorie, high protein)
   bulking: {
     breakfast: [
@@ -163,7 +161,113 @@ const foodDatabase = {
   }
 };
 
-// Function to get food database based on fitness goal
+// Firebase Functions
+
+// Initialize Firebase with food data
+export const initializeFirebaseFoodData = async () => {
+  try {
+    for (const [goal, meals] of Object.entries(localFoodDatabase)) {
+      for (const [mealType, foodItems] of Object.entries(meals)) {
+        for (const foodItem of foodItems) {
+          await addDoc(collection(db, 'foods'), {
+            ...foodItem,
+            goal,
+            mealType,
+            createdAt: new Date()
+          });
+        }
+      }
+    }
+    console.log('Food database initialized in Firebase');
+  } catch (error) {
+    console.error('Error initializing food data:', error);
+  }
+};
+
+// Get food database from Firebase
+export const getFoodDatabaseFromFirebase = async (fitnessGoal) => {
+  try {
+    const goalMapping = {
+      weightLoss: 'cutting',
+      cutting: 'cutting',
+      leanMuscle: 'leanMuscle',
+      muscleTone: 'leanMuscle',
+      maintenance: 'maintenance',
+      muscleGain: 'bulking',
+      bulking: 'bulking',
+      athleticPerformance: 'athleticPerformance'
+    };
+
+    const databaseKey = goalMapping[fitnessGoal] || 'maintenance';
+    
+    const q = query(
+      collection(db, 'foods'),
+      where('goal', '==', databaseKey)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const foods = {};
+    
+    querySnapshot.forEach((doc) => {
+      const foodData = doc.data();
+      const mealType = foodData.mealType;
+      
+      if (!foods[mealType]) {
+        foods[mealType] = [];
+      }
+      
+      foods[mealType].push({
+        id: doc.id,
+        ...foodData
+      });
+    });
+    
+    return foods;
+  } catch (error) {
+    console.error('Error fetching from Firebase, using local database:', error);
+    return getFoodDatabase(fitnessGoal);
+  }
+};
+
+// Add new food item to Firebase
+export const addFoodItem = async (foodItem) => {
+  try {
+    const docRef = await addDoc(collection(db, 'foods'), {
+      ...foodItem,
+      createdAt: new Date()
+    });
+    console.log('Food item added with ID:', docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error('Error adding food item:', error);
+    throw error;
+  }
+};
+
+// Update food item in Firebase
+export const updateFoodItem = async (foodId, updatedData) => {
+  try {
+    const foodRef = doc(db, 'foods', foodId);
+    await updateDoc(foodRef, updatedData);
+    console.log('Food item updated successfully');
+  } catch (error) {
+    console.error('Error updating food item:', error);
+    throw error;
+  }
+};
+
+// Delete food item from Firebase
+export const deleteFoodItem = async (foodId) => {
+  try {
+    await deleteDoc(doc(db, 'foods', foodId));
+    console.log('Food item deleted successfully');
+  } catch (error) {
+    console.error('Error deleting food item:', error);
+    throw error;
+  }
+};
+
+// Function to get food database (with Firebase fallback to local)
 export const getFoodDatabase = (fitnessGoal) => {
   const goalMapping = {
     weightLoss: 'cutting',
@@ -177,7 +281,7 @@ export const getFoodDatabase = (fitnessGoal) => {
   };
 
   const databaseKey = goalMapping[fitnessGoal] || 'maintenance';
-  return foodDatabase[databaseKey];
+  return localFoodDatabase[databaseKey];
 };
 
 // Function to get all food categories
@@ -192,31 +296,78 @@ export const getFoodCategories = () => {
 };
 
 // Function to search foods by category and nutritional requirements
-export const searchFoods = (fitnessGoal, category, maxCalories = null, minProtein = null) => {
-  const database = getFoodDatabase(fitnessGoal);
-  let foods = [];
-  
-  // Combine all meal types
-  Object.values(database).forEach(mealType => {
-    foods = foods.concat(mealType);
-  });
-  
-  // Filter by category if specified
-  if (category) {
-    foods = foods.filter(food => food.category === category);
+export const searchFoods = async (fitnessGoal, category, maxCalories = null, minProtein = null) => {
+  try {
+    // Try Firebase first
+    const database = await getFoodDatabaseFromFirebase(fitnessGoal);
+    let foods = [];
+    
+    // Combine all meal types
+    Object.values(database).forEach(mealType => {
+      foods = foods.concat(mealType);
+    });
+    
+    // Filter by category if specified
+    if (category) {
+      foods = foods.filter(food => food.category === category);
+    }
+    
+    // Filter by max calories if specified
+    if (maxCalories !== null) {
+      foods = foods.filter(food => food.caloriesPerServing <= maxCalories);
+    }
+    
+    // Filter by min protein if specified
+    if (minProtein !== null) {
+      foods = foods.filter(food => food.proteinPerServing >= minProtein);
+    }
+    
+    return foods;
+  } catch (error) {
+    console.error('Error searching in Firebase, using local database:', error);
+    
+    // Fallback to local search
+    const database = getFoodDatabase(fitnessGoal);
+    let foods = [];
+    
+    Object.values(database).forEach(mealType => {
+      foods = foods.concat(mealType);
+    });
+    
+    if (category) {
+      foods = foods.filter(food => food.category === category);
+    }
+    
+    if (maxCalories !== null) {
+      foods = foods.filter(food => food.caloriesPerServing <= maxCalories);
+    }
+    
+    if (minProtein !== null) {
+      foods = foods.filter(food => food.proteinPerServing >= minProtein);
+    }
+    
+    return foods;
   }
-  
-  // Filter by max calories if specified
-  if (maxCalories !== null) {
-    foods = foods.filter(food => food.caloriesPerServing <= maxCalories);
-  }
-  
-  // Filter by min protein if specified
-  if (minProtein !== null) {
-    foods = foods.filter(food => food.proteinPerServing >= minProtein);
-  }
-  
-  return foods;
 };
 
-export default foodDatabase;
+// Get all foods from Firebase (for admin purposes)
+export const getAllFoodsFromFirebase = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'foods'));
+    const foods = [];
+    
+    querySnapshot.forEach((doc) => {
+      foods.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    return foods;
+  } catch (error) {
+    console.error('Error fetching all foods:', error);
+    throw error;
+  }
+};
+
+export default localFoodDatabase;

@@ -50,7 +50,8 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [buttonAnimations, setButtonAnimations] = useState({
     setGoal: false,
-    generatePlan: false
+    generatePlan: false,
+    clearWorkouts: false
   });
 
   // Enhanced responsive design with media queries
@@ -240,6 +241,45 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     }
   };
 
+  // New function to clear only workout history
+  const clearWorkoutHistory = async () => {
+    const confirmed = window.confirm('Are you sure you want to clear all your workout history? This will remove all your completed workouts but keep your weight data and settings. This action cannot be undone.');
+    
+    if (confirmed && userId) {
+      try {
+        setButtonAnimations(prev => ({ ...prev, clearWorkouts: true }));
+        
+        const userDocRef = doc(db, 'users', userId);
+        
+        await updateDoc(userDocRef, {
+          workoutHistory: [],
+          lastCompletedWorkout: null
+        });
+        
+        // Update local state
+        setProgress(prev => ({
+          ...prev,
+          workoutHistory: [],
+          lastCompletedWorkout: null
+        }));
+        
+        calculateWorkoutStats([]);
+        generateChartData([]);
+        
+        setTimeout(() => {
+          setButtonAnimations(prev => ({ ...prev, clearWorkouts: false }));
+        }, 600);
+        
+        alert('✅ Workout history cleared successfully! Your weight data and settings have been preserved.');
+        
+      } catch (error) {
+        console.error('Error clearing workout history:', error);
+        alert('Error clearing workout history. Please try again.');
+        setButtonAnimations(prev => ({ ...prev, clearWorkouts: false }));
+      }
+    }
+  };
+
   const handleWeightSubmit = async () => {
     const currentWeight = parseFloat(weightInput.currentWeight);
     const goalWeight = parseFloat(weightInput.goalWeight);
@@ -416,6 +456,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       return date.toLocaleDateString();
     }).reverse();
 
+    // Only show days with actual workouts
     const weeklyProgress = last7Days.map(date => {
       const workoutsOnDate = workoutHistory.filter(workout => workout.completionDate === date);
       const totalSets = workoutsOnDate.reduce((sum, workout) => sum + (workout.totalSets || 0), 0);
@@ -434,9 +475,13 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         sets: totalSets,
         exercises: totalExercises,
         duration: totalDuration,
-        workoutDetails: workoutsOnDate
+        workoutDetails: workoutsOnDate,
+        hasWorkouts: workoutsOnDate.length > 0 // Flag to check if there are workouts
       };
     });
+
+    // Filter out days with no workouts for display
+    const weeklyProgressWithWorkouts = weeklyProgress.filter(day => day.hasWorkouts);
 
     const monthlyProgress = Array.from({ length: 4 }, (_, i) => {
       const weekStart = new Date();
@@ -452,9 +497,13 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       return {
         week: `Week ${i + 1}`,
         workouts: weekWorkouts.length,
-        sets: weekWorkouts.reduce((sum, workout) => sum + (workout.totalSets || 0), 0)
+        sets: weekWorkouts.reduce((sum, workout) => sum + (workout.totalSets || 0), 0),
+        hasWorkouts: weekWorkouts.length > 0
       };
     });
+
+    // Filter out weeks with no workouts
+    const monthlyProgressWithWorkouts = monthlyProgress.filter(week => week.hasWorkouts);
 
     const exerciseCount = {};
     workoutHistory.forEach(workout => {
@@ -469,8 +518,8 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       .map(([name, count]) => ({ name, count }));
 
     setChartData({
-      weeklyProgress,
-      monthlyProgress,
+      weeklyProgress: weeklyProgressWithWorkouts,
+      monthlyProgress: monthlyProgressWithWorkouts,
       exerciseDistribution
     });
   };
@@ -570,40 +619,40 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     if (!showWeeklyModal || !selectedWeekData) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-black to-gray-900 rounded-2xl md:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500">
+      <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+        <div className="bg-black rounded-2xl md:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500 gym-border">
           <div className="p-4 md:p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl md:text-2xl font-bold text-white">
+              <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
                 Daily Progress Details
               </h2>
               <button
                 onClick={() => setShowWeeklyModal(false)}
-                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors"
+                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors gym-button"
               >
                 ×
               </button>
             </div>
 
-            <div className="bg-gradient-to-r from-black to-gray-800 rounded-lg p-4 mb-4 border border-green-500">
-              <h3 className="text-lg font-bold text-white mb-3 text-center">
+            <div className="bg-gray-900 rounded-lg p-4 mb-4 border border-green-500 gym-border">
+              <h3 className="text-lg font-bold text-white mb-3 text-center gym-text">
                 {selectedWeekData.date}
               </h3>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
                   <div className="text-white font-bold text-base md:text-lg">{selectedWeekData.workouts}</div>
                   <div className="text-green-400 text-xs">Workouts</div>
                 </div>
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
                   <div className="text-white font-bold text-base md:text-lg">{selectedWeekData.sets}</div>
                   <div className="text-green-400 text-xs">Total Sets</div>
                 </div>
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
                   <div className="text-white font-bold text-base md:text-lg">{selectedWeekData.exercises}</div>
                   <div className="text-green-400 text-xs">Exercises</div>
                 </div>
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
                   <div className="text-white font-bold text-base md:text-lg">{formatDuration(selectedWeekData.duration)}</div>
                   <div className="text-green-400 text-xs">Total Time</div>
                 </div>
@@ -611,12 +660,12 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
 
               {selectedWeekData.workoutDetails && selectedWeekData.workoutDetails.length > 0 ? (
                 <div>
-                  <h4 className="text-base font-bold text-white mb-2">Workout Details:</h4>
+                  <h4 className="text-base font-bold text-white mb-2 gym-text">Workout Details:</h4>
                   <div className="space-y-2">
                     {selectedWeekData.workoutDetails.map((workout, index) => (
-                      <div key={index} className="bg-black rounded-lg p-3 border border-green-500">
+                      <div key={index} className="bg-black rounded-lg p-3 border border-green-500 gym-workout-card">
                         <div className="flex justify-between items-start mb-1">
-                          <h5 className="text-white font-medium text-sm">{workout.dayName}</h5>
+                          <h5 className="text-white font-medium text-sm gym-text">{workout.dayName}</h5>
                           <div className="text-orange-400 text-xs">
                             {workout.completionTime} • {workout.duration}
                           </div>
@@ -652,7 +701,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
             <div className="flex justify-center">
               <button
                 onClick={() => setShowWeeklyModal(false)}
-                className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105"
+                className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
               >
                 Close Details
               </button>
@@ -667,16 +716,16 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     if (!showWeightModal) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-black to-gray-900 rounded-xl md:rounded-2xl shadow-2xl max-w-md w-full border-2 border-orange-500">
+      <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+        <div className="bg-black rounded-xl md:rounded-2xl shadow-2xl max-w-md w-full border-2 border-orange-500 gym-border">
           <div className="p-4 md:p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl md:text-2xl font-bold text-white">
+              <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
                 Set Your Weight Goal
               </h2>
               <button
                 onClick={() => setShowWeightModal(false)}
-                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors"
+                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors gym-button"
               >
                 ×
               </button>
@@ -692,7 +741,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
                   step="0.1"
                   value={weightInput.currentWeight}
                   onChange={(e) => setWeightInput(prev => ({ ...prev, currentWeight: e.target.value }))}
-                  className="w-full bg-black border border-orange-500 rounded-lg px-3 py-2 text-white placeholder-green-600 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
+                  className="w-full bg-gray-900 border border-orange-500 rounded-lg px-3 py-2 text-white placeholder-green-600 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm gym-input"
                   placeholder="Enter your current weight"
                 />
               </div>
@@ -706,7 +755,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
                   step="0.1"
                   value={weightInput.goalWeight}
                   onChange={(e) => setWeightInput(prev => ({ ...prev, goalWeight: e.target.value }))}
-                  className="w-full bg-black border border-orange-500 rounded-lg px-3 py-2 text-white placeholder-green-600 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
+                  className="w-full bg-gray-900 border border-orange-500 rounded-lg px-3 py-2 text-white placeholder-green-600 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm gym-input"
                   placeholder="Enter your goal weight"
                 />
               </div>
@@ -715,13 +764,13 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowWeightModal(false)}
-                className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm"
+                className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm gym-button"
               >
                 Skip
               </button>
               <button
                 onClick={handleWeightSubmit}
-                className="flex-1 bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105"
+                className="flex-1 bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
               >
                 Set Goal
               </button>
@@ -840,12 +889,16 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     : "flex items-center gap-3 mt-0";
 
   // Animation classes
-  const setGoalButtonClass = `bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 ${
+  const setGoalButtonClass = `bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button ${
     buttonAnimations.setGoal ? 'animate-pulse scale-105' : ''
   }`;
 
-  const generatePlanButtonClass = `bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 ${
+  const generatePlanButtonClass = `bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button ${
     buttonAnimations.generatePlan ? 'animate-pulse scale-105' : ''
+  }`;
+
+  const clearWorkoutsButtonClass = `bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button ${
+    buttonAnimations.clearWorkouts ? 'animate-pulse scale-105' : ''
   }`;
 
   if (showUserForm) {
@@ -853,112 +906,209 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 text-white font-sans p-3 md:p-6">
+    <div className="min-h-screen bg-black text-white font-sans p-3 md:p-6 gym-background">
       <style jsx>{`
-        @media (max-width: 768px) {
-          .mobile-optimized {
-            padding: 1rem;
-          }
-          .mobile-text {
-            font-size: 0.875rem;
-          }
-          .mobile-padding {
-            padding: 1rem;
-          }
-          .mobile-margin {
-            margin-bottom: 1.5rem;
-          }
+        .gym-background {
+          background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+          position: relative;
         }
         
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .tablet-optimized {
-            padding: 1.5rem;
-          }
+        .gym-background::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: 
+            radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
+          pointer-events: none;
+        }
+        
+        .gym-container {
+          position: relative;
+          z-index: 1;
+        }
+        
+        .gym-header {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(34, 197, 94, 0.1) 100%);
+          border: 2px solid #22c55e;
+          box-shadow: 0 8px 32px rgba(34, 197, 94, 0.2);
+        }
+        
+        .gym-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(34, 197, 94, 0.05) 100%);
+          border: 1px solid #22c55e;
+          box-shadow: 0 4px 20px rgba(34, 197, 94, 0.1);
+          backdrop-filter: blur(10px);
+        }
+        
+        .gym-stat-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(249, 115, 22, 0.1) 100%);
+          border: 1px solid #f97316;
+          box-shadow: 0 4px 20px rgba(249, 115, 22, 0.1);
+        }
+        
+        .gym-workout-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(34, 197, 94, 0.05) 100%);
+          border: 1px solid #22c55e;
+          box-shadow: 0 2px 15px rgba(34, 197, 94, 0.1);
+        }
+        
+        .gym-button {
+          background: linear-gradient(135deg, #f97316 0%, #22c55e 100%);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+          transition: all 0.3s ease;
+        }
+        
+        .gym-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+        
+        .gym-border {
+          border: 2px solid;
+          border-image: linear-gradient(135deg, #f97316, #22c55e) 1;
+        }
+        
+        .gym-text {
+          background: linear-gradient(135deg, #22c55e, #f97316);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        .gym-input {
+          background: rgba(0, 0, 0, 0.8);
+          border: 1px solid #f97316;
+          color: #22c55e;
+        }
+        
+        .gym-input:focus {
+          border-color: #22c55e;
+          box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+        
+        .gym-progress-bar {
+          background: linear-gradient(90deg, #f97316, #22c55e);
+          box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
+        }
+        
+        .gym-achievement-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(249, 115, 22, 0.1) 100%);
+          border: 1px solid #f97316;
+          box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2);
+        }
+        
+        @keyframes pulse-gym {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        
+        .animate-pulse-gym {
+          animation: pulse-gym 2s infinite;
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="gym-container">
         {/* Header Section */}
-        <div className={`mb-6 md:mb-8 text-center mobile-margin ${isMobile ? 'mobile-padding' : ''}`}>
-          <h1 className={`${headerTextSize} font-bold mb-2 md:mb-4 bg-gradient-to-r from-orange-500 to-green-500 bg-clip-text text-transparent`}>
-            PROGRESS TRACKER
-          </h1>
-          <p className="text-green-400 text-sm md:text-base max-w-2xl mx-auto">
-            Track your fitness journey, monitor your gains, and crush your goals
-          </p>
+        <div className="gym-header rounded-2xl md:rounded-3xl p-4 md:p-8 mb-6 md:mb-8">
+          <div className={workoutHeaderClass}>
+            <div className="flex-1">
+              <h1 className={`${headerTextSize} font-bold gym-text mb-2`}>
+                Fitness Progress Tracker
+              </h1>
+              <p className="text-green-400 text-sm md:text-base">
+                Track your journey to a stronger, healthier you
+              </p>
+            </div>
+            <div className={workoutStatsClass}>
+              <div className="bg-black rounded-lg px-3 py-2 border border-orange-500 gym-stat-card">
+                <div className="text-center">
+                  <div className="text-white font-bold text-lg md:text-xl">{streak}</div>
+                  <div className="text-green-400 text-xs">Day Streak</div>
+                </div>
+              </div>
+              <div className="bg-black rounded-lg px-3 py-2 border border-orange-500 gym-stat-card">
+                <div className="text-center">
+                  <div className="text-white font-bold text-lg md:text-xl">{workoutStats.totalWorkouts}</div>
+                  <div className="text-green-400 text-xs">Total Workouts</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Quick Stats Section */}
-        <div className={`${statsGridClass} mb-6 md:mb-8`}>
-          <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 text-center transform transition-transform hover:scale-105 hover:border-green-500">
-            <div className="text-lg md:text-2xl font-bold text-white">{workoutStats.totalWorkouts}</div>
-            <div className="text-green-400 text-xs md:text-sm">Total Workouts</div>
-          </div>
-          <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 text-center transform transition-transform hover:scale-105 hover:border-green-500">
-            <div className="text-lg md:text-2xl font-bold text-white">{workoutStats.totalSets}</div>
-            <div className="text-green-400 text-xs md:text-sm">Total Sets</div>
-          </div>
-          <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 text-center transform transition-transform hover:scale-105 hover:border-green-500">
-            <div className="text-lg md:text-2xl font-bold text-white">{workoutStats.totalExercises}</div>
-            <div className="text-green-400 text-xs md:text-sm">Exercises</div>
-          </div>
-          <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 text-center transform transition-transform hover:scale-105 hover:border-green-500">
-            <div className="text-lg md:text-2xl font-bold text-white">{formatDuration(workoutStats.totalDuration)}</div>
-            <div className="text-green-400 text-xs md:text-sm">Total Time</div>
-          </div>
-          <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 text-center transform transition-transform hover:scale-105 hover:border-green-500">
-            <div className="text-lg md:text-2xl font-bold text-white">{streak}</div>
-            <div className="text-green-400 text-xs md:text-sm">Day Streak</div>
-          </div>
-          <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-3 md:p-4 text-center transform transition-transform hover:scale-105 hover:border-green-500">
-            <div className="text-lg md:text-2xl font-bold text-white">{workoutStats.completionRate}%</div>
-            <div className="text-green-400 text-xs md:text-sm">Completion</div>
+        {/* Action Buttons */}
+        <div className="flex flex-col md:flex-row gap-3 mb-6 md:mb-8">
+          <div className={buttonContainerClass}>
+            <button 
+              onClick={handleSetGoalWeightClick}
+              className={setGoalButtonClass}
+            >
+              🎯 Set Weight Goal
+            </button>
+            <button 
+              onClick={handleGenerateNewPlanClick}
+              className={generatePlanButtonClass}
+            >
+              💪 Generate New Plan
+            </button>
+            <button 
+              onClick={clearWorkoutHistory}
+              className={clearWorkoutsButtonClass}
+            >
+              🗑️ Clear Workouts
+            </button>
           </div>
         </div>
 
         {/* Weight Progress Section */}
         {progress.initialWeight && progress.goalWeight && (
-          <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-green-500 rounded-xl md:rounded-2xl p-4 md:p-6 mb-6 md:mb-8">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
-              <h2 className={`${sectionTitleSize} font-bold text-white`}>Weight Progress</h2>
-              <div className={buttonContainerClass}>
-                <button
-                  onClick={handleCurrentWeightUpdate}
-                  className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105"
-                >
-                  Update Weight
-                </button>
-              </div>
+          <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 md:mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+              <h2 className={`${sectionTitleSize} font-bold gym-text mb-2 md:mb-0`}>
+                Weight Progress
+              </h2>
+              <button
+                onClick={handleCurrentWeightUpdate}
+                className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
+              >
+                Update Current Weight
+              </button>
             </div>
-
+            
             <div className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
-                  <div className="text-white font-bold text-base md:text-lg">{progress.initialWeight}kg</div>
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{progress.initialWeight}kg</div>
                   <div className="text-green-400 text-xs">Start Weight</div>
                 </div>
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
-                  <div className="text-white font-bold text-base md:text-lg">{progress.currentWeight}kg</div>
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{progress.currentWeight}kg</div>
                   <div className="text-green-400 text-xs">Current Weight</div>
                 </div>
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
-                  <div className="text-white font-bold text-base md:text-lg">{progress.goalWeight}kg</div>
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{progress.goalWeight}kg</div>
                   <div className="text-green-400 text-xs">Goal Weight</div>
                 </div>
-                <div className="bg-black rounded-lg p-3 text-center border border-orange-500">
-                  <div className="text-white font-bold text-base md:text-lg">{weightProgress.weightLost.toFixed(1)}kg</div>
-                  <div className="text-green-400 text-xs">Lost</div>
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{weightProgress.weightLost.toFixed(1)}kg</div>
+                  <div className="text-green-400 text-xs">Weight Lost</div>
                 </div>
               </div>
-
-              <div className="bg-black rounded-lg p-3 border border-green-500">
-                <div className="flex justify-between text-sm text-green-400 mb-1">
-                  <span>Progress: {weightProgress.percentage.toFixed(1)}%</span>
-                  <span>{weightProgress.weightToGo.toFixed(1)}kg to go</span>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-400">Progress: {weightProgress.percentage.toFixed(1)}%</span>
+                  <span className="text-orange-400">{weightProgress.weightToGo.toFixed(1)}kg to go</span>
                 </div>
-                <div className="w-full bg-gray-800 rounded-full h-4 md:h-6">
+                <div className="w-full bg-gray-800 rounded-full h-3 md:h-4">
                   <div 
-                    className="bg-gradient-to-r from-orange-500 to-green-500 h-4 md:h-6 rounded-full transition-all duration-1000 ease-out"
+                    className="gym-progress-bar h-3 md:h-4 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${weightProgress.percentage}%` }}
                   ></div>
                 </div>
@@ -967,147 +1117,171 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-4 md:p-6 mb-6 md:mb-8">
-          <div className={workoutHeaderClass}>
-            <h2 className={`${sectionTitleSize} font-bold text-white mb-3 md:mb-0`}>Quick Actions</h2>
-            <div className={workoutStatsClass}>
-              <span className="text-green-400 text-sm">Fitness Level: {progress.fitnessLevel}</span>
+        {/* Workout Statistics */}
+        <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 md:mb-8">
+          <h2 className={`${sectionTitleSize} font-bold gym-text mb-4`}>
+            Workout Statistics
+          </h2>
+          
+          <div className={statsGridClass}>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.totalWorkouts}</div>
+              <div className="text-green-400 text-xs md:text-sm">Total Workouts</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.totalSets}</div>
+              <div className="text-green-400 text-xs md:text-sm">Total Sets</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.totalExercises}</div>
+              <div className="text-green-400 text-xs md:text-sm">Exercises</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{formatDuration(workoutStats.totalDuration)}</div>
+              <div className="text-green-400 text-xs md:text-sm">Total Time</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{formatDuration(workoutStats.averageDuration)}</div>
+              <div className="text-green-400 text-xs md:text-sm">Avg. Duration</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.completionRate}%</div>
+              <div className="text-green-400 text-xs md:text-sm">Completion Rate</div>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
-            <button
-              onClick={handleSetGoalWeightClick}
-              className={setGoalButtonClass}
-            >
-              Set Weight Goal
-            </button>
-            <button
-              onClick={handleGenerateNewPlanClick}
-              className={generatePlanButtonClass}
-            >
-              Generate New Plan
-            </button>
-            <button
-              onClick={exportProgress}
-              className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105"
-            >
-              Export Progress
-            </button>
-            <label className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 text-center cursor-pointer">
-              Import Progress
-              <input
-                type="file"
-                accept=".json"
-                onChange={importProgress}
-                className="hidden"
-              />
-            </label>
-          </div>
         </div>
 
-        {/* Weekly Progress Section */}
-        <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-green-500 rounded-xl md:rounded-2xl p-4 md:p-6 mb-6 md:mb-8">
-          <h2 className={`${sectionTitleSize} font-bold text-white mb-4`}>Weekly Progress</h2>
-          <div className="grid grid-cols-2 md:grid-cols-7 gap-2">
-            {chartData.weeklyProgress.map((day, index) => (
-              <div
-                key={index}
-                onClick={() => handleWeeklyProgressClick(day)}
-                className={`bg-gradient-to-br from-black to-gray-800 border-2 rounded-lg p-2 text-center cursor-pointer transform transition-all hover:scale-105 ${
-                  day.workouts > 0 
-                    ? 'border-orange-500 hover:border-green-500' 
-                    : 'border-gray-700 hover:border-orange-500'
-                }`}
-              >
-                <div className="text-white font-bold text-sm mb-1">
-                  {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
-                </div>
-                <div className="text-green-400 text-xs mb-1">
-                  {day.workouts} workout{day.workouts !== 1 ? 's' : ''}
-                </div>
-                <div className="text-orange-400 text-xs">
-                  {day.sets} sets
+        {/* Charts and Progress Visualization - Only show if there are workouts */}
+        {progress.workoutHistory && progress.workoutHistory.length > 0 ? (
+          <div className={chartsGridClass}>
+            {/* Weekly Progress - Only show if there are workouts in the week */}
+            {chartData.weeklyProgress.length > 0 && (
+              <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6">
+                <h3 className="text-lg md:text-xl font-bold gym-text mb-4">Weekly Progress</h3>
+                <div className="space-y-3">
+                  {chartData.weeklyProgress.map((day, index) => (
+                    <div 
+                      key={index}
+                      onClick={() => handleWeeklyProgressClick(day)}
+                      className="gym-workout-card rounded-lg p-3 cursor-pointer transform transition-transform hover:scale-105"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-white font-medium text-sm gym-text">{day.date}</span>
+                        <span className="text-orange-400 text-xs">{day.workouts} workout{day.workouts !== 1 ? 's' : ''}</span>
+                      </div>
+                      <div className="flex justify-between text-xs text-green-300">
+                        <span>{day.sets} sets</span>
+                        <span>{day.exercises} exercises</span>
+                        <span>{formatDuration(day.duration)}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
+
+            {/* Monthly Progress - Only show if there are workouts in the month */}
+            {chartData.monthlyProgress.length > 0 && (
+              <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6">
+                <h3 className="text-lg md:text-xl font-bold gym-text mb-4">Monthly Overview</h3>
+                <div className="space-y-4">
+                  {chartData.monthlyProgress.map((week, index) => (
+                    <div key={index} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white gym-text">{week.week}</span>
+                        <span className="text-green-400">{week.workouts} workouts</span>
+                      </div>
+                      <div className="w-full bg-gray-800 rounded-full h-2">
+                        <div 
+                          className="gym-progress-bar h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min((week.workouts / 7) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        ) : (
+          // Show empty state when no workouts completed
+          <div className="gym-card rounded-2xl md:rounded-3xl p-6 md:p-8 text-center mb-6 md:mb-8">
+            <div className="text-6xl md:text-8xl mb-4">💪</div>
+            <h3 className="text-xl md:text-2xl font-bold gym-text mb-2">No Workouts Completed Yet</h3>
+            <p className="text-green-400 mb-4">Complete your first workout to see your progress charts and statistics!</p>
+            <button 
+              onClick={handleGenerateNewPlanClick}
+              className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 gym-button"
+            >
+              Start Your First Workout
+            </button>
+          </div>
+        )}
 
         {/* Achievements Section */}
-        <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-xl md:rounded-2xl p-4 md:p-6 mb-6 md:mb-8">
-          <h2 className={`${sectionTitleSize} font-bold text-white mb-4`}>Achievements</h2>
-          <div className={achievementsGridClass}>
-            {achievements.length > 0 ? (
-              achievements.map((achievement, index) => (
-                <div
-                  key={index}
-                  className="bg-gradient-to-br from-black to-gray-800 border-2 border-green-500 rounded-lg p-3 md:p-4 transform transition-all hover:scale-105 hover:border-orange-500"
-                >
+        <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mt-6 md:mt-8">
+          <h2 className={`${sectionTitleSize} font-bold gym-text mb-4`}>
+            Achievements
+          </h2>
+          
+          {achievements.length > 0 ? (
+            <div className={achievementsGridClass}>
+              {achievements.map((achievement, index) => (
+                <div key={index} className="gym-achievement-card rounded-lg p-4 transform transition-all hover:scale-105">
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">{achievement.icon}</div>
                     <div>
-                      <div className="text-white font-bold text-sm md:text-base">{achievement.name}</div>
-                      <div className="text-green-400 text-xs">{achievement.description}</div>
+                      <h4 className="text-white font-bold text-sm md:text-base gym-text">{achievement.name}</h4>
+                      <p className="text-green-400 text-xs">{achievement.description}</p>
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-4">
-                <div className="text-4xl mb-2">🏆</div>
-                <p className="text-green-400 text-sm md:text-base">Complete your first workout to earn achievements!</p>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 md:py-8">
+              <div className="text-4xl md:text-6xl mb-3">🏆</div>
+              <p className="text-green-400 text-sm md:text-base">Complete workouts to earn achievements!</p>
+            </div>
+          )}
         </div>
 
-        {/* Recent Workouts Section */}
-        <div className="bg-gradient-to-br from-black to-gray-800 border-2 border-green-500 rounded-xl md:rounded-2xl p-4 md:p-6">
-          <h2 className={`${sectionTitleSize} font-bold text-white mb-4`}>Recent Workouts</h2>
-          <div className="space-y-3">
-            {progress.workoutHistory && progress.workoutHistory.slice(-5).reverse().map((workout, index) => (
-              <div
-                key={index}
-                className="bg-gradient-to-br from-black to-gray-800 border-2 border-orange-500 rounded-lg p-3 md:p-4 transform transition-all hover:scale-105 hover:border-green-500"
-              >
-                <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
-                  <div>
-                    <h3 className="text-white font-bold text-base md:text-lg">{workout.dayName}</h3>
-                    <p className="text-green-400 text-xs md:text-sm">
-                      {workout.exercises?.length || 0} exercises • {workout.totalSets} sets • {workout.duration}
-                    </p>
-                    <p className="text-orange-400 text-xs">
-                      Completed on {workout.completionDate} at {workout.completionTime}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {workout.exercises?.slice(0, 3).map((exercise, exIndex) => (
-                      <span
-                        key={exIndex}
-                        className="bg-black text-orange-400 px-2 py-1 rounded text-xs border border-green-500"
-                      >
-                        {exercise.name}
-                      </span>
-                    ))}
-                    {workout.exercises?.length > 3 && (
-                      <span className="bg-black text-green-400 px-2 py-1 rounded text-xs border border-orange-500">
-                        +{workout.exercises.length - 3} more
-                      </span>
-                    )}
+        {/* Recent Workouts - Only show if there are workouts */}
+        {progress.workoutHistory && progress.workoutHistory.length > 0 && (
+          <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mt-6 md:mt-8">
+            <h2 className={`${sectionTitleSize} font-bold gym-text mb-4`}>
+              Recent Workouts
+            </h2>
+            
+            <div className="space-y-3">
+              {progress.workoutHistory.slice(-5).reverse().map((workout, index) => (
+                <div key={index} className="gym-workout-card rounded-lg p-3 md:p-4">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
+                    <div className="flex-1">
+                      <h4 className="text-white font-bold text-base md:text-lg gym-text">{workout.dayName}</h4>
+                      <p className="text-green-400 text-xs md:text-sm">
+                        {workout.completionDate} • {workout.completionTime} • {workout.duration}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        <span className="bg-black px-2 py-1 rounded text-xs text-orange-400 border border-orange-500">
+                          {workout.exercises?.length || 0} exercises
+                        </span>
+                        <span className="bg-black px-2 py-1 rounded text-xs text-green-400 border border-green-500">
+                          {workout.totalSets} sets
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-orange-400 font-bold text-sm md:text-base">
+                        Completed
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            {(!progress.workoutHistory || progress.workoutHistory.length === 0) && (
-              <div className="text-center py-6">
-                <div className="text-4xl mb-2">💪</div>
-                <p className="text-green-400 text-sm md:text-base">No workouts completed yet. Start your fitness journey today!</p>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modals */}
