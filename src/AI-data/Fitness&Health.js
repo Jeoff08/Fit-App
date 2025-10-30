@@ -1356,6 +1356,10 @@ const testQuestions = [
   "Give me a different upper lower routine",
 ];
 
+export function getBotResponse(message) {
+  return getFitnessResponse(message);
+}
+
 // Uncomment to test various questions
 // testQuestions.forEach(question => {
 //   console.log(`User: ${question}`);
