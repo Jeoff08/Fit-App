@@ -70,7 +70,7 @@ const Dashboard = ({
             <div className="animate-pulse flex flex-col items-center">
               <div className="bg-gradient-to-r from-emerald-500 to-emerald-700 p-3 sm:p-4 rounded-full mb-3 sm:mb-4 animate-bounce">
                 <img 
-                  src="public/Kyrie-fitness gym.jpg" 
+                  src="src/assets/Kyrie-fitness gym.jpg" 
                   alt="ASH-FIT Logo" 
                   className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
                 />
@@ -102,7 +102,7 @@ const Dashboard = ({
                 <div className="flex items-center space-x-2 sm:space-x-3 animate-fade-in">
                   <div className="bg-black p-1 sm:p-2 rounded-full shadow-md transition-transform duration-300 hover:scale-110">
                     <img 
-                      src="public/Kyrie-fitness gym.jpg" 
+                      src="src/assets/Kyrie-fitness gym.jpg" 
                       alt="ASH-FIT Logo" 
                       className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
                     />
@@ -362,7 +362,7 @@ const Dashboard = ({
               <div className="flex items-center space-x-2 sm:space-x-3 mb-4 md:mb-0 animate-fade-in">
                 <div className="bg-black-700 p-1 sm:p-2 rounded-full transition-transform duration-300 hover:scale-110">
                   <img 
-                    src="public/Kyrie-fitness gym.jpg" 
+                    src="src/assets/Kyrie-fitness gym.jpg" 
                     alt="ASH-FIT Logo" 
                     className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
                   />
