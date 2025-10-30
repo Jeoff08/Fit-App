@@ -1,7 +1,7 @@
 export const bodybuilders = [
    {
   "name": "Chris Bumstead",
-  "image": "public/images/cbum.jpg",
+  "image": "/public/images/cbum.jpg",
   "style": "Classic Perfection and Aesthetic Balance",
   "description": "6x Mr. Olympia Classic Physique champion known for perfect proportions, incredible symmetry, and championship conditioning. Focus on balanced development, aesthetics, and mind-muscle connection.",
   "achievements": "6x Mr. Olympia Classic Physique Champion (2019, 2020, 2021, 2022, 2023, 2024), 2018 Mr. Olympia Classic Physique 2nd place, 2023 Mr. Olympia Classic Physique Champion, Toronto Pro Supershow Champion",
@@ -120,7 +120,7 @@ export const bodybuilders = [
 },
   {
     name: "Arnold Schwarzenegger",
-    image: "public/images/arnold.jpg",
+    image: "/public/images/arnold.jpg",
     style: "Classic Bodybuilding",
     description: "High-volume, high-frequency training with focus on mass and symmetry.",
     career: "7x Mr. Olympia, actor, businessman, and former governor of California. Considered the greatest bodybuilder of all time.",
@@ -237,7 +237,7 @@ export const bodybuilders = [
   },
   {
   "name": "Ronnie Coleman",
-  "image": "public/images/ronnie.jpg",
+  "image": "/public/images/ronnie.jpg",
   "style": "Heavy Duty and Maximum Intensity",
   "description": "8x Mr. Olympia champion known for his incredible mass, freakish genetics, and legendary heavy training style. The strongest bodybuilder in history with an unmatched work ethic.",
   "achievements": "8x Mr. Olympia Champion (1998-2005), 7x Arnold Classic Champion, 26 IFBB professional wins, Strongest bodybuilder in history",
@@ -356,7 +356,7 @@ export const bodybuilders = [
 },
   {
   "name": "Mike Mentzer",
-  "image": "public/images/mike.jpg",
+  "image": "/public/images/mike.jpg",
   "style": "Heavy Duty High-Intensity Training",
   "description": "Mr. Universe champion and bodybuilding philosopher who revolutionized training with his Heavy Duty system. Believed in brief, intense, infrequent training with maximum recovery.",
   "achievements": "1978 IFBB Mr. Universe, 1979 AAU Mr. America, 1976 Mr. USA, Developed Heavy Duty training system, Legendary bodybuilding philosopher",
@@ -453,7 +453,7 @@ export const bodybuilders = [
 },
   {
   "name": "Rich Piana",
-  "image": "public/images/Rich-Piana.jpg",
+  "image": "/public/images/Rich-Piana.jpg",
   "style": "High Volume, Intensity and FREQUENCY Training",
   "description": "Bodybuilding icon known for his massive size, brutal training intensity, and unique 5% philosophy. Trained with extreme volume and frequency, often hitting body parts multiple times per week.",
   "achievements": "Professional bodybuilder, YouTube fitness icon, 5% Nutrition founder, Bodybuilding personality with massive following",
@@ -558,7 +558,7 @@ export const bodybuilders = [
 },
   {
   "name": "CT Fletcher",
-  "image": "public/images/CT.jpg",
+  "image": "/public/images/CT.jpg",
   "style": "Extreme Intensity, Forced Reps and Mental Dominance",
   "description": "Powerlifting legend and motivational force known for training with insane weights, forced reps, and unparalleled mental intensity. The strongest man in the gym with a legendary work ethic.",
   "achievements": "Powerlifting champion, World record holder, Motivational icon, Fitness personality, Survived heart transplant and continued training",
@@ -669,7 +669,7 @@ export const bodybuilders = [
 },
   {
   "name": "Zyzz",
-  "image": "public/images/zyzz.jpg",
+  "image": "/public/images/zyzz.jpg",
   "style": "Aesthetic-focused High Volume with Cardio and Cutting",
   "description": "Internet fitness icon who revolutionized the 'aesthetic' movement. Focused on achieving the perfect V-taper physique with wide shoulders, small waist, and shredded conditioning.",
   "achievements": "Fitness icon, Internet personality, Inspired a generation of aesthetics, Created the 'zyzz' lifestyle movement, IFBB competitor",
@@ -788,7 +788,7 @@ export const bodybuilders = [
 },
   {
   "name": "Joven Sagabaen",
-  "image": "public/images/joven.jpg",
+  "image": "/public/images/joven.jpg",
   "style": "High Volume, Aesthetic Focused, and Progressive Overload",
   "description": "Filipino fitness influencer and bodybuilder known for his impressive physique transformation, educational content, and systematic training approach. Focuses on perfect form and muscle-mind connection.",
   "achievements": "Fitness Influencer, Bodybuilding Coach, Physique Transformation Specialist, Social Media Fitness Educator",
@@ -901,7 +901,7 @@ export const bodybuilders = [
 },
   {
   "name": "Larry Scott",
-  "image": "public/images/larry.webp",
+  "image": "/public/images/larry.webp",
   "style": "Classic Bodybuilding, High Intensity, and Symmetry Focused",
   "description": "The first Mr. Olympia (1965-1966) known for his incredible arm development, perfect proportions, and pioneering training methods. Creator of the Scott curl and innovator in bicep training.",
   "achievements": "1st Mr. Olympia (1965, 1966), 1st Mr. America (1962), 1st Mr. Universe (1964), First ever Mr. Olympia champion",
@@ -1013,7 +1013,7 @@ export const bodybuilders = [
 },
   {
   "name": "Sergio Oliva",
-  "image": "public/images/sergio.jpg",
+  "image": "/public/images/sergio.jpg",
   "style": "Freakish Genetics, High Volume, and Instinctive Training",
   "description": "3x Mr. Olympia champion known as 'The Myth' for his incredible genetics, muscle density, and unbeatable physique. The only bodybuilder to defeat Arnold Schwarzenegger at Mr. Olympia.",
   "achievements": "3x Mr. Olympia Champion (1967-1969), 2x Mr. World, 3x Mr. Universe, Only bodybuilder to defeat Arnold Schwarzenegger at Olympia",
@@ -1134,7 +1134,7 @@ export const bodybuilders = [
 },
  {
   "name": "Frank Zane",
-  "image": "public/images/frank.jpg",
+  "image": "/public/images/frank.jpg",
   "style": "Aesthetic Focused, High Intensity, and Mind-Muscle Connection",
   "description": "3x Mr. Olympia champion known for his perfect symmetry, incredible proportions, and intelligent training approach. The master of illusion and aesthetics who defeated larger competitors with superior shape and condition.",
   "achievements": "3x Mr. Olympia Champion (1977-1979), 3x Mr. Universe, 3x Mr. World, Most symmetrical physique in bodybuilding history",
@@ -1264,7 +1264,7 @@ export const bodybuilders = [
 },
   {
   "name": "Lee Haney",
-  "image": "public/images/lee.webp",
+  "image": "/public/images/lee.webp",
   "style": "Mass with Class, Heavy but Smart Training, Progressive Overload",
   "description": "8x Mr. Olympia champion who revolutionized bodybuilding with his massive yet symmetrical physique. Known for his 'stimulate, don't annihilate' training philosophy and incredible longevity at the top.",
   "achievements": "8x Mr. Olympia Champion (1984-1991) - record tied with Ronnie Coleman, 3x World Amateur Championships, Youngest Mr. Olympia winner at age 24",
@@ -1403,7 +1403,7 @@ export const bodybuilders = [
 },
   {
     name: "Dorian Yates",
-    image: "public/images/yates.jpg",
+    image: "/public/images/yates.jpg",
     style: "Blood and Guts High-Intensity Training",
     description: "Revolutionary high-intensity, low-volume training focused on maximum muscle stimulation with adequate recovery.",
     career: "6x Mr. Olympia (1992-1997), British bodybuilder who revolutionized bodybuilding with his Blood and Guts training philosophy. Known for his incredible density and conditioning.",
@@ -1525,7 +1525,7 @@ export const bodybuilders = [
   },
   {
   "name": "Phil Heath",
-  "image": "public/images/heath.jpg",
+  "image": "/public/images/heath.jpg",
   "style": "High Intensity, Precision Targeting, and Mind-Muscle Connection",
   "description": "7x Mr. Olympia champion (2011-2017) known for his incredible 3D muscle shape, perfect proportions, and intelligent training approach. Nicknamed 'The Gift' for his genetic superiority and meticulous attention to detail.",
   "achievements": "7x Mr. Olympia Champion (2011-2017), 3x Arnold Classic Champion, 1x Colorado State Championships, Most dominant Olympia reign of his era",
@@ -1658,7 +1658,7 @@ export const bodybuilders = [
 },
   {
   "name": "Kai Greene",
-  "image": "public/images/kai.jpg",
+  "image": "/public/images/kai.jpg",
   "style": "High-Volume Hypertrophy, Mind-Muscle Connection, and Aesthetic Focus",
   "description": "3x Arnold Classic champion and multiple-time Mr. Olympia runner-up known as 'The Predator.' Famous for his incredible back, overall mass, and deep mind-muscle connection that prioritizes muscle feeling over sheer weight.",
   "achievements": "3x Arnold Classic Champion (2009, 2010, 2016), Mr. Olympia Runner-Up (2012, 2013, 2014), youngest pro bodybuilder in the world at the time",
@@ -1745,7 +1745,7 @@ export const bodybuilders = [
 },
   {
   "name": "Flex Wheeler",
-  "image": "public/images/flex.jpg",
+  "image": "/public/images/flex.jpg",
   "style": "High-Volume Hypertrophy, Aesthetic Symmetry, and Mind-Muscle Connection",
   "description": "4x Arnold Classic champion renowned as 'The Sultan of Symmetry.' Celebrated for one of the most aesthetically perfect physiques in bodybuilding history, combining mass with exceptional proportion, definition, and grace.",
   "achievements": "4x Arnold Classic Champion (1993, 1997, 1998, 2000), 3x Mr. Olympia Runner-Up (1993, 1998, 1999), IFBB Hall of Famer",
@@ -1826,7 +1826,7 @@ export const bodybuilders = [
 },
   {
     "name": "Kevin Levrone",
-  "image": "public/images/kevin.jpg",
+  "image": "/public/images/kevin.jpg",
   "style": "Explosive Power and Density",
   "description": "Known for his incredible muscle density, explosive training style, and rapid contest preparation. The 'Maryland Muscle Machine' was famous for building massive size in short periods.",
   "achievements": "2x Arnold Classic Champion, 5x Grand Prix Champion, 2x Mr. Olympia Runner-up, 20 IFBB professional wins",
@@ -1917,7 +1917,7 @@ export const bodybuilders = [
 },
   {
     "name": "Shawn Ray",
-  "image": "public/images/Shawn.webp",
+  "image": "/public/images/Shawn.webp",
   "style": "Symmetry and Proportion",
   "description": "Focus on perfect symmetry, balanced proportions, and flawless conditioning. Known for his incredible waist control and overall balance.",
   "achievements": "7x Arnold Classic Champion, 2x Mr. Olympia Runner-up, 12x consecutive Olympia top 5 finishes, IFBB Hall of Fame inductee",
@@ -2014,7 +2014,7 @@ export const bodybuilders = [
 },
   {
     "name": "Branch Warren",
-  "image": "public/images/warren.jpg",
+  "image": "/public/images/warren.jpg",
   "style": "Intense Power and Density",
   "description": "Known for his brutal training intensity, heavy weights, and gritty, dense muscle. The 'Texas Terror' approach focuses on maximum effort and power.",
   "achievements": "2x Arnold Classic Champion, 2x Mr. Olympia Runner-up, 1x Australian Pro Champion, 2009 Arnold Classic Champion",
@@ -2116,7 +2116,7 @@ export const bodybuilders = [
 },
   {
     "name": "Dexter Jackson",
-  "image": "public/images/dexter.webp",
+  "image": "/public/images/dexter.webp",
   "style": "Precision and Longevity",
   "description": "Known for his incredible conditioning, sharp muscle lines, and career longevity. 'The Blade' focuses on perfect form, consistency, and year-round readiness.",
   "achievements": "2008 Mr. Olympia Champion, 5x Arnold Classic Champion, 29 IFBB professional wins (all-time record), Competed professionally for over 20 years",
@@ -2218,7 +2218,7 @@ export const bodybuilders = [
 },
   {
     "name": "Hadi Choopan",
-  "image": "public/images/Hadi.jpg",
+  "image": "/public/images/Hadi.jpg",
   "style": "Conditioning and Density",
   "description": "Known as 'The Persian Wolf' for his incredible conditioning, razor-sharp muscle definition, and dense, grainy muscle quality. Focus on high intensity and perfect conditioning.",
   "achievements": "2022 Mr. Olympia Champion, 3x Arnold Classic Champion, 2021 Mr. Olympia 3rd place, 2019 Mr. Olympia 4th place",
@@ -2320,7 +2320,7 @@ export const bodybuilders = [
 },
   {
   "name": "Nick Walker",
-  "image": "public/images/nick.jpg",
+  "image": "/public/images/nick.jpg",
   "style": "Volume and Intensity",
   "description": "Known as 'The Mutant' for his incredible mass, freaky muscle density, and high-volume, high-intensity training style. Focus on building mass with extreme volume and intensity.",
   "achievements": "2023 Arnold Classic Champion, 2021 Arnold Classic Champion, 2022 Mr. Olympia 3rd place, 2021 Mr. Olympia 5th place",
@@ -2435,7 +2435,7 @@ export const bodybuilders = [
 },
   {
   "name": "Samson Dauda",
-  "image": "public/images/sam.jpg",
+  "image": "/public/images/sam.jpg",
   "style": "Power and Proportion",
   "description": "Known as 'The Nigerian Lion' for his incredible proportions, massive structure, and power-based training approach. Focus on controlled movements with heavy weights to build quality mass.",
   "achievements": "2023 Mr. Olympia 3rd place, 2023 Arnold Classic Champion, 2022 Mr. Olympia 6th place, 2022 Arnold Classic UK Champion. 2024 Mr. Olympia 1x Mr. Olympia",
@@ -2536,7 +2536,7 @@ export const bodybuilders = [
 },
   {
   "name": "Brandon Curry",
-  "image": "public/images/brandon.jpg",
+  "image": "/public/images/brandon.jpg",
   "style": "Aesthetics and Symmetry",
   "description": "Known for his perfect symmetry, flowing muscle lines, and classic bodybuilding aesthetics. Focus on balanced development, mind-muscle connection, and quality over quantity.",
   "achievements": "2019 Mr. Olympia Champion, 2021 Mr. Olympia 2nd place, 2020 Mr. Olympia 4th place, 4x Arnold Classic Champion, 2022 Arnold Classic Champion",
@@ -2638,7 +2638,7 @@ export const bodybuilders = [
 },
   {
   "name": "William Bonac",
-  "image": "public/images/bonac.jpg",
+  "image": "/public/images/bonac.jpg",
   "style": "Density and Power",
   "description": "Known as 'The Conqueror' for his incredibly dense muscle mass, thick muscle bellies, and powerful, explosive training style. Focus on heavy compound movements and muscle density.",
   "achievements": "2x Arnold Classic Champion (2018, 2020), 2022 Arnold Classic Champion, 2020 Mr. Olympia 2nd place, 2022 Mr. Olympia 4th place, 2023 Mr. Olympia 5th place",
@@ -2749,7 +2749,7 @@ export const bodybuilders = [
 },
   {
   "name": "Ramon Dino",
-  "image": "public/images/ramon.png",
+  "image": "/public/images/ramon.png",
   "style": "Classic Aesthetics and Symmetry",
   "description": "Brazilian bodybuilder known for his incredible waist control, perfect symmetry, and classic physique lines. Focus on balanced development, conditioning, and aesthetic proportions.",
   "achievements": "2023 Mr. Olympia Classic Physique 2nd place, 2022 Arnold Classic Champion, 2022 Mr. Olympia Classic Physique 3rd place, Multiple Brazilian champion, Mr. Olympia Classic Physique Champion 2025",
@@ -2859,7 +2859,7 @@ export const bodybuilders = [
 },
   {
   "name": "Urs Kalecinski",
-  "image": "public/images/urs.jpg",
+  "image": "/public/images/urs.jpg",
   "style": "German Precision and Aesthetics",
   "description": "German classic physique prodigy known for his incredible symmetry, sharp conditioning, and meticulous training approach. Focus on perfect form, muscle control, and balanced development.",
   "achievements": "2023 Mr. Olympia Classic Physique 4th place, 2022 Arnold Classic Europe Champion, 2021 Mr. Olympia Classic Physique 6th place, Multiple European champion",
@@ -2969,7 +2969,7 @@ export const bodybuilders = [
 },
   {
   "name": "Andrew Jacked",
-  "image": "public/images/andrew.jpg",
+  "image": "/public/images/andrew.jpg",
   "style": "Structural Mass and Aesthetics",
   "description": "Nigerian-born bodybuilder known for his incredible structure, wide clavicles, tiny waist, and rapid transformation. Focus on structural balance, muscle shape, and proportional growth.",
   "achievements": "2023 Arnold Classic Champion, 2022 Mr. Olympia Classic Physique 3rd place, 2022 Arnold Classic UK Champion, Texas Pro Champion",
@@ -3079,7 +3079,7 @@ export const bodybuilders = [
 },
   {
   "name": "Terrence Ruffin",
-  "image": "public/images/Terrence.png",
+  "image": "/public/images/Terrence.png",
   "style": "Artistic Aesthetics and Posing Mastery",
   "description": "American classic physique artist known for his incredible posing, flawless symmetry, and artistic presentation. Focus on muscle quality, flow, and stage presence.",
   "achievements": "2x Arnold Classic Champion (2020, 2021), 2021 Mr. Olympia Classic Physique 2nd place, 2020 Mr. Olympia Classic Physique 2nd place, Multiple Tampa Pro Champion",
@@ -3198,7 +3198,7 @@ export const bodybuilders = [
 },
   {
   "name": "Breon Ansley",
-  "image": "public/images/breon.jpg",
+  "image": "/public/images/breon.jpg",
   "style": "Classic Perfection and Conditioning",
   "description": "2x Classic Physique Olympia champion known for his flawless conditioning, perfect proportions, and championship-level presentation. Focus on extreme detail, muscle maturity, and stage readiness.",
   "achievements": "2x Mr. Olympia Classic Physique Champion (2017, 2018), 2019 Mr. Olympia Classic Physique 2nd place, 2020 Mr. Olympia Classic Physique 3rd place, Multiple New York Pro Champion",
@@ -3317,7 +3317,7 @@ export const bodybuilders = [
 },
 {
   "name": "Johnnie Jackson",
-  "image": "public/Profile/Johnnie-Jackson.jpg",
+  "image": "/public/Profile/Johnnie-Jackson.jpg",
   "style": "Power Bodybuilding and Raw Strength",
   "description": "Legendary power bodybuilder known for incredible strength, dense muscle mass, and no-nonsense training approach. Combines heavy powerlifting with classic bodybuilding principles.",
   "achievements": "2006 Arnold Classic Champion, 2008 Arnold Classic 2nd place, 2011 Arnold Classic 3rd place, Multiple powerlifting records, IFBB Hall of Fame",
@@ -3436,7 +3436,7 @@ export const bodybuilders = [
 },
 {
   "name": "Mike Sommerfeld",
-  "image": "public/Profile/mike sommer.jpg",
+  "image": "/public/Profile/mike sommer.jpg",
   "style": "Progressive Overload, Mind-Muscle Connection, Periodization, and Functional Strength",
   "description": "Professional bodybuilder known for his scientific approach to training, combining evidence-based methods with practical application. Focuses on sustainable progress and injury prevention while building quality muscle mass.",
   "achievements": "Professional bodybuilder, renowned for his intelligent training methodologies and educational content on proper exercise technique and program design",
@@ -3522,7 +3522,7 @@ export const bodybuilders = [
 },
 {
   "name": "Wesley Vissers",
-  "image": "public/Profile/wesley.jpeg",
+  "image": "/public/Profile/wesley.jpeg",
   "style": "Golden Era Aesthetics, High-Volume Hypertrophy, Mind-Muscle Connection, and Free-Weight Focus",
   "description": "2024 Arnold Classic Champion and elite Classic Physique bodybuilder known as 'The Dutch Oak.' Celebrated for his symmetrical, aesthetic physique inspired by the Golden Era of bodybuilding, combining mass with exceptional proportion and classic lines.",
   "achievements": "2024 Arnold Classic Champion (Ohio & UK), 1st Chicago Pro (2018), 1st Romania Muscle Fest Pro (2019), 1st Yamamoto Pro Cup France (2022), Multiple-time Mr. Olympia competitor",
@@ -3604,7 +3604,7 @@ export const bodybuilders = [
 },
 {
   "name": "Logan Franklin",
-  "image": "public/Profile/Logan-Franklin.jpg",
+  "image": "/public/Profile/Logan-Franklin.jpg",
   "style": "High-Volume, High-Intensity, Progressive Overload, and Pump Chasing",
   "description": "IFBB Pro Classic Physique bodybuilder and Army veteran known as 'The Texas Oak.' Renowned for his disciplined approach, exceptional work ethic, and high-rep training style that prioritizes muscle engagement and continuous progress.",
   "achievements": "2020 New York Pro Champion (Classic Physique), 2021 Shawn Ray Hawaiian Classic Champion, 2018 Tampa Pro Champion (Men's Physique), 2025 Arnold Classic 2nd Place, Multiple-time Mr. Olympia competitor",
@@ -3704,7 +3704,7 @@ export const bodybuilders = [
 },
 {
   "name": "Michael Daboul",
-  "image": "public/Profile/michael.jpg",
+  "image": "/public/Profile/michael.jpg",
   "style": "High-Volume, High-Intensity, Superset and Drop-Set Techniques",
   "description": "IFBB Pro Classic Physique competitor from Syria, known as 'The Saharan Eagle.' Recognized for his exceptional conditioning and intense training style, often collaborating with other top-tier athletes like Samson Dauda.",
   "achievements": "Classic Physique Olympia competitor, 2023 New York Pro Classic Physique Champion",
@@ -3731,7 +3731,7 @@ export const bodybuilders = [
 },
 {
   "name": "Damien Patrick",
-  "image": "public/Profile/damien.webp",
+  "image": "/public/Profile/damien.webp",
   "style": "High-Intensity, Progressive Overload, Mind-Muscle Connection, and Functional Bodybuilding",
   "description": "Natural bodybuilder, fitness educator, and popular YouTuber known for his scientific approach to training and natural bodybuilding advocacy. Focuses on evidence-based methods, proper form, and sustainable progress without performance-enhancing drugs.",
   "achievements": "Natural bodybuilding competitor, successful fitness educator with large YouTube following, known for debunking fitness myths and promoting natural training methods",
@@ -3816,7 +3816,7 @@ export const bodybuilders = [
 },
 {
   "name": "Nathaniel Joiner",
-  "image": "public/Profile/nate.jpg",
+  "image": "/public/Profile/nate.jpg",
   "style": "High-Frequency, Volume Training, Progressive Overload, and Mind-Muscle Connection",
   "description": "IFBB Pro bodybuilder known for his massive physique and intense training style. Combines high-volume workouts with strategic frequency to maximize muscle growth and conditioning.",
   "achievements": "IFBB Pro bodybuilder, known for his impressive mass and conditioning, competitor in professional bodybuilding circuits",
@@ -3923,7 +3923,7 @@ export const bodybuilders = [
 },
 {
   "name": "Danny Hester",
-  "image": "public/Profile/danny.jpg",
+  "image": "/public/Profile/danny.jpg",
   "style": "Aesthetics, Symmetry, Instinctive Training, and High Frequency",
   "description": "The inaugural Classic Physique Mr. Olympia champion (2016), renowned for his exceptional symmetry, proportional physique, and career longevity. A pioneer who championed aesthetics over sheer mass.",
   "achievements": "First Ever Classic Physique Mr. Olympia Champion (2016), 2016 Muscle Contest Pro Classic Physique Champion, IFBB Pro with a career spanning decades",
@@ -3971,7 +3971,7 @@ export const bodybuilders = [
 },
 {
   "name": "Franklyn Audu",
-  "image": "public/Profile/Audu.jpg",
+  "image": "/public/Profile/Audu.jpg",
   "style": "Powerbuilding, Progressive Overload, Strength-Focused Hypertrophy",
   "description": "Natural bodybuilder and powerbuilder known for his impressive strength and muscular physique. Combines powerlifting principles with bodybuilding techniques to build both strength and size naturally.",
   "achievements": "Natural bodybuilding competitor, known for impressive strength feats including heavy benching and squatting while maintaining aesthetic proportions",
@@ -4062,7 +4062,7 @@ export const bodybuilders = [
 },
 {
   "name": "Fabio Junio",
-  "image": "public/Profile/fabio.webp",
+  "image": "/public/Profile/fabio.webp",
   "style": "Classic Physique Focus, Aesthetic Proportions, High-Volume Training",
   "description": "Brazilian IFBB Pro Classic Physique bodybuilder known for his impressive V-taper, balanced proportions, and dedication to the classic bodybuilding aesthetic. Combines traditional bodybuilding principles with modern training techniques.",
   "achievements": "IFBB Pro Classic Physique competitor, known for his impressive physique development and competitive presence in professional bodybuilding circuits",
@@ -4163,7 +4163,7 @@ export const bodybuilders = [
 },
 {
   "name": "Karym Saripada",
-  "image": "public/Profile/karym.jpg",
+  "image": "/public/Profile/karym.jpg",
   "style": "Aesthetic Focus, High Volume, Intensity Techniques, and PPL Split",
   "description": "A popular fitness influencer and bodybuilder known for his highly aesthetic physique and engaging workout content. His training generally focuses on high volume, strategic compound lifts, and incorporating intensity techniques like supersets and drop sets for maximum hypertrophy.",
   "achievements": "Significant social media following (millions of followers across platforms), known for detailed workout vlogs and motivational content, successful creator of various fitness programs and challenges.",
@@ -4270,7 +4270,7 @@ export const bodybuilders = [
 },
 {
   "name": "Derek Lunsford",
-  "image": "public/Profile/derek.avif",
+  "image": "/public/Profile/derek.avif",
   "style": "FST-7 Focus, High Intensity/High Volume, Controlled Movements, and Emphasis on Machines (especially during prep)",
   "description": "Reigning Mr. Olympia (2023) and former 212 Olympia champion, known for his incredible muscle density, 3D delts, and X-frame. His training prioritizes mind-muscle connection, strategic use of machines to isolate muscles, and the FST-7 training system to promote fascia stretching and hypertrophy.",
   "achievements": "Mr. Olympia (2023), Olympia 212 Champion (2021), First-ever athlete to win titles in two different divisions (212 and Open) at the Olympia.",
@@ -4340,7 +4340,7 @@ export const bodybuilders = [
 },
 {
   "name": "Roelly \"The Beast\" Winklaar",
-  "image": "public/Profile/ronny.jpg",
+  "image": "/public/Profile/ronny.jpg",
   "style": "Bodybuilding Focus, High Volume, High Intensity, Constant Tension, and Bro Split Variations (often doubling up on volume or frequency for weak points or specific body parts like chest or arms)",
   "description": "A top-tier IFBB Pro Bodybuilder known for his enormous, freakishly dense muscle mass, especially his arms and shoulders. He is famous for his intense training sessions, often coached by Sibil Peeters ('Grandma'), utilizing principles like supersets, giant sets, drop sets, and training with short rest periods to achieve a massive pump and muscle stimulation.",
   "achievements": "IFBB Pro Grand Prix wins, Arnold Classic Australia winner, 2018 Mr. Olympia People's Choice Award, multiple top-5 Mr. Olympia finishes.",
@@ -4396,7 +4396,7 @@ export const bodybuilders = [
 },
 {
   "name": "Martin \"The Martian\" Fitzwater",
-  "image": "public/Profile/martin.jpg",
+  "image": "/public/Profile/martin.jpg",
   "style": "Open Bodybuilding Focus, High Intensity, High Volume, and Modified Bro Split",
   "description": "An IFBB Pro Men's Open competitor who emphasizes bringing a 'Classic' aesthetic to the Open division. His training is rooted in heavy compound movements and progressive overload, often using machines and cables for isolation, pre-exhaustion, and high-intensity techniques like cluster sets and rest-pauses to maximize muscle fiber recruitment and time under tension.",
   "achievements": "IFBB Pro victories (e.g., Detroit Pro), top-5 finish at the Mr. Olympia (2024), known for his rapid rise and disciplined approach.",
