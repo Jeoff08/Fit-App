@@ -37,7 +37,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
       {/* Dynamic Cinematic Background */}
       <div className="fixed inset-0 z-0">
         <img 
-          src="public/images/Kyrie-fitness gym.jpg" 
+          src="/images/Kyrie-fitness gym.jpg" 
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-green-900 opacity-90 backdrop-filter backdrop-blur-sm"></div>
@@ -122,7 +122,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
               <div className="bg-gradient-to-br from-green-500 to-green-700 p-4 rounded-full shadow-2xl shadow-green-400/30 transform hover:rotate-12 transition-transform duration-300 animate-float-slow">
                 <div className="bg-black p-2 rounded-full">
                   <img 
-                    src="public/images/Kyrie-fitness gym.jpg" 
+                    src="/images/Kyrie-fitness gym.jpg" 
                     alt="ASH-FIT Logo" 
                     className="w-16 h-16 rounded-full object-cover border-2 border-green-400"
                   />
