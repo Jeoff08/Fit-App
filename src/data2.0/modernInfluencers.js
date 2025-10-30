@@ -1,7 +1,7 @@
 export const modernInfluencers = [
   {
   "name": "David Laid",
-  "image": "src/assets/david-laid.jpg",
+  "image": "public/images/david-laid.jpg",
   "style": "Hybrid Powerbuilding, Aesthetic Focus, Progressive Overload",
   "description": "Fitness icon and model renowned for his dramatic physical transformation and aesthetically pleasing physique. He combines powerlifting's heavy compound lifts with bodybuilding's isolation techniques to build both impressive strength and symmetry.",
   "achievements": "Gymshark sponsored athlete, social media fitness influencer known for inspiring millions with his transformation journey, recognized for exceptional strength at a young age",
@@ -82,7 +82,7 @@ export const modernInfluencers = [
 },
   {
   "name": "Simeon Panda",
-  "image": "src/assets/simeon panda.webp",
+  "image": "public/images/simeon panda.webp",
   "style": "High-Volume Training, Progressive Overload, and Focus on Compound Lifts",
   "description": "Natural bodybuilder, fitness model, and entrepreneur renowned for his superhero-like, symmetrical physique. Known for maintaining a lean and photoshoot-ready condition year-round without traditional bulking and cutting cycles:cite[4]:cite[5].",
   "achievements": "MuscleMania Pro, European Championship Winner (2013), Top placements in Musclemania Universe and World Championships, Internationally recognized fitness influencer with millions of followers:cite[4]:cite[5]",
@@ -166,7 +166,7 @@ export const modernInfluencers = [
 },
   {
   "name": "Sam Sulek",
-  "image": "src/assets/sam sulek.jpg",
+  "image": "public/images/sam sulek.jpg",
   "style": "High-Frequency, High-Volume, Training to Failure",
   "description": "Influential bodybuilder known for his massive physique and intense, high-volume training style. He follows a relentless rotating split with a focus on pushing every set to muscular failure, often incorporating partial reps to extend the set beyond failure.",
   "achievements": "Gained a massive following for documenting his physique transformation and intense training methodology online, inspiring a new generation of lifters",
@@ -230,7 +230,7 @@ export const modernInfluencers = [
 },
   {
   "name": "Lazar Angelov",
-  "image": "src/assets/lazar.jpg",
+  "image": "public/images/lazar.jpg",
   "style": "High-Intensity, Aesthetic Focus, Military Precision, and Symmetry Training",
   "description": "Bulgarian fitness model and bodybuilder known as 'The Bulgarian Monster.' Renowned for his incredibly sculpted, symmetrical physique that combines impressive mass with perfect proportions and extreme conditioning year-round.",
   "achievements": "Fitness model, former professional basketball player, military veteran, internationally recognized for one of the most aesthetic physiques in fitness",
@@ -335,7 +335,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Hussein Farhat",
-  "image": "src/Profile/farhat.jpg",
+  "image": "public/Profile/farhat.jpg",
   "style": "High-Intensity, Powerbuilding, Mind-Muscle Connection, and Functional Athleticism",
   "description": "Fitness icon, entrepreneur, and motivational force behind the 'Hustle Harder' brand. Known for his impressive blend of size, strength, and athleticism, built through intense, disciplined training and a powerful mindset.",
   "achievements": "Founder of Hustle Harder brand, renowned fitness influencer inspiring millions, known for a physique that balances bodybuilding mass with functional strength",
@@ -425,7 +425,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Noel Deyzel",
-  "image": "src/Profile/noel.jpg",
+  "image": "public/Profile/noel.jpg",
   "style": "Bodybuilding Focus, High Volume, and PPL Split",
   "description": "Known as 'Daddy Noel,' a popular bodybuilder and fitness influencer who focuses on detailed training, high volume, and a strong mind-muscle connection. He emphasizes a balance of strength and hypertrophy for maximum muscle gain.",
   "achievements": "Massive social media following (millions of subscribers), creator of various training programs (e.g., PPL, HyperMass), known for motivational and educational fitness content.",
@@ -519,7 +519,7 @@ export const modernInfluencers = [
 },
 {
   "name": "The Tren Twins (Christian & Michael Gaiera)",
-  "image": "src/Profile/tren twins.jpg",
+  "image": "public/Profile/tren twins.jpg",
   "style": "High Volume/High Intensity, Power-Bodybuilding Focus, Modified Bro Split",
   "description": "Popular fitness influencers known for their intense, high-volume workouts that combine heavy compound lifting for strength with high-rep isolation movements for hypertrophy, often training to failure.",
   "achievements": "Massive social media following (millions of subscribers), known for their aggressive, motivational training style, and collaborations with top bodybuilders and coaches.",
@@ -592,7 +592,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Andrey Smaev",
-  "image": "src/Profile/andrey.jpg",
+  "image": "public/Profile/andrey.jpg",
   "style": "Powerbuilding Focus, Extreme Weighted Calisthenics, and High Intensity",
   "description": "Known as an extremely strong calisthenics and weighted strength athlete, Smaev’s training combines the heavy compound lifts of powerlifting with the muscle volume of bodybuilding. He emphasizes maximal strength and high-load movements with perfect form.",
   "achievements": "Exceptional feats of strength (e.g., 270kg bench, 140kg weighted chin-up), master of weighted calisthenics (e.g., one-arm pull-ups, front lever rows).",
@@ -641,7 +641,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Anatoly (Vladimir Shmondenko)",
-  "image": "src/Profile/Anatoly.jpg",
+  "image": "public/Profile/Anatoly.jpg",
   "style": "PowerBuilding Focus, Low Volume on Main Lifts, High Intensity, and Focus on the 'Big 3'",
   "description": "A Ukrainian elite powerlifter and fitness influencer known for his viral 'janitor' gym pranks. His training is rooted in powerlifting, focusing on strength and the 'Big 3' (Squat, Bench, Deadlift), combined with bodybuilding accessory work for muscle mass.",
   "achievements": "Three-time Ukrainian Powerlifting Champion (2019, 2020, 2021). Best Lifts: Deadlift 290kg, Squat 210kg, Bench Press 150kg. Massive social media following (millions of subscribers) across platforms.",
@@ -700,7 +700,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Togi (Shane Stoffer)",
-  "image": "src/Profile/togi.jpg",
+  "image": "public/Profile/togi.jpg",
   "style": "Hybrid Strength/Bodybuilding, High Intensity, Progressive Overload",
   "description": "A high-energy fitness influencer and strength athlete known for his rapid physical transformation and intense, unpredictable gym style. He blends heavy lifting for strength with high-volume bodybuilding for a dense, aesthetic physique.",
   "achievements": "Massive social media following, known for a quick, dramatic physical transformation, and content that blends raw authenticity with high-level training.",
@@ -759,7 +759,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Larry Wheels",
-  "image": "src/Profile/larry-wheels.jpg",
+  "image": "public/Profile/larry-wheels.jpg",
   "style": "Powerbuilding (Hybrid Strength & Hypertrophy), High Volume, High Intensity",
   "description": "An American professional powerlifter, bodybuilder, and strongman who became famous for his incredible strength records and later transitioned to Classic Physique bodybuilding. His training often combines maximal strength work (powerlifting) with high-volume sets (bodybuilding) for mass gain, a style known as Powerbuilding.",
   "achievements": "Held multiple world records in powerlifting (including a 2,275lb/1,032kg total), competed in strongman, and recently earned his IFBB Pro Card in Classic Physique.",
@@ -798,7 +798,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Leanbeefpatty (Patricia Skidmore)",
-  "image": "src/Profile/Lean-Beef-Patty.jpg",
+  "image": "public/Profile/Lean-Beef-Patty.jpg",
   "style": "Aesthetic/Hypertrophy Focus, Mixed Frequency Split, High Intensity, Progressive Overload",
   "description": "A popular fitness influencer known for her strength, aesthetic physique, and engaging content. Her training focuses on compound movements for foundation, supplemented with isolation work, often incorporating unconventional exercises and high-intensity principles like training close to failure.",
   "achievements": "Massive social media following (millions of subscribers), Certified Personal Trainer (CPT), creator of multiple training programs (e.g., Gym Program, Home Program, PPL Split).",
@@ -866,7 +866,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Jesse James West",
-  "image": "src/Profile/Jesse-James-West.webp",
+  "image": "public/Profile/Jesse-James-West.webp",
   "style": "Aesthetic Focus, High Frequency (5-Day Split), High Volume, Powerbuilding (Strength + Hypertrophy)",
   "description": "A top fitness influencer who blends high-intensity, bodybuilding-style training with strength-based compound lifts. His workout philosophy is built on 'staying relentless,' pushing volume, and utilizing high frequency training for aesthetic muscle growth and strength.",
   "achievements": "Massive social media following (millions of subscribers), creator of multiple popular training programs (e.g., 'Winners' Program, 5-Day Program), known for high-energy fitness challenges and collabs.",
@@ -939,7 +939,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Tibo InShape",
-  "image": "src/Profile/tibo.jpg",
+  "image": "public/Profile/tibo.jpg",
   "style": "High-Volume Bodybuilding, Focus on Aesthetics & Mass, High Energy, and Bro Split/Modified 5-Day Split",
   "description": "A French fitness icon known for his explosive energy and popularization of bodybuilding in France. His training focuses on maximizing muscle pump and volume, with a clear emphasis on achieving a balanced, aesthetic physique.",
   "achievements": "Massive YouTube following (one of the largest in France), founder of 'InShape Nutrition' supplements and 'ShapeYou' fitness programs, known for motivational 'BOUM!' catchphrase.",
@@ -1009,7 +1009,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Joey Swoll (Joey Sergo)",
-  "image": "src/Profile/joey.jpg",
+  "image": "public/Profile/joey.jpg",
   "style": "Bodybuilding/Hypertrophy Focus, High Volume, High Frequency (5-6 days/week), Low Rest",
   "description": "A bodybuilder, fitness model, and influential figure known for his massive physique and the '#GymPositivity' movement. His training emphasizes consistency, intensity, and high-volume work to achieve maximal muscle growth and density. He prioritizes compound movements and believes the gym should be a sanctuary for everyone.",
   "achievements": "Massive social media following (millions of followers), creator of the #GymPositivity movement, personalized online coaching and training programs, featured on major fitness magazine covers.",
@@ -1084,7 +1084,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Joe Fazer",
-  "image": "src/Profile/fazer.jpg",
+  "image": "public/Profile/fazer.jpg",
   "style": "Bodybuilding Focus, High Volume, PPL Split, Progressive Overload, Training to Failure",
   "description": "A prominent fitness influencer who documented his 'Skinny Kid Bulking Up' journey. His training philosophy centers on high-frequency training (often 6 days a week), maximizing volume, and using a strategic mix of heavy compound movements and high-rep isolation work to build mass and overcome the challenges of a naturally skinny frame.",
   "achievements": "Massive social media following (millions of subscribers), successful personal transformation from ectomorph to bodybuilder, popular creator of beginner and intermediate training programs (e.g., 'The Workout Program To Get Huge').",
@@ -1173,7 +1173,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Lex Little",
-  "image": "src/Profile/lex.jpg",
+  "image": "public/Profile/lex.jpg",
   "style": "Powerbuilding (High Volume, Strength Focus, and 6-Day PPL Split)",
   "description": "A popular fitness influencer and powerlifter known for his combination of heavy compound lifts (powerlifting) and high-volume isolation work (bodybuilding). He frequently uses a Push, Pull, Legs split to maximize training frequency and volume for muscle growth and strength gains.",
   "achievements": "Strong presence in the powerlifting and aesthetic bodybuilding communities. Known for impressive strength on the big three lifts (Squat, Bench, Deadlift) and a strong social media following.",
@@ -1252,7 +1252,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Will Tennyson",
-  "image": "src/Profile/Will-Tennyson.webp",
+  "image": "public/Profile/Will-Tennyson.webp",
   "style": "Volume/Intensity Focus, Variety in Splits (Upper/Lower, PPL variants), Emphasis on Compound Lifts",
   "description": "A popular fitness YouTuber and bodybuilder known for his entertaining challenges, diet experiments, and educational content. His training focuses on maximizing muscle growth through a high-effort approach with rotating splits.",
   "achievements": "Massive social media following (millions of subscribers), documented bodybuilding show preparation (natural class), known for his 'I Tried X' video series.",
@@ -1338,7 +1338,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Shizzy Sam (Shizzy)",
-  "image": "src/Profile/shizzy.jpg",
+  "image": "public/Profile/shizzy.jpg",
   "style": "Natural Bodybuilding Focus, High Intensity Training (HIT) Principles, Focus on Form & Mind-Muscle Connection, PPL Split",
   "description": "A prominent natural bodybuilder and fitness influencer known for his aesthetic physique and emphasis on high-intensity training, strict form, and detailed muscle contraction. He often uses a Push/Pull/Legs split and is known for training with high volume and intensity, sometimes incorporating principles like FST-7 or training to failure/near-failure.",
   "achievements": "Significant social media following, known for collaborations with major figures (like Hany Rambod, Chris Bumstead), and promoting natural bodybuilding principles.",
@@ -1393,7 +1393,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Bruce Wang",
-  "image": "src/Profile/wang.jpg",
+  "image": "public/Profile/wang.jpg",
   "style": "Natural Bodybuilding, High Volume for Hypertrophy, Classic Upper/Lower Split",
   "description": "A fitness influencer and natural bodybuilder known for his aesthetic physique and focused training. He emphasizes consistent, high-effort training sessions to maximize muscle growth, likely utilizing evidence-based splits to hit each muscle group multiple times per week.",
   "achievements": "Strong social media following within the natural fitness community, known for his detailed approach to diet and training.",
@@ -1457,7 +1457,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Alex Eubank",
-  "image": "src/Profile/eubank.jpg",
+  "image": "public/Profile/eubank.jpg",
   "style": "Aesthetic Bodybuilding, High Volume, Intensity Cycling, Bro Split/Hybrid",
   "description": "A well-known fitness influencer recognized for his aesthetic, 'Greek God' style physique. His training heavily emphasizes high-volume work, intensity techniques (especially drop sets), and frequently cycling rep ranges and exercises to ensure progressive overload and stimulate new growth.",
   "achievements": "Massive social media following (millions of subscribers), creator of various training programs (e.g., Greek God, Titan Physique), known for high-energy and aesthetic content.",
@@ -1543,7 +1543,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Mike O'Hearn",
-  "image": "src/Profile/o.jpg",
+  "image": "public/Profile/o.jpg",
   "style": "Power Bodybuilding (Powerlifting + Bodybuilding), High Volume/High Intensity, and Compound Lift Focus",
   "description": "Known as 'The Titan,' Mike O'Hearn's training philosophy is 'Power Bodybuilding,' which integrates heavy compound movements (low reps) for strength/density followed by high-volume, moderate-rep isolation work for hypertrophy and detail. He emphasizes longevity, perfect form, and mind-muscle connection.",
   "achievements": "4-time Mr. Universe (Natural), 4-time Powerlifting Champion, 2-time Iron Warrior: Decathlon of Strength Strongman Champion. Creator of the 'Power Bodybuilding' training method.",
@@ -1622,7 +1622,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Jeff Seid",
-  "image": "src/Profile/seid.jpg",
+  "image": "public/Profile/seid.jpg",
   "style": "Aesthetic Bodybuilding, High Volume, Classic Split, Supersets/Drop Sets",
   "description": "A prominent fitness model and Men's Physique/Classic Physique competitor known for his 'Aesthetics' and 'SeidWear' brand. His training style emphasizes high-volume, classic bodybuilding exercises, frequent use of intensity techniques (supersets, drop sets), and a focused approach to the mind-muscle connection for proportional, aesthetic development.",
   "achievements": "IFBB Pro Card (youngest ever at the time), 2024 Natural Olympia Champion (Men's Physique), Massive social media following ('King of Aesthetics'), Creator of various training programs (e.g., Student/Master of Aesthetics).",
@@ -1710,7 +1710,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Sergi Constance",
-  "image": "src/Profile/constance.jpg",
+  "image": "public/Profile/constance.jpg",
   "style": "Aesthetic Bodybuilding Focus, High Volume, and 5-6 Day Body Part Split",
   "description": "A Spanish fitness model and entrepreneur renowned for his highly aesthetic, symmetrical, and shredded physique. His training focuses on high volume, strategic intensity techniques (drop sets, supersets), and full body part separation to target every muscle head for maximum development and 'sculpting.'",
   "achievements": "Global fitness icon, cover model for numerous magazines, multiple physique competition wins, and creator of the 'Be Legend' brand and training app.",
@@ -1796,7 +1796,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Annabel Lucinda",
-  "image": "src/Profile/slicey.webp",
+  "image": "public/Profile/slicey.webp",
   "style": "Glute-Focused Hypertrophy, Upper/Lower Split Variation, and Compound/Isolation Mix",
   "description": "A popular fitness influencer and Gymshark athlete known for her commitment to building a well-rounded, strong, and highly aesthetic physique. Her training prioritizes the glutes and hamstrings, using heavy compound movements paired with high-rep isolation work to build shape and volume.",
   "achievements": "Massive social media following (millions of followers), sponsored by major fitness brands (Gymshark, Raw Nutrition), known for her detailed workout vlogs and glute-building routines.",
@@ -1868,7 +1868,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Lucia Mikušová",
-  "image": "src/Profile/lucia.webp",
+  "image": "public/Profile/lucia.webp",
   "style": "Aesthetic Bodybuilding Focus, High Volume, and Body Part Split (Bro Split)",
   "description": "A highly aesthetic competitive athlete and fitness influencer known for her focused training sessions. Her routine emphasizes high volume, compound lifts followed by isolation work, and training to high intensity to achieve a balanced, proportioned physique.",
   "achievements": "Competitive bodybuilder, SCITEC Nutrition athlete, large social media following (694K+ YouTube subscribers), known for physique aesthetics.",
@@ -1955,7 +1955,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Diana Conforti",
-  "image": "src/Profile/diana.jpg",
+  "image": "public/Profile/diana.jpg",
   "style": "Glute-Focused Bodybuilding, High Intensity, and 5-Day Split",
   "description": "A popular fitness influencer known for her highly structured, high-volume workouts that prioritize glute and hamstring development, along with a focus on core strength and a balanced, aesthetic physique. She trains with high intensity, often incorporating supersets.",
   "achievements": "Massive social media following (millions of followers), creator of several popular training programs (e.g., 4-Week Program), recognized for her sculpted physique and detailed workout tutorials.",
@@ -2038,7 +2038,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Jessica Bickling",
-  "image": "src/Profile/jessica.jpg",
+  "image": "public/Profile/jessica.jpg",
   "style": "Aesthetic Bodybuilding, Hourglass Focus, and 5-Day Upper/Lower Split",
   "description": "A fitness influencer and coach famous for her 'Hourglass Aspect' training programs. Her split heavily prioritizes glute, back, and shoulder hypertrophy to create a more 'hourglass' aesthetic, while incorporating principles of progressive overload and RPE.",
   "achievements": "Creator of the highly popular 'Hourglass Aspect' program series (1.0, 2.0, 3.0), known for providing detailed, periodized training plans and form cues for intermediate to advanced lifters.",
@@ -2107,7 +2107,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Jeorge Michael Dionaldo",
-  "image": "src/Profile/jeorge.jpg",
+  "image": "public/Profile/jeorge.jpg",
   "style": "Aesthetic/Classic Bodybuilding, High Volume, and 5-Day Body Part Split",
   "description": "A prominent Filipino fitness influencer known for his focus on achieving a complete, aesthetic physique. His training style is typically high-volume, emphasizing the mind-muscle connection and hitting each muscle group thoroughly once per week for maximum hypertrophy and conditioning.",
   "achievements": "Massive social media following (TikTok/Instagram), consistent content creation providing gym tips, tutorials, and workout routines, known for maintaining an impressive, well-balanced physique.",
@@ -2177,7 +2177,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Shaun T",
-  "image": "src/Profile/Shaun.webp",
+  "image": "public/Profile/Shaun.webp",
   "style": "Functional Strength, Body Recomposition, and Periodized 5-Day Split",
   "description": "A world-renowned fitness celebrity famous for high-intensity cardio (Insanity), his newer focus, 'DIG DEEPER,' is a 12-week weightlifting program designed for strength building and total-body recomposition. He emphasizes mental resilience, controlled form, and progressive overload over high-impact cardio.",
   "achievements": "Creator of Insanity, T25, Transform 20, and Focus T25, which have generated millions of sales. Pioneered 'Max Interval Training.' Successfully transitioned to competitive bodybuilding in his 40s, inspiring his new strength-focused program, DIG DEEPER.",
@@ -2232,7 +2232,7 @@ export const modernInfluencers = [
 },
 {
   "name": "YounesLifts (Younes)",
-  "image": "src/Profile/younes.webp",
+  "image": "public/Profile/younes.webp",
   "style": "Aesthetic Bodybuilding Focus, Volume-Heavy, High Frequency Training (PPL / Upper-Lower)",
   "description": "A popular fitness influencer known for his shredded, aesthetic physique, focusing on training muscles with high volume and frequency, often using a Push/Pull/Legs or Upper/Lower split to maximize muscle protein synthesis and recovery.",
   "achievements": "Massive social media following, creator of various training and nutrition programs (e.g., PPL, Volume-Focused routines), known for detailed workout breakdowns and physique updates.",
@@ -2345,7 +2345,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Chris Heria",
-  "image": "src/coaches/heria.png",
+  "image": "public/coaches/heria.png",
   "style": "Calisthenics, Street Workout, Skill-Based Training, High-Intensity Circuits, Bodyweight Mastery",
   "description": "Founder of ThenX and a leading figure in the modern calisthenics movement. Heria's style focuses on using bodyweight exercises to build impressive levels of strength, muscle, and skill. His training incorporates foundational movements, isometric holds, and dynamic skills to create a athletic and aesthetic physique.",
   "achievements": "Founder of the ThenX fitness brand and app. Built a massive global following through YouTube, popularizing advanced calisthenics. Known for performing and teaching skills like the Planche, Front Lever, and Muscle-Up. Has trained numerous athletes and individuals in bodyweight mastery.",
@@ -2448,7 +2448,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Eric Tai",
-  "image": "src/Profile/eric.webp",
+  "image": "public/Profile/eric.webp",
   "style": "Powerbuilding, Strength & Hypertrophy Hybrid, Athletic Performance, Functional Muscle",
   "description": "Canadian personal trainer and bodybuilder known for his impressive physique and evidence-based approach to training. Specializes in powerbuilding - combining powerlifting's heavy compound lifts with bodybuilding's hypertrophy work. Focuses on progressive overload, intelligent exercise selection, and sustainable muscle growth.",
   "achievements": "Renowned for transforming his own physique and coaching thousands of clients to achieve similar results. Known for his educational social media content debunking fitness myths. Has worked with various athletes and celebrities, building a reputation for delivering measurable results through systematic training.",
@@ -2565,7 +2565,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Ulisses Jr.",
-  "image": "src/Profile/Ulisses.jpg",
+  "image": "public/Profile/Ulisses.jpg",
   "style": "Aesthetic Bodybuilding, Symmetry Development, Peak Muscle Contraction, High-Volume Training",
   "description": "World-renowned bodybuilder and fitness model known for his exceptional aesthetics, perfect symmetry, and incredible muscle density. Nicknamed 'The Greek God' for his classic physique. Focuses on high-volume training with extreme muscle-mind connection, peak contractions, and perfect form to maximize muscle shape and detail.",
   "achievements": "IFBB Pro bodybuilder, multiple fitness model of the year awards, featured on hundreds of magazine covers worldwide. Known for one of the most aesthetic physiques in modern bodybuilding history. Has trained thousands of clients through his online coaching and transformation programs.",
@@ -2688,7 +2688,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Zac Perna",
-  "image": "src/Profile/Zac.png",
+  "image": "public/Profile/Zac.png",
   "style": "Powerbuilding, Evidence-Based Training, Strength & Hypertrophy Hybrid, Realistic Fitness",
   "description": "Australian fitness coach and YouTuber known for his no-BS approach to training that combines powerlifting strength with bodybuilding aesthetics. Focuses on evidence-based methods, progressive overload, and sustainable training practices that deliver real results without unnecessary complexity.",
   "achievements": "Built one of Australia's most successful fitness YouTube channels through educational and entertaining content. Known for dramatic physique transformations using scientific training principles. Has coached thousands of clients through his training programs with focus on measurable progress and realistic goals.",
@@ -2816,7 +2816,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Brody Shredz",
-  "image": "src/Profile/sherdz.jpeg",
+  "image": "public/Profile/sherdz.jpeg",
   "style": "High-Intensity Bodybuilding, Metabolic Stress Training, Pump-Focused Workouts, Aesthetic Development",
   "description": "Fitness influencer and bodybuilder known for his incredibly shredded physique and high-intensity training style. Focuses on metabolic stress training, extreme pumps, and volume-based workouts to maximize muscle growth through cellular swelling and fatigue.",
   "achievements": "Known for achieving extreme levels of muscle definition and conditioning. Built a massive social media following by showcasing dramatic physique updates and high-energy workout content. Recognized for his unique training intensity and dedication to the bodybuilding lifestyle.",
@@ -2951,7 +2951,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Chris Lavado",
-  "image": "src/Profile/lavado.jpg",
+  "image": "public/Profile/lavado.jpg",
   "style": "Aesthetic Bodybuilding, Symmetry Training, Classic Physique Development, Mind-Muscle Connection",
   "description": "Natural bodybuilder and fitness coach known for his exceptional aesthetics, perfect proportions, and classic physique development. Focuses on balanced muscle growth, symmetry, and creating a harmonious physique through precise training techniques and intelligent programming.",
   "achievements": "Natural bodybuilding champion known for his classic physique structure. Built a significant following through his educational content on natural bodybuilding principles and aesthetic development. Recognized for his exceptional shoulder-to-waist ratio and balanced muscle development.",
@@ -3078,7 +3078,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Nikki Blackketter",
-  "image": "src/Profile/nikki.jpg",
+  "image": "public/Profile/nikki.jpg",
   "style": "Aesthetic Physique, Glute Specialization, Balanced Proportions, Sustainable Fitness",
   "description": "Fitness influencer and physique athlete known for her balanced, aesthetic physique and emphasis on glute development. Focuses on creating feminine curves through targeted training, proper form, and sustainable workout practices that build muscle while maintaining proportion and symmetry.",
   "achievements": "Built one of the largest female fitness followings on social media through her authentic journey and impressive physique transformation. Known for her educational content on glute development and balanced training. Has inspired thousands of women to pursue strength training.",
@@ -3196,7 +3196,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Ashton Hall",
-  "image": "src/Profile/ashton.jpeg",
+  "image": "public/Profile/ashton.jpeg",
   "style": "Powerbuilding, Strength & Hypertrophy Hybrid, Evidence-Based Training, Athletic Performance",
   "description": "Fitness coach and content creator known for his balanced approach to building strength and muscle. Focuses on powerbuilding methodology that combines powerlifting's heavy compound lifts with bodybuilding's hypertrophy work. Emphasizes evidence-based training principles, progressive overload, and sustainable progress.",
   "achievements": "Built a significant following through educational fitness content and impressive strength and physique transformation. Known for his practical, no-nonsense approach to training and nutrition. Has coached numerous clients to achieve their strength and physique goals through systematic programming.",
@@ -3324,7 +3324,7 @@ export const modernInfluencers = [
 },
 {
   "name": "Antonie Lokhorst",
-  "image": "src/Profile/antonielokhorst.jpg",
+  "image": "public/Profile/antonielokhorst.jpg",
   "style": "Aesthetic Bodybuilding, Classic Physique Development, Symmetry Training, Mind-Muscle Connection",
   "description": "Dutch bodybuilder and fitness coach known for his exceptional aesthetics, classic physique structure, and balanced proportions. Focuses on creating a harmonious, symmetrical physique through precise training techniques, controlled movements, and intelligent exercise selection that emphasizes muscle shape and detail.",
   "achievements": "Natural bodybuilding champion known for his classic physique and impressive muscle maturity. Built a significant following through his educational content on natural bodybuilding principles and aesthetic development. Recognized for his exceptional shoulder-to-waist ratio and balanced muscle development.",

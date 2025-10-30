@@ -1,7 +1,7 @@
 export const scienceBasedLifters = [
   {
   "name": "Jeff Nippard",
-  "image": "src/assets/jeff.jpg",
+  "image": "public/images/jeff.jpg",
   "style": "Science-Based Bodybuilding, Powerbuilding, Training Frequency, and Progressive Overload.",
   "description": "A Canadian natural pro bodybuilder and powerlifter with a BSc in biochemistry, known for synthesizing scientific research into practical, detailed training programs. He emphasizes training near failure, adequate volume, and high training frequency.",
   "achievements": "Creator of numerous best-selling, science-based training programs (PPL, Upper/Lower, Powerbuilding), massive social media following, and co-creator of the MacroFactor diet app.",
@@ -83,7 +83,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Dr. Mike Israetel (Renaissance Periodization)",
-  "image": "src/SciencebasedProf/dr mike.jpg",
+  "image": "public/SciencebasedProf/dr mike.jpg",
   "style": "Science-Based Hypertrophy, Volume Management, and Autoregulation (RPE/RIR)",
   "description": "A world-renowned PhD in Sport Physiology and co-founder of Renaissance Periodization (RP Strength). His approach is rooted in peer-reviewed science, focusing on precise volume and frequency management (MEV, MAV, MRV) to optimize muscle growth and recovery. He promotes a flexible, high-frequency training style over traditional low-frequency 'Bro Splits.'",
   "achievements": "PhD in Sport Physiology, co-founder of RP Strength, author of numerous books and scientific articles on hypertrophy and nutrition, highly influential educator in the fitness world.",
@@ -136,7 +136,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Dr. Eric Helms (3DMJ)",
-  "image": "src/SciencebasedProf/dr erik.jpg",
+  "image": "public/SciencebasedProf/dr erik.jpg",
   "style": "Evidence-Based Bodybuilding, High Frequency, Periodization, RPE/RIR",
   "description": "A PhD in exercise science, natural professional bodybuilder, and coach. Helms' philosophy is centered on evidence-based practices, prioritizing volume, intensity (measured by RPE/RIR), and frequency for optimal muscle gain and strength.",
   "achievements": "Co-author of the 'Muscle and Strength Pyramid' books, WNBF Pro Natural Bodybuilder, influential figure in the evidence-based fitness community, and co-founder of Team 3DMJ.",
@@ -189,7 +189,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Layne Norton",
-  "image": "src/SciencebasedProf/layne.jpg",
+  "image": "public/SciencebasedProf/layne.jpg",
   "style": "Scientific Powerbuilding, Periodization, Metabolic Damage Training, Evidence-Based Nutrition, Natural Bodybuilding",
   "description": "PhD in Nutritional Sciences, natural bodybuilder, world-record holding powerlifter, and renowned coach. Creator of the PH3 (Power Hypertrophy Hypothesis) program and Metabolic Damage training. Known for bridging the gap between scientific research and practical application in natural bodybuilding and strength training.",
   "achievements": "IFPA & NGA Natural Pro Bodybuilder, World Record Powerlifter (raw 2,303 lbs total), PhD in Nutritional Sciences, bestselling author, founder of BioLayne supplements. One of the most respected evidence-based coaches in the fitness industry.",
@@ -386,7 +386,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "James Krieger, M.S. (Weightology)",
-  "image": "src/SciencebasedProf/James-Krieger.jpg",
+  "image": "public/SciencebasedProf/James-Krieger.jpg",
   "style": "Evidence-Based Hypertrophy, Volume Management, and Training Frequency as a Tool",
   "description": "An exercise science researcher and founder of Weightology.net, James Krieger's approach is rooted in meta-analyses and systematic reviews. He promotes optimal training variables for hypertrophy, often advocating for distributing total weekly volume over multiple sessions for better recovery and quality sets.",
   "achievements": "Numerous published meta-analyses on training volume and frequency for hypertrophy, including seminal work on the volume-hypertrophy relationship and training frequency for muscle growth.",
@@ -422,7 +422,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Greg Nuckols",
-  "image": "src/SciencebasedProf/greg.jpg",
+  "image": "public/SciencebasedProf/greg.jpg",
   "style": "Science-Based, Powerlifting/Powerbuilding Focus, High Frequency for Compound Lifts, DUP (Daily Undulating Periodization) Principles",
   "description": "Founder of Stronger By Science, Greg Nuckols is a highly respected coach and writer known for creating evidence-based training programs. His programs prioritize high training frequency for the main powerlifts (Squat, Bench, Deadlift) and employ flexible progression methods like RPE (Rate of Perceived Exertion) and AMRAP (As Many Reps As Possible) to manage fatigue and maximize strength and hypertrophy.",
   "achievements": "Creator of 'The 28 Programs' (a collection of free, customizable strength templates), accomplished powerlifter, and author of numerous evidence-based articles on strength training and nutrition.",
@@ -484,7 +484,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "TNF (Joel Twinem)",
-  "image": "src/SciencebasedProf/TNF.webp",
+  "image": "public/SciencebasedProf/TNF.webp",
   "style": "Science-Based Bodybuilding, High Intensity/Low Volume Focus (relative to high-volume splits), and Flexible Split",
   "description": "Founder of T Nutrition and Fitness, TNF is a popular natural bodybuilder and coach known for his emphasis on evidence-based training and nutrition. He focuses on training to failure/near-failure with fewer sets than high-volume programs, prioritizing compound movements and strategic isolation work.",
   "achievements": "Massive social media following (millions of subscribers across platforms), competitive natural bodybuilder, creator of various educational fitness content and manuals.",
@@ -544,7 +544,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Cliff Wilson (Team Wilson)",
-  "image": "src/SciencebasedProf/wilson.webp",
+  "image": "public/SciencebasedProf/wilson.webp",
   "style": "Individualized Periodization, High Volume/Frequency, and Adaptive Programming",
   "description": "A top-tier natural bodybuilding coach with over 150 clients earning pro cards. Cliff Wilson's philosophy centers on tailoring training and nutrition to the individual's recovery capacity, genetic potential, and specific weak points, emphasizing high-volume training with systematic fatigue management.",
   "achievements": "Coached clients to over 150 pro cards and multiple world championships, renowned for his 'Rapid Backload' peaking strategy and evidence-driven coaching.",
@@ -583,7 +583,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Gabriel Sey",
-  "image": "src/SciencebasedProf/gab.jpg",
+  "image": "public/SciencebasedProf/gab.jpg",
   "style": "Hybrid Training, Bodybuilding x Calisthenics/Athleticism, and High Frequency Splits",
   "description": "A fitness influencer and athlete who promotes a 'True Beast Athletics' philosophy, emphasizing functional strength, impressive aesthetics, and an efficient approach to training. He advocates for high-frequency training to maximize muscle growth.",
   "achievements": "Strong presence on YouTube and social media, known for his detailed training routines and fitness content aimed at both bodybuilding and athletic performance.",
@@ -630,7 +630,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Jeremy Ethier",
-  "image": "src/SciencebasedProf/Jeremy-Ethier.webp",
+  "image": "public/SciencebasedProf/Jeremy-Ethier.webp",
   "style": "Science-Based, High Frequency, Progressive Overload, and Form-Focused",
   "description": "Founder of 'Built With Science,' a kinesiologist and fitness researcher known for creating evidence-based workout programs and nutrition guides. He emphasizes training each muscle group at least twice a week for optimal hypertrophy.",
   "achievements": "Massive social media following (millions of subscribers), creator of various science-backed programs (PPL, Full Body, Upper/Lower), known for simplifying fitness science and promoting efficient training.",
@@ -697,7 +697,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Dr. Stefi Cohen",
-  "image": "src/SciencebasedProf/cohen.jpg",
+  "image": "public/SciencebasedProf/cohen.jpg",
   "style": "Powerlifting, Strength Training, Sports Performance, Evidence-Based Coaching",
   "description": "World-record holding powerlifter, Doctor of Physical Therapy, and strength coach. Holds the Guinness World Record for most powerlifting world records by a female. Combines scientific knowledge with elite athletic experience to create highly effective strength training programs focused on maximal force production and injury prevention.",
   "achievements": "25-time World Record holder in powerlifting, 4-time IPF World Champion. First woman to deadlift 4.4x her bodyweight. Doctor of Physical Therapy with extensive knowledge in biomechanics and rehabilitation. Co-founder of Hybrid Performance Method.",
@@ -817,7 +817,7 @@ export const scienceBasedLifters = [
 },
 {
   "name": "Jessica Buettner",
-  "image": "src/SciencebasedProf/buettner.png",
+  "image": "public/SciencebasedProf/buettner.png",
   "style": "Powerlifting, Strength Training, Type 1 Diabetes Athlete Coaching, Competition Preparation",
   "description": "World champion powerlifter, registered dietitian, and type 1 diabetes advocate. Known for her incredible strength-to-bodyweight ratio and technical mastery of the powerlifting movements. Combines scientific nutrition knowledge with elite-level strength training experience.",
   "achievements": "IPF World Champion, multiple world record holder in the 76kg class. Known for massive deadlifts and squats relative to bodyweight. One of the most dominant female powerlifters of her generation. Advocate for athletes with type 1 diabetes.",

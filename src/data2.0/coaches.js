@@ -1,7 +1,7 @@
 export const coaches = [
   {
     name: "Kayla Itsines",
-    image: "src/assets/kayla.jpg",
+    image: "public/images/kayla.jpg",
     style: "BBG - High-Intensity Circuit Training",
     description: "Circuit-based training with minimal rest for fat loss and endurance.",
     career: "Australian personal trainer, author, and entrepreneur. Co-founder of the fitness app Sweat with Kayla. Known for creating the Bikini Body Guide (BBG) program.",
@@ -30,7 +30,7 @@ export const coaches = [
   },
   {
     name: "Joe Wicks",
-    image: "src/assets/joe.png",
+    image: "public/images/joe.png",
     style: "HIIT & Hybrid Training",
     description: "Accessible, time-efficient HIIT combining strength and cardio.",
     career: "British fitness coach, author, and television presenter. Known as 'The Body Coach' for his popular HIIT workouts and Lean in 15 nutrition plan.",
@@ -56,7 +56,7 @@ export const coaches = [
   },
   {
     name: "Michelle Lewin",
-    image: "src/assets/Michelle Lewin.jpg",
+    image: "public/images/Michelle Lewin.jpg",
     style: "Glute & Aesthetic Focus",
     description: "Glute-focused training with emphasis on mind-muscle connection and progressive overload.",
     career: "Venezuelan fitness model, bodybuilder, and social media influencer. Known for her aesthetic physique and glute development expertise.",
@@ -83,7 +83,7 @@ export const coaches = [
   },
   {
     name: "Stephanie Buttermore",
-    image: "src/assets/stephanie.jpg",
+    image: "public/images/stephanie.jpg",
     style: "Full-Body & Women's Training",
     description: "Balanced approach focusing on strength, hypertrophy, and sustainable training habits.",
     career: "PhD in Cancer Biology, fitness scientist, and content creator. Known for her 'All In' journey and evidence-based approach to training and nutrition.",
@@ -110,7 +110,7 @@ export const coaches = [
   },
   {
   "name": "Greg Doucette (Coach Greg)",
-  "image": "src/coaches/greg.webp",
+  "image": "public/coaches/greg.webp",
   "style": "High Intensity, Full Body & High Frequency Splits, Training to Failure, HTLT Principle",
   "description": "An IFBB Pro and popular fitness influencer known for his 'Harder Than Last Time' (HTLT) training philosophy, advocating for training to failure, maximizing effort, and using a high training frequency to optimize muscle hypertrophy. He has programs for all levels (Beginner to Advanced).",
   "achievements": "IFBB Pro Bodybuilder, Guinness World Record holder, Powerlifter, B.S. and M.S. in Kinesiology, creator of the 'Harder Than Last Time' program and 'Anabolic' recipes/cookbooks.",
@@ -172,7 +172,7 @@ export const coaches = [
 },
   {
   "name": "Hany Rambod",
-  "image": "src/coaches/hany.png",
+  "image": "public/coaches/hany.png",
   "style": "Fascia Stretch Training-7 (FST-7), Heavy Lifting + High Volume/Pump",
   "description": "Known as the 'Pro Creator,' Hany Rambod has trained numerous Mr. Olympia champions. His method, FST-7, involves heavy compound movements followed by high-volume, short-rest '7-sets' on isolation exercises to maximize the muscle pump and, theoretically, stretch the muscle fascia for new growth.",
   "achievements": "Trained over 20 Olympia winners, including multiple Mr. Olympia titleholders like Phil Heath (7x), Jay Cutler (2x), Hadi Choopan, and Derek Lunsford.",
@@ -364,7 +364,7 @@ export const coaches = [
 },
   {
     name: "Jeff Cavaffliere",
-    image: "src/coaches/cavaliere.jpeg",
+    image: "public/coaches/cavaliere.jpeg",
     style: "Athlean-X - Scientific Approach",
     description: "Evidence-based training focusing on muscle activation and injury prevention.",
     career: "Physical therapist, strength coach, and founder of Athlean-X. Former head physical therapist for the New York Mets.",
@@ -469,7 +469,7 @@ export const coaches = [
   },
   {
   "name": "Scott Herman",
-  "image": "src/coaches/herman.jpg",
+  "image": "public/coaches/herman.jpg",
   "style": "Volume Training, Science-Based Bodybuilding, and Progressive Overload",
   "description": "The CEO of MuscularStrength, Scott Herman is known for his simple, no-nonsense, science-based approach to training. He emphasizes getting the basics right, pushing volume, and using progressive overload to ensure consistent muscle gain (often promoting his 'Guaranteed Gains' methodology).",
   "achievements": "Massive YouTube following ('ScottHermanFitness' with millions of subscribers), creator of MuscularStrength.com, and numerous successful workout programs like PPL, Upper/Lower, and the 'Ultimate Mass' series.",
@@ -533,7 +533,7 @@ export const coaches = [
 },
   {
   "name": "Vince Gironda (The Iron Guru)",
-  "image": "src/coaches/vince.jpg",
+  "image": "public/coaches/vince.jpg",
   "style": "Old-School Bodybuilding, High-Density Training (8x8, 6x6), Emphasis on Symmetry and Definition",
   "description": "A legendary bodybuilding coach who pioneered concepts like low-carb dieting and high-intensity, short-rest training. His methods focused on density and form to achieve a dramatic V-taper and muscular definition, often running counter to mainstream advice of his time.",
   "achievements": "Trained numerous Mr. America, Mr. Olympia (Larry Scott), and Mr. Universe champions. Developed highly influential training protocols (8x8, 6x6) and controversial exercises (Gironda Neck Press, Sissy Squat).",
@@ -582,7 +582,7 @@ export const coaches = [
 },
   {
   "name": "Charles Glass",
-  "image": "src/coaches/charles.jpg",
+  "image": "public/coaches/charles.jpg",
   "style": "Master Trainer, Precision Form, Mind-Muscle Connection, Injury Prevention",
   "description": "Legendary bodybuilding coach known as 'The Master' who has trained numerous champion bodybuilders. Focuses on perfect form, controlled movements, and intelligent training principles to maximize muscle growth while preventing injuries.",
   "achievements": "Trained multiple Mr. Olympia winners and champions including Ronnie Coleman, Jay Cutler, Flex Wheeler, Chris Cormier. Known for his scientific approach to bodybuilding and rehabilitation training.",
@@ -725,7 +725,7 @@ export const coaches = [
 },
   {
   "name": "Ben Pakulski",
-  "image": "src/coaches/Ben.jpg",
+  "image": "public/coaches/Ben.jpg",
   "style": "Muscle Intelligence, MI40 Principle, Biomechanics, Hypertrophy Execution Mastery, Time Under Tension (TUT)",
   "description": "IFBB Pro Bodybuilder and founder of Muscle Intelligence and the MI40 (Mass Intentions 40) training system. Renowned for a highly scientific approach to bodybuilding, focusing on perfect exercise execution, muscle activation, proper joint mechanics, and manipulating variables like tempo and intensity to maximize muscle growth (hypertrophy) and minimize injury.",
   "achievements": "Competed in the Mr. Olympia and Arnold Classic. Creator of the globally successful MI40 series (Foundation, Xtreme, etc.). Coach to high-level bodybuilders, athletes, and fitness enthusiasts, focusing on optimizing health and performance.",
@@ -798,7 +798,7 @@ export const coaches = [
 },
   {
   "name": "John Meadows (Mountain Dog Training)",
-  "image": "src/coaches/john.webp",
+  "image": "public/coaches/john.webp",
   "style": "Mountain Dog Training, High-Intensity Bodybuilding, Phased Workouts, Longevity Focused",
   "description": "IFBB Pro bodybuilder and highly-regarded coach. His 'Mountain Dog' method uses a four-phase structure per workout—Activation, Explosive, Supramaximal Pump, and Loaded Stretching—to maximize muscle hypertrophy and minimize joint strain. He trained numerous pros and championed hamstrings-first leg days.",
   "achievements": "IFBB Pro, multiple competition wins, coached numerous professional bodybuilders, created the Mountain Dog Diet/Training system.",
@@ -904,7 +904,7 @@ export const coaches = [
 },
 {
   "name": "Dave \"Jumbo\" Palumbo",
-  "image": "src/coaches/dave.png",
+  "image": "public/coaches/dave.png",
   "style": "High Intensity, Low Volume, Isolation Focus (Later Career), Advanced Body Part Specialization, Nutrition-First Coaching (Palumbo Diet)",
   "description": "IFBB Pro Bodybuilder, successful contest prep guru, and founder of RXMuscle. Known for his 'Palumbo Diet' (low-carb, high-fat/protein) and advocating for intense, short-duration workouts to maximize muscle damage and recovery. His training evolved to prioritize isolation and mind-muscle connection, especially for arms.",
   "achievements": "Competed as a Super Heavyweight, 2nd place at the 2003 NPC USA Championships. Coached numerous professional and amateur bodybuilders. Founder of Species Nutrition and RXMuscle.",
@@ -988,7 +988,7 @@ export const coaches = [
 },
   {
   "name": "Chris Aceto",
-  "image": "src/coaches/aceto.jpg",
+  "image": "public/coaches/aceto.jpg",
   "style": "Nutrition-First Bodybuilding, Metabolic Manipulation, High-Volume Training, Strategic Supplementation",
   "description": "World-renowned bodybuilding nutritionist and coach, famous for his scientific approach to diet, contest preparation, and supplementation. While not a 'form guru' like Glass, his training principles are designed to work in synergy with his nutritional strategies to maximize muscle growth and fat loss.",
   "achievements": "Author of 'Championship Bodybuilding' and 'Everything You Need to Know About Fat Loss'. Coached numerous top-tier bodybuilders including Jay Cutler, Flex Wheeler, Nasser El Sonbaty, and many Olympia contenders. Known as one of the most sought-after nutrition experts in the sport's history.",
@@ -1093,7 +1093,7 @@ export const coaches = [
 },
   {
   "name": "Tom Platz",
-  "image": "src/coaches/plotz.jpg",
+  "image": "public/coaches/plotz.jpg",
   "style": "High-Intensity, Beyond Failure, Deep Squats, Mental Fortitude, Unparalleled Volume",
   "description": "Legendary bodybuilder known as 'The Golden Eagle' and 'The Quad Father', famous for the most developed legs in bodybuilding history. His training philosophy was built on extreme intensity, pushing past failure, and a deep, unbreakable mind-muscle connection. He believed in training with maximum effort and emotional investment on every set.",
   "achievements": "IFBB Professional Bodybuilder, 1981 Mr. Universe Champion, 6th place at the 1981 Mr. Olympia. While his competitive record was limited, his legacy is defined by his legendary leg development and training intensity that has inspired generations of bodybuilders and strength athletes.",
@@ -1288,7 +1288,7 @@ export const coaches = [
 },
   {
   "name": "Mike O'Hearn",
-  "image": "src/coaches/mike o'hearn.jpg",
+  "image": "public/coaches/mike o'hearn.jpg",
   "style": "Power Bodybuilding, Functional Aesthetics, Heavy Compounds, Longevity Training, Joint Health",
   "description": "Iconic fitness model, bodybuilder, and powerlifter known for his legendary physique and incredible longevity. Creator of the 'Power Bodybuilding' system, which combines heavy compound lifting for strength with classic bodybuilding techniques for aesthetics. Focuses on perfect form, progressive overload, and training for a lifetime of health and performance.",
   "achievements": "4-time Mr. Natural Universe, Powerlifting Champion (700+ lb squat, 700+ lb deadlift, 500+ lb bench), renowned fitness model for decades (Titan series, multiple magazine covers), actor, and founder of the Power Bodybuilding system.",
@@ -1532,7 +1532,7 @@ export const coaches = [
 },
   {
   "name": "Kris Gethin",
-  "image": "src/coaches/kris.jpg",
+  "image": "public/coaches/kris.jpg",
   "style": "High-Intensity Transformation, DTP Training, Extreme Volume, Mind Over Matter, Strategic Supplementation",
   "description": "World-renowned bodybuilding coach and transformation specialist famous for his brutal 12-week body transformation programs. His training philosophy is built on extreme intensity, high volume, and pushing beyond physical and mental limits. Known for DTP (Dramatic Transformation Principle) training and his 'mind over matter' approach to breaking through plateaus.",
   "achievements": "Creator of the famous 12-Week Hardcore Daily Video Trainer, multiple bodybuilding titles including WBFF Pro, bestselling author, former CEO of Kaged Muscle. Transformed thousands of people through his online coaching and video series.",
@@ -1804,7 +1804,7 @@ export const coaches = [
 },
   {
   "name": "Scott Abel",
-  "image": "src/coaches/abel.jpg",
+  "image": "public/coaches/abel.jpg",
   "style": "Periodization Master, Anti-Adaptation, Strategic Overtraining, Hormonal Optimization, Mind-Body Connection",
   "description": "Renowned bodybuilding theorist and coach known for his intellectual, scientific approach to training. Developed the 'Abel Approach' focusing on periodization, avoiding muscle adaptation, and working with the body's hormonal and nervous system responses. Emphasizes training variability and strategic overtraining phases to trigger growth responses.",
   "achievements": "One of the most respected theorists in bodybuilding, coach to countless champions and professionals. Author of 'The Abel Approach' and numerous training publications. Known for revolutionizing how athletes think about training frequency, volume, and recovery.",
@@ -2097,7 +2097,7 @@ export const coaches = [
 },
   {
   "name": "Mark Carroll",
-  "image": "src/coaches/caroll.jpg",
+  "image": "public/coaches/caroll.jpg",
   "style": "Evidence-Based Training, Progressive Overload, Glute Specialization, Strategic Exercise Selection, Sustainable Results",
   "description": "World-renowned coach specializing in female physique transformation and bikini competition prep. Known for his scientific, no-nonsense approach to building the iconic 'bikini body' through strategic programming, progressive overload, and glute specialization. Focuses on sustainable methods that deliver long-term results rather than short-term fixes.",
   "achievements": "Creator of the legendary 'Building the Bikini Body' series, coach to countless IFBB Bikini Pros and champions. Revolutionized female training with his glute specialization protocols and evidence-based approach. Known for producing some of the most successful bikini competitors in the industry.",
@@ -2307,7 +2307,7 @@ export const coaches = [
 },
   {
   "name": "Bret Contreras",
-  "image": "src/coaches/bret.jpg",
+  "image": "public/coaches/bret.jpg",
   "style": "Evidence-Based Glute Specialist, Hip Thrust Pioneer, Scientific Training, Progressive Overload, EMG Research",
   "description": "World-renowned strength coach and researcher known as 'The Glute Guy.' Famous for pioneering the hip thrust exercise and revolutionizing glute training through scientific research and EMG studies. Focuses on evidence-based methods, progressive overload, and optimizing training for maximum glute development.",
   "achievements": "PhD in Sports Science, author of 'The Glute Lab,' creator of the hip thrust exercise, renowned researcher in glute biomechanics. Coach to thousands of clients and athletes worldwide, transforming glute training through scientific principles.",
@@ -2715,7 +2715,7 @@ export const coaches = [
 },
 {
   "name": "Massy Arias",
-  "image": "src/coaches/arias.webp",
+  "image": "public/coaches/arias.webp",
   "style": "Functional Strength, HIIT, Holistic Wellness, Mind-Body Connection, Glute Building",
   "description": "Celebrity fitness trainer and holistic wellness coach known for her high-energy workouts and balanced approach to health. Focuses on building strong, functional physiques through a combination of heavy lifting, metabolic conditioning, and mindful recovery. Empowers clients to connect fitness with overall well-being.",
   "achievements": "Internationally recognized trainer, founder of the Train Like A Goddess program, featured in major publications like Women's Health, ESPN, and Shape. Built a massive global following by promoting a sustainable and empowering fitness lifestyle.",
@@ -2806,7 +2806,7 @@ export const coaches = [
 },
 {
   "name": "Natacha Océane",
-  "image": "src/coaches/natacha.jpg",
+  "image": "public/coaches/natacha.jpg",
   "style": "Evidence-Based Training, Biomechanics, Performance-Focused, Hybrid Athlete, Macro-Nutrient Cycling",
   "description": "Scientist and elite fitness coach known for her deep-dive, evidence-based approach to training and nutrition. Focuses on building athletic, functional physiques through optimized programming that blends strength, power, hypertrophy, and conditioning. Promotes a 'food-first' philosophy and individualizes everything based on personal data and goals.",
   "achievements": "Creator of the highly popular Build, Cut, and Home training programs. Holds a Masters degree in Medical Sciences. Known for her YouTube channel where she debunks fitness myths and explains complex physiological concepts in an accessible way. Competes in fitness model categories and is a renowned hybrid athlete.",
@@ -2906,7 +2906,7 @@ export const coaches = [
 },
 {
   "name": "Jordan Syatt",
-  "image": "src/coaches/syatt.jpg",
+  "image": "public/coaches/syatt.jpg",
   "style": "Powerlifting, Strength & Conditioning, Sustainable Fitness, Fat Loss, Evidence-Based Coaching",
   "description": "World-record holding powerlifter and founder of Syatt Fitness. Known for a no-BS, evidence-based approach that prioritizes long-term progress, strength building, and sustainable fat loss over quick fixes. His coaching focuses on mastering fundamental movements and integrating fitness into a realistic lifestyle.",
   "achievements": "Holds the Guinness World Record for the Heviest Deadlift at 501 lbs (227 kg) at 132 lbs (60 kg) body weight. Has coached tens of thousands of clients online, including numerous celebrities. Renowned for debunking fitness myths and providing practical, actionable advice.",
@@ -2968,7 +2968,7 @@ export const coaches = [
 },
 {
   "name": "Chris Heria",
-  "image": "src/coaches/heria.png",
+  "image": "public/coaches/heria.png",
   "style": "Calisthenics, Street Workout, Skill-Based Training, High-Intensity Circuits, Bodyweight Mastery",
   "description": "Founder of ThenX and a leading figure in the modern calisthenics movement. Heria's style focuses on using bodyweight exercises to build impressive levels of strength, muscle, and skill. His training incorporates foundational movements, isometric holds, and dynamic skills to create a athletic and aesthetic physique.",
   "achievements": "Founder of the ThenX fitness brand and app. Built a massive global following through YouTube, popularizing advanced calisthenics. Known for performing and teaching skills like the Planche, Front Lever, and Muscle-Up. Has trained numerous athletes and individuals in bodyweight mastery.",
@@ -3071,7 +3071,7 @@ export const coaches = [
 },
 {
   "name": "Hannah Bower",
-  "image": "src/coaches/hannah.jpg",
+  "image": "public/coaches/hannah.jpg",
   "style": "Functional Strength, Core Foundations, Pre/Postnatal Fitness, Mindful Movement, Glute & Back Development",
   "description": "Highly influential strength coach and fitness educator specializing in functional training, core rehabilitation, and safe, effective exercise for motherhood (pre/postnatal). Her methodology focuses on building a strong, resilient body from the inside out, with an emphasis on core and pelvic floor health, proper breathing, and compound movements.",
   "achievements": "Built a massive online community by educating on core recovery and safe training during and after pregnancy. Creator of the popular core guide and various training programs. Recognized as a leading voice in evidence-based, functional fitness for women.",
