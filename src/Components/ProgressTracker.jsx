@@ -17,15 +17,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     goalWeight: null,
     weightHistory: [],
     weightGoalSetDate: null,
-    lastWorkoutAdjustment: null,
-    dailyStats: {
-      date: new Date().toLocaleDateString(),
-      workouts: 0,
-      sets: 0,
-      exercises: 0,
-      duration: 0
-    },
-    weeklyProgress: []
+    lastWorkoutAdjustment: null
   });
 
   const [workoutStats, setWorkoutStats] = useState({
@@ -59,13 +51,8 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
   const [buttonAnimations, setButtonAnimations] = useState({
     setGoal: false,
     generatePlan: false,
-    clearWorkouts: false,
-    importData: false,
-    exportData: false
+    clearWorkouts: false
   });
-
-  const [showImportExport, setShowImportExport] = useState(false);
-  const [importData, setImportData] = useState('');
 
   // Enhanced responsive design with media queries
   useEffect(() => {
@@ -82,183 +69,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
-
-  // Check and reset daily stats if it's a new day - IMPROVED VERSION
-  const checkAndResetDailyStats = async (userProgress) => {
-    const today = new Date().toLocaleDateString();
-    const currentDailyStats = userProgress.dailyStats || {
-      date: today,
-      workouts: 0,
-      sets: 0,
-      exercises: 0,
-      duration: 0
-    };
-
-    // If it's a new day, reset daily stats and archive to weekly progress
-    if (currentDailyStats.date !== today) {
-      const yesterdayStats = { ...currentDailyStats };
-      
-      // Archive yesterday's stats to weekly progress if there were workouts
-      if (yesterdayStats.workouts > 0 || yesterdayStats.sets > 0 || yesterdayStats.exercises > 0) {
-        const weeklyProgress = userProgress.weeklyProgress || [];
-        
-        // Check if we already have an entry for yesterday
-        const existingEntryIndex = weeklyProgress.findIndex(entry => entry.date === yesterdayStats.date);
-        
-        let updatedWeeklyProgress;
-        if (existingEntryIndex !== -1) {
-          // Update existing entry
-          updatedWeeklyProgress = [...weeklyProgress];
-          updatedWeeklyProgress[existingEntryIndex] = {
-            ...updatedWeeklyProgress[existingEntryIndex],
-            workouts: updatedWeeklyProgress[existingEntryIndex].workouts + yesterdayStats.workouts,
-            sets: updatedWeeklyProgress[existingEntryIndex].sets + yesterdayStats.sets,
-            exercises: updatedWeeklyProgress[existingEntryIndex].exercises + yesterdayStats.exercises,
-            duration: updatedWeeklyProgress[existingEntryIndex].duration + yesterdayStats.duration
-          };
-        } else {
-          // Add new entry
-          updatedWeeklyProgress = [...weeklyProgress, {
-            ...yesterdayStats,
-            archivedAt: new Date().toISOString()
-          }];
-        }
-        
-        // Update Firestore with reset daily stats and updated weekly progress
-        if (userId) {
-          const userDocRef = doc(db, 'users', userId);
-          await updateDoc(userDocRef, {
-            dailyStats: {
-              date: today,
-              workouts: 0,
-              sets: 0,
-              exercises: 0,
-              duration: 0
-            },
-            weeklyProgress: updatedWeeklyProgress
-          });
-        }
-
-        return {
-          dailyStats: {
-            date: today,
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          },
-          weeklyProgress: updatedWeeklyProgress
-        };
-      } else {
-        // Just reset daily stats if no workouts yesterday
-        if (userId) {
-          const userDocRef = doc(db, 'users', userId);
-          await updateDoc(userDocRef, {
-            dailyStats: {
-              date: today,
-              workouts: 0,
-              sets: 0,
-              exercises: 0,
-              duration: 0
-            }
-          });
-        }
-
-        return {
-          dailyStats: {
-            date: today,
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          },
-          weeklyProgress: userProgress.weeklyProgress || []
-        };
-      }
-    }
-
-    return null;
-  };
-
-  // Update daily stats when a workout is completed - IMPROVED VERSION
-  const updateDailyStats = async (workoutData) => {
-    if (!userId) return;
-
-    const today = new Date().toLocaleDateString();
-    const currentDailyStats = progress.dailyStats || {
-      date: today,
-      workouts: 0,
-      sets: 0,
-      exercises: 0,
-      duration: 0
-    };
-
-    // First, check if we need to reset for new day
-    if (currentDailyStats.date !== today) {
-      await checkAndResetDailyStats(progress);
-      // After reset, start with fresh stats for the new day
-      const freshStats = {
-        date: today,
-        workouts: 0,
-        sets: 0,
-        exercises: 0,
-        duration: 0
-      };
-      
-      // Now add the current workout to the fresh stats
-      const updatedDailyStats = await addWorkoutToDailyStats(freshStats, workoutData);
-      await saveDailyStatsToFirestore(updatedDailyStats);
-      
-      setProgress(prev => ({
-        ...prev,
-        dailyStats: updatedDailyStats
-      }));
-      
-    } else {
-      // Same day, just update the stats
-      const updatedDailyStats = await addWorkoutToDailyStats(currentDailyStats, workoutData);
-      await saveDailyStatsToFirestore(updatedDailyStats);
-      
-      setProgress(prev => ({
-        ...prev,
-        dailyStats: updatedDailyStats
-      }));
-    }
-  };
-
-  // Helper function to add workout data to daily stats
-  const addWorkoutToDailyStats = async (dailyStats, workoutData) => {
-    // Calculate workout duration in seconds
-    let durationSeconds = 0;
-    if (workoutData.duration) {
-      const [minutes, seconds] = workoutData.duration.split(':').map(Number);
-      durationSeconds = minutes * 60 + seconds;
-    }
-
-    return {
-      date: dailyStats.date,
-      workouts: dailyStats.workouts + 1,
-      sets: dailyStats.sets + (workoutData.totalSets || 0),
-      exercises: dailyStats.exercises + (workoutData.exercises?.length || 0),
-      duration: dailyStats.duration + durationSeconds,
-      lastWorkout: workoutData.dayName,
-      lastUpdated: new Date().toISOString()
-    };
-  };
-
-  // Helper function to save daily stats to Firestore
-  const saveDailyStatsToFirestore = async (dailyStats) => {
-    if (!userId) return;
-
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      await updateDoc(userDocRef, {
-        dailyStats: dailyStats
-      });
-    } catch (error) {
-      console.error('Error updating daily stats:', error);
-    }
-  };
 
   // Initialize auth and load progress from Firestore
   useEffect(() => {
@@ -280,15 +90,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           goalWeight: null,
           weightHistory: [],
           weightGoalSetDate: null,
-          lastWorkoutAdjustment: null,
-          dailyStats: {
-            date: new Date().toLocaleDateString(),
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          },
-          weeklyProgress: []
+          lastWorkoutAdjustment: null
         };
         setProgress(emptyProgress);
         calculateWorkoutStats([]);
@@ -304,13 +106,9 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     if (!userId) return;
 
     const userDocRef = doc(db, 'users', userId);
-    const unsubscribe = onSnapshot(userDocRef, async (doc) => {
+    const unsubscribe = onSnapshot(userDocRef, (doc) => {
       if (doc.exists()) {
         const userData = doc.data();
-        
-        // Check and reset daily stats if needed
-        const resetData = await checkAndResetDailyStats(userData);
-        
         const userProgress = {
           workoutHistory: userData.workoutHistory || [],
           fitnessLevel: userData.fitnessLevel || 'beginner',
@@ -322,20 +120,12 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           goalWeight: userData.goalWeight || null,
           weightHistory: userData.weightHistory || [],
           weightGoalSetDate: userData.weightGoalSetDate || null,
-          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null,
-          dailyStats: resetData?.dailyStats || userData.dailyStats || {
-            date: new Date().toLocaleDateString(),
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          },
-          weeklyProgress: resetData?.weeklyProgress || userData.weeklyProgress || []
+          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null
         };
         
         setProgress(userProgress);
         calculateWorkoutStats(userProgress.workoutHistory);
-        generateChartData(userProgress.workoutHistory, userProgress.weeklyProgress);
+        generateChartData(userProgress.workoutHistory);
         
         checkAndAdjustWorkouts(userProgress);
       }
@@ -343,32 +133,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
 
     return () => unsubscribe();
   }, [userId]);
-
-  // Auto-reset daily stats at midnight
-  useEffect(() => {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    
-    const timeUntilMidnight = tomorrow.getTime() - now.getTime();
-    
-    const midnightTimer = setTimeout(() => {
-      // Reset daily stats at midnight
-      if (userId) {
-        checkAndResetDailyStats(progress);
-      }
-      
-      // Set up recurring midnight check
-      setInterval(() => {
-        if (userId) {
-          checkAndResetDailyStats(progress);
-        }
-      }, 24 * 60 * 60 * 1000); // 24 hours
-    }, timeUntilMidnight);
-    
-    return () => clearTimeout(midnightTimer);
-  }, [userId, progress]);
 
   const checkAndAdjustWorkouts = async (userProgress) => {
     if (!userProgress.goalWeight || !userProgress.weightGoalSetDate || !userId) return;
@@ -435,10 +199,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        
-        // Check and reset daily stats if needed
-        const resetData = await checkAndResetDailyStats(userData);
-        
         const userProgress = {
           workoutHistory: userData.workoutHistory || [],
           fitnessLevel: userData.fitnessLevel || 'beginner',
@@ -450,20 +210,12 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           goalWeight: userData.goalWeight || null,
           weightHistory: userData.weightHistory || [],
           weightGoalSetDate: userData.weightGoalSetDate || null,
-          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null,
-          dailyStats: resetData?.dailyStats || userData.dailyStats || {
-            date: new Date().toLocaleDateString(),
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          },
-          weeklyProgress: resetData?.weeklyProgress || userData.weeklyProgress || []
+          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null
         };
         
         setProgress(userProgress);
         calculateWorkoutStats(userProgress.workoutHistory);
-        generateChartData(userProgress.workoutHistory, userProgress.weeklyProgress);
+        generateChartData(userProgress.workoutHistory);
       } else {
         const emptyProgress = {
           workoutHistory: [],
@@ -476,15 +228,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           goalWeight: null,
           weightHistory: [],
           weightGoalSetDate: null,
-          lastWorkoutAdjustment: null,
-          dailyStats: {
-            date: new Date().toLocaleDateString(),
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          },
-          weeklyProgress: []
+          lastWorkoutAdjustment: null
         };
         
         await updateDoc(userDocRef, emptyProgress);
@@ -509,28 +253,14 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         
         await updateDoc(userDocRef, {
           workoutHistory: [],
-          lastCompletedWorkout: null,
-          dailyStats: {
-            date: new Date().toLocaleDateString(),
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          }
+          lastCompletedWorkout: null
         });
         
         // Update local state
         setProgress(prev => ({
           ...prev,
           workoutHistory: [],
-          lastCompletedWorkout: null,
-          dailyStats: {
-            date: new Date().toLocaleDateString(),
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          }
+          lastCompletedWorkout: null
         }));
         
         calculateWorkoutStats([]);
@@ -547,99 +277,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         alert('Error clearing workout history. Please try again.');
         setButtonAnimations(prev => ({ ...prev, clearWorkouts: false }));
       }
-    }
-  };
-
-  // Export progress data
-  const exportProgressData = () => {
-    setButtonAnimations(prev => ({ ...prev, exportData: true }));
-    
-    const exportData = {
-      progress: progress,
-      workoutStats: workoutStats,
-      chartData: chartData,
-      exportDate: new Date().toISOString(),
-      version: '1.0'
-    };
-    
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `fitness-progress-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    setTimeout(() => {
-      setButtonAnimations(prev => ({ ...prev, exportData: false }));
-    }, 600);
-    
-    alert('📤 Progress data exported successfully!');
-  };
-
-  // Import progress data
-  const importProgressData = () => {
-    if (!importData.trim()) {
-      alert('Please paste your progress data to import.');
-      return;
-    }
-    
-    try {
-      setButtonAnimations(prev => ({ ...prev, importData: true }));
-      
-      const importedData = JSON.parse(importData);
-      
-      // Validate the imported data structure
-      if (!importedData.progress || !importedData.workoutStats) {
-        throw new Error('Invalid data format');
-      }
-      
-      const confirmed = window.confirm(
-        'This will replace your current progress data. Are you sure you want to continue?'
-      );
-      
-      if (confirmed && userId) {
-        // Update Firestore with imported data
-        const userDocRef = doc(db, 'users', userId);
-        updateDoc(userDocRef, {
-          workoutHistory: importedData.progress.workoutHistory || [],
-          fitnessLevel: importedData.progress.fitnessLevel || 'beginner',
-          goals: importedData.progress.goals || [],
-          achievements: importedData.progress.achievements || [],
-          lastCompletedWorkout: importedData.progress.lastCompletedWorkout || null,
-          initialWeight: importedData.progress.initialWeight || null,
-          currentWeight: importedData.progress.currentWeight || null,
-          goalWeight: importedData.progress.goalWeight || null,
-          weightHistory: importedData.progress.weightHistory || [],
-          weightGoalSetDate: importedData.progress.weightGoalSetDate || null,
-          lastWorkoutAdjustment: importedData.progress.lastWorkoutAdjustment || null,
-          dailyStats: importedData.progress.dailyStats || {
-            date: new Date().toLocaleDateString(),
-            workouts: 0,
-            sets: 0,
-            exercises: 0,
-            duration: 0
-          },
-          weeklyProgress: importedData.progress.weeklyProgress || []
-        });
-        
-        setImportData('');
-        setShowImportExport(false);
-        
-        alert('📥 Progress data imported successfully!');
-      }
-      
-    } catch (error) {
-      console.error('Error importing data:', error);
-      alert('Error importing data. Please check the format and try again.');
-    } finally {
-      setTimeout(() => {
-        setButtonAnimations(prev => ({ ...prev, importData: false }));
-      }, 600);
     }
   };
 
@@ -812,44 +449,39 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     });
   };
 
-  const generateChartData = (workoutHistory, weeklyProgress = []) => {
+  const generateChartData = (workoutHistory) => {
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
       return date.toLocaleDateString();
     }).reverse();
 
-    // Combine workout history with daily stats for weekly progress
-    const weeklyProgressData = last7Days.map(date => {
+    // Only show days with actual workouts
+    const weeklyProgress = last7Days.map(date => {
       const workoutsOnDate = workoutHistory.filter(workout => workout.completionDate === date);
-      const dailyStats = weeklyProgress.find(day => day.date === date);
-      
-      const totalSets = workoutsOnDate.reduce((sum, workout) => sum + (workout.totalSets || 0), 0) + (dailyStats?.sets || 0);
-      const totalExercises = workoutsOnDate.reduce((sum, workout) => sum + (workout.exercises?.length || 0), 0) + (dailyStats?.exercises || 0);
+      const totalSets = workoutsOnDate.reduce((sum, workout) => sum + (workout.totalSets || 0), 0);
+      const totalExercises = workoutsOnDate.reduce((sum, workout) => sum + (workout.exercises?.length || 0), 0);
       const totalDuration = workoutsOnDate.reduce((sum, workout) => {
         if (workout.duration) {
           const [minutes, seconds] = workout.duration.split(':').map(Number);
           return sum + minutes * 60 + seconds;
         }
         return sum;
-      }, 0) + (dailyStats?.duration || 0);
-      
-      const totalWorkouts = workoutsOnDate.length + (dailyStats?.workouts || 0);
+      }, 0);
       
       return {
         date,
-        workouts: totalWorkouts,
+        workouts: workoutsOnDate.length,
         sets: totalSets,
         exercises: totalExercises,
         duration: totalDuration,
         workoutDetails: workoutsOnDate,
-        dailyStats: dailyStats,
-        hasWorkouts: totalWorkouts > 0
+        hasWorkouts: workoutsOnDate.length > 0 // Flag to check if there are workouts
       };
     });
 
     // Filter out days with no workouts for display
-    const weeklyProgressWithWorkouts = weeklyProgressData.filter(day => day.hasWorkouts);
+    const weeklyProgressWithWorkouts = weeklyProgress.filter(day => day.hasWorkouts);
 
     const monthlyProgress = Array.from({ length: 4 }, (_, i) => {
       const weekStart = new Date();
@@ -983,16 +615,12 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     setShowUserForm(true);
   };
 
-  const handleImportExportClick = () => {
-    setShowImportExport(true);
-  };
-
   const WeeklyProgressModal = () => {
     if (!showWeeklyModal || !selectedWeekData) return null;
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500 gym-border">
+        <div className="bg-black rounded-2xl md:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500 gym-border">
           <div className="p-4 md:p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
@@ -1006,7 +634,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
               </button>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900 to-black rounded-lg p-4 mb-4 border border-green-500 gym-border">
+            <div className="bg-gray-900 rounded-lg p-4 mb-4 border border-green-500 gym-border">
               <h3 className="text-lg font-bold text-white mb-3 text-center gym-text">
                 {selectedWeekData.date}
               </h3>
@@ -1073,7 +701,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
             <div className="flex justify-center">
               <button
                 onClick={() => setShowWeeklyModal(false)}
-                className="px-6 py-2 bg-gradient-to-r from-orange-500 to-green-500 text-white font-bold rounded-lg hover:from-orange-600 hover:to-green-600 transition-all transform hover:scale-105 gym-button"
+                className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
               >
                 Close Details
               </button>
@@ -1084,58 +712,65 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     );
   };
 
-  const WeightModal = () => {
+  const WeightInputModal = () => {
     if (!showWeightModal) return null;
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl max-w-md w-full border-2 border-orange-500 gym-border">
+        <div className="bg-black rounded-xl md:rounded-2xl shadow-2xl max-w-md w-full border-2 border-orange-500 gym-border">
           <div className="p-4 md:p-6">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center gym-text">
-              🎯 Set Your Weight Goal
-            </h2>
-            
-            <div className="space-y-4 mb-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
+                Set Your Weight Goal
+              </h2>
+              <button
+                onClick={() => setShowWeightModal(false)}
+                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors gym-button"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-4">
               <div>
-                <label className="block text-white text-sm font-medium mb-1 gym-text">
+                <label className="block text-green-400 font-medium mb-1 text-sm">
                   Current Weight (kg)
                 </label>
                 <input
                   type="number"
+                  step="0.1"
                   value={weightInput.currentWeight}
                   onChange={(e) => setWeightInput(prev => ({ ...prev, currentWeight: e.target.value }))}
-                  className="w-full px-3 py-2 bg-black border-2 border-orange-500 rounded-lg text-white placeholder-gray-400 focus:border-green-500 focus:outline-none transition-colors gym-input"
-                  placeholder="Enter current weight"
+                  className="w-full bg-gray-900 border border-orange-500 rounded-lg px-3 py-2 text-white placeholder-green-600 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm gym-input"
+                  placeholder="Enter your current weight"
                 />
               </div>
               
               <div>
-                <label className="block text-white text-sm font-medium mb-1 gym-text">
+                <label className="block text-green-400 font-medium mb-1 text-sm">
                   Goal Weight (kg)
                 </label>
                 <input
                   type="number"
+                  step="0.1"
                   value={weightInput.goalWeight}
                   onChange={(e) => setWeightInput(prev => ({ ...prev, goalWeight: e.target.value }))}
-                  className="w-full px-3 py-2 bg-black border-2 border-orange-500 rounded-lg text-white placeholder-gray-400 focus:border-green-500 focus:outline-none transition-colors gym-input"
-                  placeholder="Enter goal weight"
+                  className="w-full bg-gray-900 border border-orange-500 rounded-lg px-3 py-2 text-white placeholder-green-600 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm gym-input"
+                  placeholder="Enter your goal weight"
                 />
               </div>
             </div>
-            
-            <div className="flex gap-3">
+
+            <div className="flex gap-2">
               <button
-                onClick={() => {
-                  setShowWeightModal(false);
-                  setWeightInput({ currentWeight: '', goalWeight: '' });
-                }}
-                className="flex-1 px-4 py-2 bg-gray-700 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors gym-button"
+                onClick={() => setShowWeightModal(false)}
+                className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm gym-button"
               >
-                Cancel
+                Skip
               </button>
               <button
                 onClick={handleWeightSubmit}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-green-500 text-white font-bold rounded-lg hover:from-orange-600 hover:to-green-600 transition-all transform hover:scale-105 gym-button"
+                className="flex-1 bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
               >
                 Set Goal
               </button>
@@ -1146,381 +781,512 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     );
   };
 
-  const ImportExportModal = () => {
-    if (!showImportExport) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl max-w-2xl w-full border-2 border-orange-500 gym-border">
-          <div className="p-4 md:p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
-                📊 Import/Export Progress Data
-              </h2>
-              <button
-                onClick={() => setShowImportExport(false)}
-                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors gym-button"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {/* Export Section */}
-              <div className="bg-gradient-to-br from-gray-900 to-black rounded-lg p-4 border border-green-500 gym-border">
-                <h3 className="text-lg font-bold text-white mb-3 gym-text">Export Progress Data</h3>
-                <p className="text-green-400 text-sm mb-3">
-                  Download your complete progress data as a JSON file for backup or transfer.
-                </p>
-                <button
-                  onClick={exportProgressData}
-                  className={`w-full px-4 py-3 bg-gradient-to-r from-green-500 to-orange-500 text-white font-bold rounded-lg hover:from-green-600 hover:to-orange-600 transition-all transform hover:scale-105 gym-button ${
-                    buttonAnimations.exportData ? 'animate-pulse' : ''
-                  }`}
-                >
-                  📤 Export Progress Data
-                </button>
-              </div>
-
-              {/* Import Section */}
-              <div className="bg-gradient-to-br from-gray-900 to-black rounded-lg p-4 border border-orange-500 gym-border">
-                <h3 className="text-lg font-bold text-white mb-3 gym-text">Import Progress Data</h3>
-                <p className="text-orange-400 text-sm mb-3">
-                  Paste your exported JSON data to restore your progress.
-                </p>
-                <textarea
-                  value={importData}
-                  onChange={(e) => setImportData(e.target.value)}
-                  className="w-full h-32 px-3 py-2 bg-black border-2 border-orange-500 rounded-lg text-white placeholder-gray-400 focus:border-green-500 focus:outline-none transition-colors gym-input"
-                  placeholder="Paste your exported JSON data here..."
-                />
-                <button
-                  onClick={importProgressData}
-                  className={`w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-green-500 text-white font-bold rounded-lg hover:from-orange-600 hover:to-green-600 transition-all transform hover:scale-105 gym-button mt-3 ${
-                    buttonAnimations.importData ? 'animate-pulse' : ''
-                  }`}
-                >
-                  📥 Import Progress Data
-                </button>
-              </div>
-            </div>
-
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => setShowImportExport(false)}
-                className="px-6 py-2 bg-gray-700 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors gym-button"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const clearProgress = async () => {
+    const confirmed = window.confirm('Are you sure you want to clear all your progress? This action cannot be undone.');
+    if (confirmed && userId) {
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        const emptyProgress = {
+          workoutHistory: [],
+          fitnessLevel: 'beginner',
+          goals: [],
+          achievements: [],
+          lastCompletedWorkout: null,
+          initialWeight: null,
+          currentWeight: null,
+          goalWeight: null,
+          weightHistory: [],
+          weightGoalSetDate: null,
+          lastWorkoutAdjustment: null
+        };
+        
+        await updateDoc(userDocRef, emptyProgress);
+        
+        setProgress(emptyProgress);
+        calculateWorkoutStats([]);
+        generateChartData([]);
+      } catch (error) {
+        console.error('Error clearing progress:', error);
+        alert('Error clearing progress. Please try again.');
+      }
+    }
   };
 
+  const exportProgress = () => {
+    const dataStr = JSON.stringify(progress, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'fitness-progress.json';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importProgress = async (event) => {
+    const file = event.target.files[0];
+    if (file && userId) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const importedProgress = JSON.parse(e.target.result);
+          
+          const userDocRef = doc(db, 'users', userId);
+          await updateDoc(userDocRef, importedProgress);
+          
+          setProgress(importedProgress);
+          calculateWorkoutStats(importedProgress.workoutHistory || []);
+          generateChartData(importedProgress.workoutHistory || []);
+          alert('Progress imported successfully!');
+        } catch (error) {
+          console.error('Error importing progress:', error);
+          alert('Error importing progress file. Please make sure it is a valid JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const streak = calculateStreak();
   const achievements = getAchievements();
-  const currentStreak = calculateStreak();
   const weightProgress = calculateWeightProgress();
 
+  // Enhanced responsive classes with better mobile optimization
+  const statsGridClass = isMobile 
+    ? "grid grid-cols-2 gap-2" 
+    : isTablet 
+      ? "grid grid-cols-3 gap-3" 
+      : "grid grid-cols-3 lg:grid-cols-6 gap-3";
+
+  const achievementsGridClass = isMobile 
+    ? "grid grid-cols-1 gap-3" 
+    : isTablet 
+      ? "grid grid-cols-2 gap-4" 
+      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
+
+  const chartsGridClass = isMobile 
+    ? "grid grid-cols-1 gap-4" 
+    : "grid md:grid-cols-2 gap-6";
+
+  const buttonContainerClass = isMobile 
+    ? "flex flex-col gap-2 w-full" 
+    : "flex gap-3";
+
+  const headerTextSize = isMobile 
+    ? "text-2xl md:text-4xl" 
+    : "text-3xl md:text-5xl";
+
+  const sectionTitleSize = isMobile 
+    ? "text-xl" 
+    : "text-2xl";
+
+  const workoutHeaderClass = isMobile 
+    ? "flex flex-col gap-3" 
+    : "flex justify-between items-start";
+
+  const workoutStatsClass = isMobile 
+    ? "flex flex-wrap gap-2 mt-2" 
+    : "flex items-center gap-3 mt-0";
+
+  // Animation classes
+  const setGoalButtonClass = `bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button ${
+    buttonAnimations.setGoal ? 'animate-pulse scale-105' : ''
+  }`;
+
+  const generatePlanButtonClass = `bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button ${
+    buttonAnimations.generatePlan ? 'animate-pulse scale-105' : ''
+  }`;
+
+  const clearWorkoutsButtonClass = `bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button ${
+    buttonAnimations.clearWorkouts ? 'animate-pulse scale-105' : ''
+  }`;
+
+  if (showUserForm) {
+    return <UserForm onSubmit={handleUserFormSubmit} />;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-green-900 to-orange-900 text-white p-4 md:p-6">
-      {/* Header */}
-      <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 gym-text">
-          <span className="text-orange-500">PROGRESS</span>{' '}
-          <span className="text-green-500">TRACKER</span>
-        </h1>
-        <p className="text-gray-300 text-sm md:text-base gym-text">
-          Track your fitness journey and celebrate your achievements
-        </p>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
-        <button
-          onClick={handleSetGoalWeightClick}
-          className={`px-4 py-3 bg-gradient-to-r from-orange-500 to-green-500 text-white font-bold rounded-lg hover:from-orange-600 hover:to-green-600 transition-all transform hover:scale-105 gym-button ${buttonAnimations.setGoal ? 'animate-pulse' : ''}`}
-        >
-          🎯 Set Weight Goal
-        </button>
+    <div className="min-h-screen bg-black text-white font-sans p-3 md:p-6 gym-background">
+      <style jsx>{`
+        .gym-background {
+          background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+          position: relative;
+        }
         
-        <button
-          onClick={handleGenerateNewPlanClick}
-          className={`px-4 py-3 bg-gradient-to-r from-green-500 to-orange-500 text-white font-bold rounded-lg hover:from-green-600 hover:to-orange-600 transition-all transform hover:scale-105 gym-button ${buttonAnimations.generatePlan ? 'animate-pulse' : ''}`}
-        >
-          💪 Generate New Plan
-        </button>
+        .gym-background::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: 
+            radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
+          pointer-events: none;
+        }
         
-        <button
-          onClick={handleImportExportClick}
-          className={`px-4 py-3 bg-gradient-to-r from-purple-500 to-orange-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-orange-600 transition-all transform hover:scale-105 gym-button`}
-        >
-          📊 Import/Export
-        </button>
-      </div>
-
-      {/* Additional Action Buttons */}
-      <div className="flex justify-center mb-6 md:mb-8">
-        <button
-          onClick={clearWorkoutHistory}
-          className={`px-4 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold rounded-lg hover:from-red-600 hover:to-orange-600 transition-all transform hover:scale-105 gym-button ${buttonAnimations.clearWorkouts ? 'animate-pulse' : ''}`}
-        >
-          🗑️ Clear Workout History
-        </button>
-      </div>
-
-      {/* Daily Stats Section */}
-      <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 mb-6 md:mb-8 border-2 border-green-500 gym-border">
-        <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center gym-text">
-          📊 Today's Progress
-        </h2>
+        .gym-container {
+          position: relative;
+          z-index: 1;
+        }
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
-            <div className="text-white font-bold text-lg md:text-xl">{progress.dailyStats.workouts}</div>
-            <div className="text-green-400 text-xs md:text-sm">Workouts</div>
-          </div>
-          <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
-            <div className="text-white font-bold text-lg md:text-xl">{progress.dailyStats.sets}</div>
-            <div className="text-green-400 text-xs md:text-sm">Total Sets</div>
-          </div>
-          <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
-            <div className="text-white font-bold text-lg md:text-xl">{progress.dailyStats.exercises}</div>
-            <div className="text-green-400 text-xs md:text-sm">Exercises</div>
-          </div>
-          <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
-            <div className="text-white font-bold text-lg md:text-xl">{formatDuration(progress.dailyStats.duration)}</div>
-            <div className="text-green-400 text-xs md:text-sm">Total Time</div>
-          </div>
-        </div>
+        .gym-header {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(34, 197, 94, 0.1) 100%);
+          border: 2px solid #22c55e;
+          box-shadow: 0 8px 32px rgba(34, 197, 94, 0.2);
+        }
         
-        <div className="mt-4 text-center">
-          <p className="text-orange-400 text-sm gym-text">
-            Stats reset daily at midnight • Auto-saved to weekly progress
-          </p>
-        </div>
-      </div>
+        .gym-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(34, 197, 94, 0.05) 100%);
+          border: 1px solid #22c55e;
+          box-shadow: 0 4px 20px rgba(34, 197, 94, 0.1);
+          backdrop-filter: blur(10px);
+        }
+        
+        .gym-stat-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(249, 115, 22, 0.1) 100%);
+          border: 1px solid #f97316;
+          box-shadow: 0 4px 20px rgba(249, 115, 22, 0.1);
+        }
+        
+        .gym-workout-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(34, 197, 94, 0.05) 100%);
+          border: 1px solid #22c55e;
+          box-shadow: 0 2px 15px rgba(34, 197, 94, 0.1);
+        }
+        
+        .gym-button {
+          background: linear-gradient(135deg, #f97316 0%, #22c55e 100%);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+          transition: all 0.3s ease;
+        }
+        
+        .gym-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+        
+        .gym-border {
+          border: 2px solid;
+          border-image: linear-gradient(135deg, #f97316, #22c55e) 1;
+        }
+        
+        .gym-text {
+          background: linear-gradient(135deg, #22c55e, #f97316);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        .gym-input {
+          background: rgba(0, 0, 0, 0.8);
+          border: 1px solid #f97316;
+          color: #22c55e;
+        }
+        
+        .gym-input:focus {
+          border-color: #22c55e;
+          box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+        
+        .gym-progress-bar {
+          background: linear-gradient(90deg, #f97316, #22c55e);
+          box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
+        }
+        
+        .gym-achievement-card {
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(249, 115, 22, 0.1) 100%);
+          border: 1px solid #f97316;
+          box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2);
+        }
+        
+        @keyframes pulse-gym {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        
+        .animate-pulse-gym {
+          animation: pulse-gym 2s infinite;
+        }
+      `}</style>
 
-      {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
-        {/* Left Column */}
-        <div className="space-y-6 md:space-y-8">
-          {/* Workout Statistics */}
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 border-2 border-orange-500 gym-border">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center gym-text">
-              📈 Workout Statistics
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-              <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                <div className="text-white font-bold text-lg md:text-xl">{workoutStats.totalWorkouts}</div>
-                <div className="text-orange-400 text-xs md:text-sm">Total Workouts</div>
-              </div>
-              <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                <div className="text-white font-bold text-lg md:text-xl">{workoutStats.totalSets}</div>
-                <div className="text-orange-400 text-xs md:text-sm">Total Sets</div>
-              </div>
-              <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                <div className="text-white font-bold text-lg md:text-xl">{workoutStats.totalExercises}</div>
-                <div className="text-orange-400 text-xs md:text-sm">Total Exercises</div>
-              </div>
-              <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                <div className="text-white font-bold text-lg md:text-xl">{formatDuration(workoutStats.totalDuration)}</div>
-                <div className="text-orange-400 text-xs md:text-sm">Total Time</div>
-              </div>
-              <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                <div className="text-white font-bold text-lg md:text-xl">{formatDuration(workoutStats.averageDuration)}</div>
-                <div className="text-orange-400 text-xs md:text-sm">Avg. Duration</div>
-              </div>
-              <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                <div className="text-white font-bold text-lg md:text-xl">{workoutStats.completionRate}%</div>
-                <div className="text-orange-400 text-xs md:text-sm">Completion Rate</div>
-              </div>
+      <div className="gym-container">
+        {/* Header Section */}
+        <div className="gym-header rounded-2xl md:rounded-3xl p-4 md:p-8 mb-6 md:mb-8">
+          <div className={workoutHeaderClass}>
+            <div className="flex-1">
+              <h1 className={`${headerTextSize} font-bold gym-text mb-2`}>
+                Fitness Progress Tracker
+              </h1>
+              <p className="text-green-400 text-sm md:text-base">
+                Track your journey to a stronger, healthier you
+              </p>
             </div>
-          </div>
-
-          {/* Weekly Progress */}
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 border-2 border-green-500 gym-border">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center gym-text">
-              📅 Weekly Progress
-            </h2>
-            <div className="space-y-3">
-              {chartData.weeklyProgress.length > 0 ? (
-                chartData.weeklyProgress.map((day, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleWeeklyProgressClick(day)}
-                    className="bg-black rounded-lg p-3 md:p-4 border border-orange-500 hover:border-green-500 transition-colors cursor-pointer gym-workout-card"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-white font-bold text-sm md:text-base gym-text">{day.date}</h3>
-                      <span className="text-green-400 text-xs md:text-sm">{day.workouts} workout(s)</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="text-orange-400 text-xs md:text-sm">
-                        <div className="font-bold">{day.sets}</div>
-                        <div>Sets</div>
-                      </div>
-                      <div className="text-orange-400 text-xs md:text-sm">
-                        <div className="font-bold">{day.exercises}</div>
-                        <div>Exercises</div>
-                      </div>
-                      <div className="text-orange-400 text-xs md:text-sm">
-                        <div className="font-bold">{formatDuration(day.duration)}</div>
-                        <div>Time</div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-4">
-                  <div className="text-4xl mb-2">📊</div>
-                  <p className="text-green-400 text-sm md:text-base gym-text">No workouts completed this week yet</p>
-                  <p className="text-orange-400 text-xs mt-1 gym-text">Complete a workout to see your progress here!</p>
+            <div className={workoutStatsClass}>
+              <div className="bg-black rounded-lg px-3 py-2 border border-orange-500 gym-stat-card">
+                <div className="text-center">
+                  <div className="text-white font-bold text-lg md:text-xl">{streak}</div>
+                  <div className="text-green-400 text-xs">Day Streak</div>
                 </div>
-              )}
+              </div>
+              <div className="bg-black rounded-lg px-3 py-2 border border-orange-500 gym-stat-card">
+                <div className="text-center">
+                  <div className="text-white font-bold text-lg md:text-xl">{workoutStats.totalWorkouts}</div>
+                  <div className="text-green-400 text-xs">Total Workouts</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="space-y-6 md:space-y-8">
-          {/* Weight Progress */}
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 border-2 border-orange-500 gym-border">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center gym-text">
-              ⚖️ Weight Progress
-            </h2>
-            {progress.currentWeight && progress.goalWeight ? (
-              <div className="space-y-4">
-                <div className="bg-black rounded-lg p-4 border border-green-500 gym-stat-card">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-white font-medium gym-text">Progress</span>
-                    <span className="text-orange-400 font-bold text-sm md:text-base">{weightProgress.percentage.toFixed(1)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-3 md:h-4">
-                    <div
-                      className="bg-gradient-to-r from-orange-500 to-green-500 h-3 md:h-4 rounded-full transition-all duration-500"
-                      style={{ width: `${weightProgress.percentage}%` }}
-                    ></div>
-                  </div>
+        {/* Action Buttons */}
+        <div className="flex flex-col md:flex-row gap-3 mb-6 md:mb-8">
+          <div className={buttonContainerClass}>
+            <button 
+              onClick={handleSetGoalWeightClick}
+              className={setGoalButtonClass}
+            >
+              🎯 Set Weight Goal
+            </button>
+            <button 
+              onClick={handleGenerateNewPlanClick}
+              className={generatePlanButtonClass}
+            >
+              💪 Generate New Plan
+            </button>
+            <button 
+              onClick={clearWorkoutHistory}
+              className={clearWorkoutsButtonClass}
+            >
+              🗑️ Clear Workouts
+            </button>
+          </div>
+        </div>
+
+        {/* Weight Progress Section */}
+        {progress.initialWeight && progress.goalWeight && (
+          <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 md:mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+              <h2 className={`${sectionTitleSize} font-bold gym-text mb-2 md:mb-0`}>
+                Weight Progress
+              </h2>
+              <button
+                onClick={handleCurrentWeightUpdate}
+                className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
+              >
+                Update Current Weight
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{progress.initialWeight}kg</div>
+                  <div className="text-green-400 text-xs">Start Weight</div>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-3 md:gap-4">
-                  <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                    <div className="text-white font-bold text-lg md:text-xl">{progress.initialWeight}kg</div>
-                    <div className="text-orange-400 text-xs md:text-sm">Starting</div>
-                  </div>
-                  <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                    <div className="text-white font-bold text-lg md:text-xl">{progress.currentWeight}kg</div>
-                    <div className="text-orange-400 text-xs md:text-sm">Current</div>
-                  </div>
-                  <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                    <div className="text-white font-bold text-lg md:text-xl">{progress.goalWeight}kg</div>
-                    <div className="text-orange-400 text-xs md:text-sm">Goal</div>
-                  </div>
-                  <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-green-500 gym-stat-card">
-                    <div className="text-white font-bold text-lg md:text-xl">{weightProgress.weightLost.toFixed(1)}kg</div>
-                    <div className="text-orange-400 text-xs md:text-sm">Lost</div>
-                  </div>
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{progress.currentWeight}kg</div>
+                  <div className="text-green-400 text-xs">Current Weight</div>
                 </div>
-                
-                <button
-                  onClick={handleCurrentWeightUpdate}
-                  className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white font-bold rounded-lg hover:from-green-600 hover:to-orange-600 transition-all transform hover:scale-105 gym-button"
-                >
-                  Update Current Weight
-                </button>
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{progress.goalWeight}kg</div>
+                  <div className="text-green-400 text-xs">Goal Weight</div>
+                </div>
+                <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
+                  <div className="text-white font-bold text-lg">{weightProgress.weightLost.toFixed(1)}kg</div>
+                  <div className="text-green-400 text-xs">Weight Lost</div>
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-4">
-                <div className="text-4xl mb-2">⚖️</div>
-                <p className="text-green-400 text-sm md:text-base gym-text mb-3">Set your weight goal to track your progress</p>
-                <button
-                  onClick={handleSetGoalWeightClick}
-                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-green-500 text-white font-bold rounded-lg hover:from-orange-600 hover:to-green-600 transition-all transform hover:scale-105 gym-button"
-                >
-                  Set Weight Goal
-                </button>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-400">Progress: {weightProgress.percentage.toFixed(1)}%</span>
+                  <span className="text-orange-400">{weightProgress.weightToGo.toFixed(1)}kg to go</span>
+                </div>
+                <div className="w-full bg-gray-800 rounded-full h-3 md:h-4">
+                  <div 
+                    className="gym-progress-bar h-3 md:h-4 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${weightProgress.percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Workout Statistics */}
+        <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 md:mb-8">
+          <h2 className={`${sectionTitleSize} font-bold gym-text mb-4`}>
+            Workout Statistics
+          </h2>
+          
+          <div className={statsGridClass}>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.totalWorkouts}</div>
+              <div className="text-green-400 text-xs md:text-sm">Total Workouts</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.totalSets}</div>
+              <div className="text-green-400 text-xs md:text-sm">Total Sets</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.totalExercises}</div>
+              <div className="text-green-400 text-xs md:text-sm">Exercises</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{formatDuration(workoutStats.totalDuration)}</div>
+              <div className="text-green-400 text-xs md:text-sm">Total Time</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{formatDuration(workoutStats.averageDuration)}</div>
+              <div className="text-green-400 text-xs md:text-sm">Avg. Duration</div>
+            </div>
+            <div className="bg-black rounded-lg p-3 md:p-4 text-center border border-orange-500 gym-stat-card">
+              <div className="text-white font-bold text-lg md:text-2xl">{workoutStats.completionRate}%</div>
+              <div className="text-green-400 text-xs md:text-sm">Completion Rate</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Charts and Progress Visualization - Only show if there are workouts */}
+        {progress.workoutHistory && progress.workoutHistory.length > 0 ? (
+          <div className={chartsGridClass}>
+            {/* Weekly Progress - Only show if there are workouts in the week */}
+            {chartData.weeklyProgress.length > 0 && (
+              <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6">
+                <h3 className="text-lg md:text-xl font-bold gym-text mb-4">Weekly Progress</h3>
+                <div className="space-y-3">
+                  {chartData.weeklyProgress.map((day, index) => (
+                    <div 
+                      key={index}
+                      onClick={() => handleWeeklyProgressClick(day)}
+                      className="gym-workout-card rounded-lg p-3 cursor-pointer transform transition-transform hover:scale-105"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-white font-medium text-sm gym-text">{day.date}</span>
+                        <span className="text-orange-400 text-xs">{day.workouts} workout{day.workouts !== 1 ? 's' : ''}</span>
+                      </div>
+                      <div className="flex justify-between text-xs text-green-300">
+                        <span>{day.sets} sets</span>
+                        <span>{day.exercises} exercises</span>
+                        <span>{formatDuration(day.duration)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Monthly Progress - Only show if there are workouts in the month */}
+            {chartData.monthlyProgress.length > 0 && (
+              <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6">
+                <h3 className="text-lg md:text-xl font-bold gym-text mb-4">Monthly Overview</h3>
+                <div className="space-y-4">
+                  {chartData.monthlyProgress.map((week, index) => (
+                    <div key={index} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white gym-text">{week.week}</span>
+                        <span className="text-green-400">{week.workouts} workouts</span>
+                      </div>
+                      <div className="w-full bg-gray-800 rounded-full h-2">
+                        <div 
+                          className="gym-progress-bar h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min((week.workouts / 7) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
+        ) : (
+          // Show empty state when no workouts completed
+          <div className="gym-card rounded-2xl md:rounded-3xl p-6 md:p-8 text-center mb-6 md:mb-8">
+            <div className="text-6xl md:text-8xl mb-4">💪</div>
+            <h3 className="text-xl md:text-2xl font-bold gym-text mb-2">No Workouts Completed Yet</h3>
+            <p className="text-green-400 mb-4">Complete your first workout to see your progress charts and statistics!</p>
+            <button 
+              onClick={handleGenerateNewPlanClick}
+              className="bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 gym-button"
+            >
+              Start Your First Workout
+            </button>
+          </div>
+        )}
 
-          {/* Achievements */}
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 border-2 border-green-500 gym-border">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center gym-text">
-              🏆 Achievements
+        {/* Achievements Section */}
+        <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mt-6 md:mt-8">
+          <h2 className={`${sectionTitleSize} font-bold gym-text mb-4`}>
+            Achievements
+          </h2>
+          
+          {achievements.length > 0 ? (
+            <div className={achievementsGridClass}>
+              {achievements.map((achievement, index) => (
+                <div key={index} className="gym-achievement-card rounded-lg p-4 transform transition-all hover:scale-105">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">{achievement.icon}</div>
+                    <div>
+                      <h4 className="text-white font-bold text-sm md:text-base gym-text">{achievement.name}</h4>
+                      <p className="text-green-400 text-xs">{achievement.description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 md:py-8">
+              <div className="text-4xl md:text-6xl mb-3">🏆</div>
+              <p className="text-green-400 text-sm md:text-base">Complete workouts to earn achievements!</p>
+            </div>
+          )}
+        </div>
+
+        {/* Recent Workouts - Only show if there are workouts */}
+        {progress.workoutHistory && progress.workoutHistory.length > 0 && (
+          <div className="gym-card rounded-2xl md:rounded-3xl p-4 md:p-6 mt-6 md:mt-8">
+            <h2 className={`${sectionTitleSize} font-bold gym-text mb-4`}>
+              Recent Workouts
             </h2>
+            
             <div className="space-y-3">
-              {achievements.length > 0 ? (
-                achievements.map((achievement, index) => (
-                  <div
-                    key={index}
-                    className="bg-black rounded-lg p-3 md:p-4 border border-orange-500 gym-achievement-card"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl md:text-3xl">{achievement.icon}</div>
-                      <div>
-                        <h3 className="text-white font-bold text-sm md:text-base gym-text">{achievement.name}</h3>
-                        <p className="text-green-400 text-xs md:text-sm">{achievement.description}</p>
+              {progress.workoutHistory.slice(-5).reverse().map((workout, index) => (
+                <div key={index} className="gym-workout-card rounded-lg p-3 md:p-4">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
+                    <div className="flex-1">
+                      <h4 className="text-white font-bold text-base md:text-lg gym-text">{workout.dayName}</h4>
+                      <p className="text-green-400 text-xs md:text-sm">
+                        {workout.completionDate} • {workout.completionTime} • {workout.duration}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        <span className="bg-black px-2 py-1 rounded text-xs text-orange-400 border border-orange-500">
+                          {workout.exercises?.length || 0} exercises
+                        </span>
+                        <span className="bg-black px-2 py-1 rounded text-xs text-green-400 border border-green-500">
+                          {workout.totalSets} sets
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-orange-400 font-bold text-sm md:text-base">
+                        Completed
                       </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-4">
-                  <div className="text-4xl mb-2">🎯</div>
-                  <p className="text-green-400 text-sm md:text-base gym-text">Complete workouts to earn achievements</p>
-                  <p className="text-orange-400 text-xs mt-1 gym-text">Your first achievement is waiting!</p>
                 </div>
-              )}
+              ))}
             </div>
           </div>
-
-          {/* Current Streak */}
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 border-2 border-orange-500 gym-border">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center gym-text">
-              🔥 Current Streak
-            </h2>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-orange-500 mb-2 gym-text">{currentStreak}</div>
-              <p className="text-green-400 text-sm md:text-base gym-text">consecutive days with workouts</p>
-              {currentStreak >= 3 && (
-                <p className="text-orange-400 text-xs mt-2 gym-text">Keep going! You're on fire! 🔥</p>
-              )}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Modals */}
       <WeeklyProgressModal />
-      <WeightModal />
-      <ImportExportModal />
-
-      {/* User Form Modal */}
-      {showUserForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl md:rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500 gym-border">
-            <div className="p-4 md:p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
-                  Generate New Workout Plan
-                </h2>
-                <button
-                  onClick={() => setShowUserForm(false)}
-                  className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors gym-button"
-                >
-                  ×
-                </button>
-              </div>
-              <UserForm 
-                onSubmit={handleUserFormSubmit}
-                onCancel={() => setShowUserForm(false)}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <WeightInputModal />
     </div>
   );
 };
