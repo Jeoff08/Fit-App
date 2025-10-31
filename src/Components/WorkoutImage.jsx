@@ -373,30 +373,63 @@ const WorkoutImage = ({
   alt = "", 
   width = "300",
   height = "200",
+  showName = true,
   ...props 
 }) => {
   const imageSrc = getWorkoutImage(exerciseName);
   const imageAlt = alt || exerciseName || 'Workout image';
   
   return (
-    <div className="workout-image-container">
-      <img 
-        src={imageSrc} 
-        alt={imageAlt}
-        width={width}
-        height={height}
-        className={`workout-image rounded-2xl shadow-lg object-cover ${className}`}
-        onError={(e) => {
-          // Fallback to default image if the specific one doesn't exist
-          console.warn(`Image not found: ${imageSrc}, falling back to default`);
-          e.target.src = '';
-        }}
-        loading="lazy"
-        {...props}
-      />
-      {exerciseName && (
-        <div className="exercise-name text-center mt-2 text-sm font-medium text-gray-700">
-          {exerciseName}
+    <div className="workout-image-container relative group">
+      <div className="relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
+        {imageSrc ? (
+          <img 
+            src={imageSrc} 
+            alt={imageAlt}
+            width={width}
+            height={height}
+            className={`workout-image w-full h-auto max-w-full object-cover transition-transform duration-500 group-hover:scale-105 ${className}`}
+            onError={(e) => {
+              // Fallback to default image if the specific one doesn't exist
+              console.warn(`Image not found: ${imageSrc}, falling back to default`);
+              e.target.src = '';
+              e.target.className += ' hidden'; // Hide broken images
+            }}
+            loading="lazy"
+            {...props}
+          />
+        ) : (
+          <div className="w-full h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+            <div className="text-center p-4">
+              <div className="w-16 h-16 bg-indigo-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <p className="text-gray-600 text-sm font-medium">No Image Available</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Exercise name overlay */}
+        {showName && exerciseName && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+            <div className="exercise-name text-white font-semibold text-lg text-center drop-shadow-md">
+              {exerciseName}
+            </div>
+          </div>
+        )}
+        
+        {/* Hover effect indicator */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-2xl pointer-events-none"></div>
+      </div>
+      
+      {/* Optional bottom label for non-overlay version */}
+      {showName && exerciseName && (
+        <div className="text-center mt-3 px-2">
+          <span className="inline-block bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full">
+            {exerciseName}
+          </span>
         </div>
       )}
     </div>

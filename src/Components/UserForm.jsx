@@ -442,7 +442,7 @@ const UserForm = ({ onSubmit }) => {
       {/* Background Image with Overlay - Fixed */}
       <div className="fixed inset-0 z-0">
         <img 
-          src="src/assets/Kyrie-fitness gym.jpg(1).jpg"
+          src="/images/Kyrie-fitness gym.jpg(1).jpg"
           alt="Gym background" 
           className="w-full h-full object-cover"
         />
@@ -472,7 +472,7 @@ const UserForm = ({ onSubmit }) => {
           <div className="flex items-center justify-center space-x-3 md:space-x-4 relative z-10">
             <div className="bg-gradient-to-br from-green-500 to-green-700 p-2 md:p-3 rounded-full shadow-lg shadow-green-500/50 animate-pulse-slow border border-green-400/50">
               <img 
-                src="src/assets/Kyrie-fitness gym.jpg" 
+                src="/images/Kyrie-fitness gym.jpg" 
                 alt="ASH-FIT Logo" 
                 className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
               />
