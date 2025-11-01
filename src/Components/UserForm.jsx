@@ -44,7 +44,6 @@ const UserForm = ({ onSubmit }) => {
     { value: 'light', label: 'Light Active', icon: '🚶', description: 'Light exercise 1-2 days/week' },
     { value: 'moderate', label: 'Moderately Active', icon: '🏃', description: 'Exercise 3-4 days/week' },
     { value: 'active', label: 'Very Active', icon: '🚴', description: 'Intense exercise 5-6 days/week' },
-    { value: 'extremelyActive', label: 'Extremely Active', icon: '🏋️', description: 'Professional athlete level' }
   ];
 
   const workoutPreferenceOptions = [
