@@ -802,6 +802,152 @@ const exerciseAlternatives = {
     { name: 'Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
     { name: 'Clap Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'intermediate' },
     { name: 'Plyometric Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'advanced' }
+  ],
+
+  'heel raises': [
+  { name: 'Single-Leg Calf Raises', equipment: 'bodyweight', muscleGroup: 'calves', difficulty: 'beginner' },
+  { name: 'Calf Raises on a Step', equipment: 'step', muscleGroup: 'calves', difficulty: 'beginner' },
+  { name: 'Bent-Knee Calf Raises', equipment: 'bodyweight', muscleGroup: 'calves', difficulty: 'beginner' },
+  { name: 'Jump Rope', equipment: 'jump rope', muscleGroup: 'calves', difficulty: 'intermediate' },
+  { name: 'Farmer\'s Walk on Toes', equipment: 'dumbbells', muscleGroup: 'calves', difficulty: 'intermediate' },
+  { name: 'Seated Calf Raises', equipment: 'machine', muscleGroup: 'calves', difficulty: 'beginner' }
+],
+
+'wall push-ups': [
+  { name: 'Incline Push-ups', equipment: 'bench', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Knee Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Counter Push-ups', equipment: 'counter', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Resistance Band Chest Press', equipment: 'resistance band', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Machine Chest Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Dumbbell Chest Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' }
+],
+
+'arm circles': [
+  { name: 'Shoulder Rolls', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'beginner' },
+  { name: 'Arm Swings', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'beginner' },
+  { name: 'Scapular Wall Slides', equipment: 'wall', muscleGroup: 'shoulders', difficulty: 'beginner' },
+  { name: 'Band Pull-Aparts', equipment: 'resistance band', muscleGroup: 'shoulders', difficulty: 'beginner' },
+  { name: 'Light Dumbbell Lateral Raises', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+  { name: 'Cable Shoulder Rotations', equipment: 'cable', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+],
+
+'breathing exercise': [
+  { name: 'Diaphragmatic Breathing', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Box Breathing', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: '4-7-8 Breathing', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Alternate Nostril Breathing', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Pursed Lip Breathing', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Kapalabhati Breathing', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' }
+],
+
+'neck rolls': [
+  { name: 'Chin Tucks', equipment: 'bodyweight', muscleGroup: 'neck', difficulty: 'beginner' },
+  { name: 'Side Neck Stretches', equipment: 'bodyweight', muscleGroup: 'neck', difficulty: 'beginner' },
+  { name: 'Forward Neck Stretches', equipment: 'bodyweight', muscleGroup: 'neck', difficulty: 'beginner' },
+  { name: 'Resistance Band Neck Flexion', equipment: 'resistance band', muscleGroup: 'neck', difficulty: 'intermediate' },
+  { name: 'Towel Neck Stretch', equipment: 'towel', muscleGroup: 'neck', difficulty: 'beginner' },
+  { name: 'Scalene Stretch', equipment: 'bodyweight', muscleGroup: 'neck', difficulty: 'beginner' }
+],
+
+'resistance band triceps extension': [
+  { name: 'Dumbbell Triceps Extension', equipment: 'dumbbells', muscleGroup: 'triceps', difficulty: 'beginner' },
+  { name: 'Cable Triceps Pushdown', equipment: 'cable', muscleGroup: 'triceps', difficulty: 'beginner' },
+  { name: 'Bench Dips', equipment: 'bench', muscleGroup: 'triceps', difficulty: 'beginner' },
+  { name: 'Close Grip Push-ups', equipment: 'bodyweight', muscleGroup: 'triceps', difficulty: 'intermediate' },
+  { name: 'Overhead Triceps Extension', equipment: 'dumbbells', muscleGroup: 'triceps', difficulty: 'beginner' },
+  { name: 'Skull Crushers', equipment: 'barbell', muscleGroup: 'triceps', difficulty: 'intermediate' }
+],
+
+'bird-dog': [
+  { name: 'Plank', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Dead Bug', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Superman', equipment: 'bodyweight', muscleGroup: 'back', difficulty: 'beginner' },
+  { name: 'Quadruped Limb Raises', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Stability Ball Bird Dog', equipment: 'stability ball', muscleGroup: 'core', difficulty: 'intermediate' },
+  { name: 'Cable Wood Chops', equipment: 'cable', muscleGroup: 'core', difficulty: 'intermediate' }
+],
+
+'bodyweight squats': [
+  { name: 'Chair Squats', equipment: 'chair', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Goblet Squats', equipment: 'dumbbell', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Wall Sits', equipment: 'wall', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Bodyweight Lunges', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Step-ups', equipment: 'step', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Machine Leg Press', equipment: 'machine', muscleGroup: 'legs', difficulty: 'beginner' }
+],
+
+'breathing with arm raises': [
+  { name: 'Sun Salutations', equipment: 'bodyweight', muscleGroup: 'full body', difficulty: 'beginner' },
+  { name: 'Breathing with Overhead Reach', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'beginner' },
+  { name: 'Rib Cage Breathing', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'beginner' },
+  { name: 'Breathing with Lateral Raises', equipment: 'bodyweight', muscleGroup: 'shoulders', difficulty: 'beginner' },
+  { name: 'Dynamic Chest Opener', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Breathing with Resistance Band Pulls', equipment: 'resistance band', muscleGroup: 'back', difficulty: 'intermediate' }
+],
+
+'machine chest press': [
+  { name: 'Barbell Bench Press', equipment: 'barbell', muscleGroup: 'chest', difficulty: 'intermediate' },
+  { name: 'Dumbbell Bench Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Push-ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Cable Chest Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' },
+  { name: 'Resistance Band Chest Press', equipment: 'resistance band', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Pec Deck Machine', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+  { name: 'Incline Dumbbell Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'intermediate' }
+],
+
+'stationary bike': [
+  { name: 'Outdoor Cycling', equipment: 'bicycle', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Spin Bike', equipment: 'spin bike', muscleGroup: 'legs', difficulty: 'intermediate' },
+  { name: 'Assault Bike', equipment: 'assault bike', muscleGroup: 'full body', difficulty: 'advanced' },
+  { name: 'Rowing Machine', equipment: 'rower', muscleGroup: 'full body', difficulty: 'intermediate' },
+  { name: 'Stair Climber', equipment: 'stair machine', muscleGroup: 'legs', difficulty: 'intermediate' },
+  { name: 'Jump Rope', equipment: 'jump rope', muscleGroup: 'legs', difficulty: 'intermediate' },
+  { name: 'High Knees', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'beginner' }
+],
+
+'elliptical trainer': [
+  { name: 'Treadmill', equipment: 'treadmill', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Stair Climber', equipment: 'stair machine', muscleGroup: 'legs', difficulty: 'intermediate' },
+  { name: 'Arc Trainer', equipment: 'arc trainer', muscleGroup: 'legs', difficulty: 'intermediate' },
+  { name: 'Rowing Machine', equipment: 'rower', muscleGroup: 'full body', difficulty: 'intermediate' },
+  { name: 'Cross-country Ski Machine', equipment: 'ski machine', muscleGroup: 'full body', difficulty: 'advanced' },
+  { name: 'Walking Lunges', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'beginner' },
+  { name: 'Mountain Climbers', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' }
+]
+
+};
+
+// Medical condition detection patterns
+const medicalConditionPatterns = {
+  backPain: [
+    'back pain', 'lower back pain', 'upper back pain', 'spinal', 'disc herniation', 
+    'sciatica', 'slipped disc', 'back injury', 'back problems', 'back issues',
+    'chronic back pain', 'acute back pain', 'back strain', 'back sprain'
+  ],
+  kneeProblems: [
+    'knee pain', 'knee problems', 'knee injury', 'knee issues', 'knee arthritis',
+    'torn meniscus', 'acl injury', 'mcl injury', 'knee surgery', 'knee replacement',
+    'patellar tendinitis', 'runner\'s knee', 'knee osteoarthritis', 'swollen knee'
+  ],
+  hypertension: [
+    'high blood pressure', 'hypertension', 'high bp', 'elevated blood pressure',
+    'blood pressure issues', 'hypertensive', 'hbp', 'stage 1 hypertension',
+    'stage 2 hypertension', 'hypertensive crisis'
+  ],
+  diabetes: [
+    'diabetes', 'type 2 diabetes', 'type 1 diabetes', 'high blood sugar',
+    'diabetic', 'insulin resistance', 'prediabetes', 'gestational diabetes',
+    'blood sugar problems', 'sugar issues'
+  ],
+  arthritis: [
+    'arthritis', 'osteoarthritis', 'rheumatoid arthritis', 'joint pain',
+    'joint inflammation', 'joint stiffness', 'arthritic', 'degenerative joint disease',
+    'inflammatory arthritis', 'joint problems'
+  ],
+  heartDisease: [
+    'heart disease', 'heart problems', 'cardiac issues', 'cardiovascular disease',
+    'heart condition', 'coronary artery disease', 'heart failure', 'arrhythmia',
+    'heart attack history', 'cardiac arrest', 'heart surgery', 'bypass surgery'
   ]
 };
 
@@ -935,61 +1081,206 @@ export const calculateProteinIntake = (weight, goal) => {
   return weight * (proteinMultipliers[goal] || 1.8);
 };
 
-// Function to detect medical conditions from user input
-const detectMedicalConditions = (medicalConditionsText) => {
-  if (!medicalConditionsText) return [];
+// Enhanced medical condition detection with workout preference consideration
+export const detectMedicalConditions = (medicalConditionsText, workoutPreference = 'general') => {
+  if (!medicalConditionsText || medicalConditionsText.trim() === '') return [];
   
   const conditions = [];
-  const text = medicalConditionsText.toLowerCase();
+  const text = medicalConditionsText.toLowerCase().trim();
   
-  // Check for common medical conditions
-  if (text.includes('back') || text.includes('spine') || text.includes('disc')) {
-    conditions.push('backPain');
-  }
-  if (text.includes('knee') || text.includes('joint') || text.includes('arthritis')) {
-    conditions.push('kneeProblems');
-  }
-  if (text.includes('blood pressure') || text.includes('hypertension') || text.includes('high bp')) {
-    conditions.push('hypertension');
-  }
-  if (text.includes('diabetes') || text.includes('sugar') || text.includes('blood sugar')) {
-    conditions.push('diabetes');
-  }
-  if (text.includes('heart') || text.includes('cardiac') || text.includes('cardiovascular')) {
-    conditions.push('heartDisease');
-  }
+  // Check for each medical condition pattern
+  Object.entries(medicalConditionPatterns).forEach(([condition, patterns]) => {
+    const hasCondition = patterns.some(pattern => text.includes(pattern));
+    if (hasCondition) {
+      conditions.push({
+        condition: condition,
+        severity: detectSeverity(text, condition),
+        workoutPreference: workoutPreference
+      });
+    }
+  });
   
   return conditions;
 };
 
-// Enhanced medical condition detection with workout preference consideration
-const detectMedicalConditionsWithPreference = (medicalConditionsText, workoutPreference) => {
-  if (!medicalConditionsText) return [];
+// Detect severity based on keywords in the text
+const detectSeverity = (text, condition) => {
+  const severeKeywords = ['severe', 'chronic', 'acute', 'extreme', 'debilitating', 'constant'];
+  const moderateKeywords = ['moderate', 'mild', 'occasional', 'intermittent'];
   
-  const conditions = [];
-  const text = medicalConditionsText.toLowerCase();
+  if (severeKeywords.some(keyword => text.includes(keyword))) {
+    return 'severe';
+  } else if (moderateKeywords.some(keyword => text.includes(keyword))) {
+    return 'moderate';
+  } else {
+    return 'mild';
+  }
+};
+
+// Get appropriate workout intensity based on condition and severity
+const getWorkoutIntensity = (condition, severity, fitnessLevel) => {
+  // Base intensity on condition severity
+  let baseIntensity = 'low';
   
-  // Check for common medical conditions
-  if (text.includes('back') || text.includes('spine') || text.includes('disc')) {
-    conditions.push('backPain');
-  }
-  if (text.includes('knee') || text.includes('joint') || text.includes('arthritis')) {
-    conditions.push('kneeProblems');
-  }
-  if (text.includes('blood pressure') || text.includes('hypertension') || text.includes('high bp')) {
-    conditions.push('hypertension');
-  }
-  if (text.includes('diabetes') || text.includes('sugar') || text.includes('blood sugar')) {
-    conditions.push('diabetes');
-  }
-  if (text.includes('heart') || text.includes('cardiac') || text.includes('cardiovascular')) {
-    conditions.push('heartDisease');
-  }
-  if (text.includes('arthritis')) {
-    conditions.push('arthritis');
+  if (severity === 'mild') {
+    baseIntensity = fitnessLevel === 'beginner' ? 'low' : 'moderate';
+  } else if (severity === 'moderate') {
+    baseIntensity = 'low';
+  } else if (severity === 'severe') {
+    baseIntensity = 'very low';
   }
   
-  return conditions;
+  // Adjust based on specific conditions
+  if (condition === 'heartDisease' || condition === 'hypertension') {
+    baseIntensity = 'low'; // Always low for heart conditions
+  }
+  
+  return baseIntensity;
+};
+
+// Get medical-specific notes and precautions
+const getMedicalNotes = (condition, severity) => {
+  const notes = {
+    backPain: {
+      mild: "Focus on core strengthening and proper form. Avoid heavy lifting and twisting motions.",
+      moderate: "Start with gentle mobility exercises. Consult with physical therapist for specific guidance.",
+      severe: "Rest and gentle stretching only. Consult healthcare provider before starting any exercise program."
+    },
+    kneeProblems: {
+      mild: "Low-impact exercises recommended. Focus on quadriceps and hamstring strengthening.",
+      moderate: "Avoid high-impact activities. Use supported exercises and maintain proper alignment.",
+      severe: "Minimal weight-bearing exercises. Focus on range of motion and gentle strengthening."
+    },
+    hypertension: {
+      mild: "Monitor blood pressure during exercise. Avoid heavy lifting and breath-holding.",
+      moderate: "Low to moderate intensity only. Focus on cardiovascular health and stress reduction.",
+      severe: "Light activity only under medical supervision. Avoid strenuous exercise."
+    },
+    diabetes: {
+      mild: "Monitor blood sugar levels. Stay hydrated and have quick sugar source available.",
+      moderate: "Consistent moderate exercise helps insulin sensitivity. Avoid exercise during peak insulin activity.",
+      severe: "Medical supervision recommended. Focus on gentle, consistent activity patterns."
+    },
+    arthritis: {
+      mild: "Gentle range of motion exercises. Warm up properly and avoid overexertion.",
+      moderate: "Low-impact activities only. Listen to joint feedback and adjust intensity accordingly.",
+      severe: "Focus on maintaining mobility. Avoid exercises that cause pain or inflammation."
+    },
+    heartDisease: {
+      mild: "Gradual progression recommended. Monitor heart rate and symptoms during exercise.",
+      moderate: "Supervised exercise program recommended. Avoid high-intensity activities.",
+      severe: "Medical clearance required. Very light activity only under supervision."
+    }
+  };
+  
+  return notes[condition]?.[severity] || "Consult with healthcare provider before starting any exercise program.";
+};
+
+// Generate medical workout plan based on detected conditions
+export const generateMedicalWorkoutPlanFromText = (medicalText, userData) => {
+  const { fitnessLevel, selectedDays, gender, workoutPreference, weight } = userData;
+  
+  // Detect conditions from text
+  const detectedConditions = detectMedicalConditions(medicalText, workoutPreference);
+  
+  if (detectedConditions.length === 0) {
+    return null; // No medical conditions detected
+  }
+  
+  // Use the primary condition (first detected)
+  const primaryCondition = detectedConditions[0];
+  const conditionKey = primaryCondition.condition;
+  const severity = primaryCondition.severity;
+  
+  // Get appropriate intensity
+  const workoutIntensity = getWorkoutIntensity(conditionKey, severity, fitnessLevel);
+  
+  // Get medical workouts for the condition
+  let medicalWorkouts = medicalConditionWorkouts[conditionKey] || [];
+  
+  // Filter by intensity
+  let filteredWorkouts = medicalWorkouts.filter(workout => 
+    workout.intensity === workoutIntensity || 
+    (workoutIntensity === 'very low' && workout.intensity === 'low')
+  );
+  
+  // If no workouts found for the exact intensity, get all available
+  if (filteredWorkouts.length === 0) {
+    filteredWorkouts = medicalWorkouts;
+  }
+  
+  // Further filter by workout preference to maintain training style
+  let preferenceFilteredWorkouts = [];
+  
+  if (workoutPreference === 'bodybuilding') {
+    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
+      workout.type === 'Bodybuilding' || 
+      workout.type === 'Upper Body Strength' ||
+      workout.type === 'Lower Body'
+    );
+  } else if (workoutPreference === 'powerlifting') {
+    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
+      workout.type === 'Powerlifting' ||
+      workout.type.includes('Strength')
+    );
+  } else if (workoutPreference === 'calisthenics') {
+    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
+      workout.type === 'Calisthenics' ||
+      workout.type === 'Bodyweight'
+    );
+  }
+  
+  // If preference filtering gives us too few exercises, include other types
+  if (preferenceFilteredWorkouts.length < selectedDays.length * 4) {
+    const additionalWorkouts = filteredWorkouts.filter(workout => 
+      !preferenceFilteredWorkouts.includes(workout)
+    );
+    preferenceFilteredWorkouts = [...preferenceFilteredWorkouts, ...additionalWorkouts.slice(0, 10)];
+  }
+  
+  // Ensure we have enough workouts
+  const totalWorkoutsNeeded = selectedDays.length * 4; // 4 workouts per day for medical conditions
+  let finalWorkouts = preferenceFilteredWorkouts;
+  
+  if (finalWorkouts.length < totalWorkoutsNeeded) {
+    // Add more workouts from the general medical pool if needed
+    const additionalNeeded = totalWorkoutsNeeded - finalWorkouts.length;
+    const extraWorkouts = medicalWorkouts
+      .filter(workout => !finalWorkouts.includes(workout))
+      .slice(0, additionalNeeded);
+    
+    finalWorkouts = [...finalWorkouts, ...extraWorkouts];
+  }
+  
+  // Distribute workouts across selected days (4 per day for medical conditions)
+  const workoutsPerDay = 4;
+  
+  const weeklyPlan = selectedDays.map((day, index) => {
+    const startIdx = index * workoutsPerDay;
+    const endIdx = startIdx + workoutsPerDay;
+    const dayWorkouts = finalWorkouts.slice(startIdx, endIdx);
+    
+    // Adjust workouts for gender if needed
+    const genderAdjustedWorkouts = dayWorkouts.map(workout => 
+      adjustWorkoutForGender(workout, gender, userData.fitnessGoal, weight)
+    );
+    
+    return {
+      day,
+      workouts: genderAdjustedWorkouts,
+      medicalCondition: conditionKey,
+      conditionSeverity: severity,
+      intensity: workoutIntensity,
+      workoutStyle: workoutPreference,
+      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
+      totalExercises: dayWorkouts.length,
+      isMedicalPlan: true,
+      medicalNotes: getMedicalNotes(conditionKey, severity)
+    };
+  });
+  
+  // Add alternatives to medical workout plan
+  return addAlternativesToWorkoutPlan(weeklyPlan);
 };
 
 // Filter workouts based on gender to avoid redundancy and inappropriate exercises
@@ -1083,132 +1374,19 @@ const addLegWorkoutForFemale = (weeklyPlan, gender, adjustedWorkouts) => {
   return weeklyPlan;
 };
 
-// Helper function to get workout type based on preference
-const getWorkoutTypeByPreference = (preference) => {
-  const preferenceMap = {
-    'bodybuilding': ['Bodybuilding', 'Upper Body Strength', 'Lower Body'],
-    'powerlifting': ['Powerlifting', 'Strength'],
-    'calisthenics': ['Calisthenics', 'Bodyweight']
-  };
-  
-  return preferenceMap[preference] || ['Strength', 'Cardio', 'Mobility'];
-};
-
-// Enhanced medical condition workout generation algorithm
-const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gender, workoutPreference) => {
-  // Use the first detected condition as primary
-  const primaryCondition = conditions[0];
-  let medicalWorkouts = medicalConditionWorkouts[primaryCondition] || [];
-  
-  // Filter medical workouts by gender
-  const genderFilteredWorkouts = filterWorkoutsByGender(medicalWorkouts, gender, 'medical');
-  
-  // Adjust intensity based on fitness level
-  let intensity = 'low';
-  if (fitnessLevel === 'intermediate') {
-    intensity = 'moderate';
-  } else if (fitnessLevel === 'advanced') {
-    intensity = 'moderate'; // Still keep it moderate for safety
-  }
-  
-  // Filter workouts by intensity first
-  const filteredWorkouts = genderFilteredWorkouts.filter(workout => workout.intensity === intensity);
-  
-  // Further filter by workout preference to maintain training style
-  let preferenceFilteredWorkouts = [];
-  
-  if (workoutPreference === 'bodybuilding') {
-    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
-      workout.type === 'Bodybuilding' || 
-      workout.type === 'Upper Body Strength' ||
-      workout.type === 'Lower Body'
-    );
-  } else if (workoutPreference === 'powerlifting') {
-    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
-      workout.type === 'Powerlifting' ||
-      workout.type.includes('Strength')
-    );
-  } else if (workoutPreference === 'calisthenics') {
-    preferenceFilteredWorkouts = filteredWorkouts.filter(workout => 
-      workout.type === 'Calisthenics' ||
-      workout.type === 'Bodyweight'
-    );
-  }
-  
-  // If preference filtering gives us too few exercises, include other types
-  if (preferenceFilteredWorkouts.length < selectedDays.length * 5) {
-    const additionalWorkouts = filteredWorkouts.filter(workout => 
-      !preferenceFilteredWorkouts.includes(workout)
-    );
-    preferenceFilteredWorkouts = [...preferenceFilteredWorkouts, ...additionalWorkouts];
-  }
-  
-  // Ensure we have enough workouts (at least 5 per day)
-  const totalWorkoutsNeeded = selectedDays.length * 5;
-  let finalWorkouts = preferenceFilteredWorkouts;
-  
-  if (finalWorkouts.length < totalWorkoutsNeeded) {
-    // Add more workouts from the general medical pool if needed
-    const additionalNeeded = totalWorkoutsNeeded - finalWorkouts.length;
-    const extraWorkouts = medicalWorkouts
-      .filter(workout => !finalWorkouts.includes(workout))
-      .slice(0, additionalNeeded);
-    
-    finalWorkouts = [...finalWorkouts, ...extraWorkouts];
-  }
-  
-  // If we still don't have enough, duplicate some with modifications
-  if (finalWorkouts.length < totalWorkoutsNeeded) {
-    const duplicatesNeeded = totalWorkoutsNeeded - finalWorkouts.length;
-    const availableWorkouts = [...finalWorkouts];
-    
-    for (let i = 0; i < duplicatesNeeded; i++) {
-      const originalWorkout = availableWorkouts[i % availableWorkouts.length];
-      const modifiedWorkout = {
-        ...originalWorkout,
-        id: originalWorkout.id * 1000 + i, // Create unique ID
-        name: `${originalWorkout.name} (Variation)`,
-        description: `${originalWorkout.description} - Modified variation for extended workout`
-      };
-      finalWorkouts.push(modifiedWorkout);
-    }
-  }
-  
-  // Distribute workouts across selected days (5 per day)
-  const workoutsPerDay = 5;
-  
-  const weeklyPlan = selectedDays.map((day, index) => {
-    const startIdx = index * workoutsPerDay;
-    const endIdx = startIdx + workoutsPerDay;
-    const dayWorkouts = finalWorkouts.slice(startIdx, endIdx);
-    
-    return {
-      day,
-      workouts: dayWorkouts,
-      medicalCondition: primaryCondition,
-      intensity: intensity,
-      workoutStyle: workoutPreference,
-      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
-      totalExercises: dayWorkouts.length
-    };
-  });
-  
-  // Add alternatives to medical workout plan
-  return addAlternativesToWorkoutPlan(weeklyPlan);
-};
-
-// Enhanced main workout generation function
+// Enhanced main workout generation function with medical condition detection
 export const generateInitialWorkoutPlan = (userData) => {
   const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender } = userData;
   
-  // Check if user has medical conditions
-  const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
-  
-  // If medical conditions are detected, prioritize medical workouts but maintain training style
-  if (detectedConditions.length > 0) {
-    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender, workoutPreference);
+  // Check if user has medical conditions and generate medical workout plan if detected
+  if (hasMedicalConditions && medicalConditions && medicalConditions.trim() !== '') {
+    const medicalPlan = generateMedicalWorkoutPlanFromText(medicalConditions, userData);
+    if (medicalPlan) {
+      return medicalPlan;
+    }
   }
   
+  // Original workout generation code for users without medical conditions
   let selectedWorkouts = [];
   let workoutSplit = [];
   
@@ -1292,7 +1470,8 @@ export const generateInitialWorkoutPlan = (userData) => {
       day,
       workouts: finalWorkouts.slice(startIdx, endIdx),
       genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
-      totalExercises: 5
+      totalExercises: 5,
+      isMedicalPlan: false
     };
   });
   
@@ -1316,6 +1495,7 @@ export const generateInitialWorkoutPlan = (userData) => {
   return weeklyPlan;
 };
 
+// Enhanced nutrition plan with medical considerations
 export const generateInitialNutritionPlan = (userData) => {
   const { age, weight, height, gender, activityLevel, fitnessGoal, hasMedicalConditions, medicalConditions } = userData;
   
@@ -1343,17 +1523,25 @@ export const generateInitialNutritionPlan = (userData) => {
   
   let carbPercentage = 0.5; // Default 50% carbs
   let fatPercentage = 0.25; // Default 25% fat
+  let medicalNutritionNotes = [];
   
   // Adjust macronutrients based on medical conditions
-  if (detectedConditions.includes('diabetes')) {
+  if (detectedConditions.some(cond => cond.condition === 'diabetes')) {
     carbPercentage = 0.4; // Lower carbs for diabetes
     fatPercentage = 0.35; // Higher healthy fats
-  } else if (detectedConditions.includes('hypertension')) {
+    medicalNutritionNotes.push("Lower carbohydrate intake to help manage blood sugar levels");
+  }
+  
+  if (detectedConditions.some(cond => cond.condition === 'hypertension')) {
     carbPercentage = 0.45; // Slightly lower carbs
     fatPercentage = 0.25; // Maintain fat
-  } else if (detectedConditions.includes('heartDisease')) {
+    medicalNutritionNotes.push("Reduced sodium intake recommended. Focus on potassium-rich foods.");
+  }
+  
+  if (detectedConditions.some(cond => cond.condition === 'heartDisease')) {
     carbPercentage = 0.4; // Lower carbs
     fatPercentage = 0.3; // Moderate fat with focus on healthy fats
+    medicalNutritionNotes.push("Emphasize heart-healthy fats (omega-3s) and limit saturated fats");
   }
   
   // For cutting plans, adjust macronutrients to prioritize protein and reduce carbs
@@ -1405,12 +1593,14 @@ export const generateInitialNutritionPlan = (userData) => {
     fatIntake: Math.round(fatIntake),
     meals,
     medicalConsiderations: detectedConditions.length > 0 ? 
-      `Nutrition plan adjusted for: ${detectedConditions.join(', ')}` : 
+      `Nutrition plan adjusted for: ${detectedConditions.map(c => c.condition).join(', ')}` : 
       'No specific medical considerations',
+    medicalNutritionNotes: medicalNutritionNotes,
     genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
     isCuttingPlan: isCuttingPlan,
     originalCalorieIntake: isCuttingPlan ? Math.round(calorieIntake) : null,
-    calorieDeficit: isCuttingPlan ? Math.round(calorieIntake - finalCalorieIntake) : 0
+    calorieDeficit: isCuttingPlan ? Math.round(calorieIntake - finalCalorieIntake) : 0,
+    detectedMedicalConditions: detectedConditions.map(c => c.condition)
   };
 };
 
@@ -1487,4 +1677,4 @@ export const selectAlternativeExercise = (originalWorkoutPlan, dayIndex, workout
 };
 
 // Export the alternative functions for external use
-export { findExerciseAlternatives, exerciseAlternatives };
+export { findExerciseAlternatives, exerciseAlternatives, medicalConditionPatterns };

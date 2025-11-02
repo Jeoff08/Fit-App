@@ -47,6 +47,10 @@ const getWorkoutImage = (exerciseName) => {
 
 
     // Shoulder exercises
+    'seated lateral raises': '/GIF2.0/Seated-Dumbbell-Lateral-Raise.gif',
+    'resistance band pull-apart': '/WorkoutsImage/Resistance-Band-Pull-Apart.gif',
+    'light dumbbell shrugs': '/WorkoutsImage/dumbbell-shrug.gif',
+    'seated face pull': '/WorkoutsImage/seated face pull.gif',
     'Arnold press': '/GIF/arnold-presses.gif',
     'dumbbell shoulder press': '/GIF/SEAT_DB_SHD_PRESS (1).gif',
     'dumbbell reverse fly': '/GIF/dumbbell-reverse-fly.gif',
@@ -122,6 +126,10 @@ const getWorkoutImage = (exerciseName) => {
     
     
     // Leg exercises
+    'wall sits': '/GIF2.0/wall-sit.gif',
+    'goblet squats': '/GIF/explosive-goblet-squat.gif',
+    'seated leg press (very light)': '/WorkoutsImage/leg-press.gif',
+    'seated calf raises (light)': '/GIF/SEAT_CALF_RAISE.gif',
     'landmine squat': '/GIF2.0/landmine-squat.gif',
     'barbell seated calf raises': '/GIF2.0/Barbell-Seated-Calf-Raise.gif',
     'dumbbell seated calf raises': '/GIF2.0/seated-calf-raise-dumbbell.gif',
@@ -174,6 +182,9 @@ const getWorkoutImage = (exerciseName) => {
     'safety bar squat': '/GIF/safety bar squat.gif',
     
     // Arm exercises
+    'machine bicep curls (light)': '/GIF/machine curl.gif',
+    'resistance band tricep extensions': '/WorkoutsImage/Triceps-Extension-with-Resistance-Bands.gif',
+    'resistance band bicep curls': '/WorkoutsImage/Resistance-Band-Curl.webp',
     'machine triceps extension': '/GIF2.0/TRI_EXT_MC.gif',
     'dumbbell overhead extension': '/GIF/SEAT_DB_TRI_EXT.gif',
     'barbell overhead extension': '/GIF2.0/bb-overhead.gif',
@@ -206,6 +217,9 @@ const getWorkoutImage = (exerciseName) => {
     
     
     // Core/Ab exercises
+    'Breathing with Resistance Band Pulls': '/GIF2.0/Breathing with Resistance Band Pulls.gif',
+    'Dynamic Chest Opener': '/GIF2.0/Dynamic Chest Opener.gif', 
+    'Breathing with Overhead Reach': '/GIF2.0/Breathing with Overhead Reach.gif',
     'plate crunches': '/WorkoutsImage/weighted-knee-crunch.gif',
     'sit-ups': '/GIF/anim-sit-ups.gif',
     'sit-up': '',
@@ -246,15 +260,21 @@ const getWorkoutImage = (exerciseName) => {
     
     // Machine exercises
     'chest press machine': '/GIF/DEC_CHEST_MAC.gif',
+    'machine chest press (light)': '/GIF/Chest-Press-Machine.gif',
     'incline machine chest press': '/WorkoutsImage/Incline-Chest-Press-Machine.gif',
     'shoulder press machine': '',
     'leg press machine': '',
     'cable machine': '',
     'smith machine': '',
     'machine preacher curls': '/GIF/PREA_CURL_MAC.gif',
+    'wall push-ups': '/WorkoutsImage/Wall-Push-ups.gif',
     
     
     // Bodyweight exercises
+    'sun salutations': '/GIF2.0/sun-salutation-b.webp',
+    'step-ups': '/GIF/WEI_STEP_UP.gif',
+    'bodyweight squats': '/GIF/bodyweight-squat.gif',
+    'bodyweight squats (limited depth)': '/GIF/bodyweight-squat.gif',
     'close grip push ups': '/GIF2.0/-Close-Grip-Push-up_Upper-Arms_360.gif',
     'push-ups': '/GIF/anim-push-ups.gif',
     'dip': '',
@@ -298,11 +318,23 @@ const getWorkoutImage = (exerciseName) => {
 
 
     // Stretching and mobility
-    'stretch': '',
+    'light resistance training': '',
     'yoga': '',
-    'pilates': '',
-    'dynamic stretch': '',
-    'static stretch': ''
+    'Cable Wood Chops': '/GIF2.0/Dumbbell-Wood-Chop.webp',
+    'quadruped limb raises': '/GIF2.0/quadruped-leg-curl.gif',
+    'superman': '/GIF2.0/superman exercise.gif',
+    'chair squats': '/GIF2.0/Chair+squats.gif',
+    'breathing with arm raises': '/GIF2.0/breathing.gif',
+    'bird-dog': '/GIF2.0/1712e59ba06e7f8c5e69c3dda17a46a4.gif',
+    'neck roll': '/GIF/neck roll.gif',
+    'heel raises': '/GIF2.0/heel raises.gif',
+    'arm circles ': '/GIF2.0/anim-arm-circles-stretch.gif',
+    'Resistance band squats': '/WorkoutsImage/resistance-band-squat.gif',
+    'elliptical trainer': '/GIF/Elliptical-Machine.gif',
+    'cycling (stationary)': '/WorkoutsImage/Bike (1).gif',
+    'resistance band exercises': '/WorkoutsImage/band-pull-through.gif'
+    
+    
   };
 
   // First, check for exact match
