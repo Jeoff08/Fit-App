@@ -88,7 +88,7 @@ const Dashboard = ({
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-20 transition-all duration-1000"
         style={{ 
-          backgroundImage: `url('src/assets/Kyrie-fitness gym.jpg(2).jpg')`
+          backgroundImage: `url('public/images/Kyrie-fitness gym.jpg(2).jpg')`
         }}
       ></div>
       

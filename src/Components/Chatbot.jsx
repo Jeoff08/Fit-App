@@ -473,7 +473,7 @@ const Chatbot = ({ onClose }) => {
                 transition={{ type: "spring", stiffness: 300, delay: 0.4 }}
                 className="text-sm sm:text-lg md:text-xl lg:text-3xl font-bold mb-0 sm:mb-1 md:mb-2 drop-shadow truncate"
               >
-                {isMobile ? 'Fitness Pro' : 'Fitness & Health Pro'}
+                {isMobile ? 'ASH-Fit AI' : 'ASH-Fit V coach'}
               </motion.h2>
               <motion.p 
                 initial={{ opacity: 0, y: 5 }}

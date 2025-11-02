@@ -99,7 +99,7 @@ const Influencers = () => {
     return () => unsubscribe();
   }, [userId]);
 
-  // Enhanced heuristic algorithm to adjust workout based on user data
+  // Heuristic algorithm to adjust workout based on user data
   const adjustWorkoutForUser = (exercises, userData) => {
     if (!userData || !userData.fitnessLevel) return exercises;
 
@@ -109,65 +109,32 @@ const Influencers = () => {
       // Adjust based on fitness level
       switch (userData.fitnessLevel.toLowerCase()) {
         case 'beginner':
-          // Reduce sets for beginners
           if (adjustedExercise.sets > 3) {
             adjustedExercise.sets = 3;
-          } else if (adjustedExercise.sets < 2) {
-            adjustedExercise.sets = 2;
-          }
-          
-          // Increase reps for beginners (higher reps for form practice)
-          if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
-            const [min, max] = adjustedExercise.reps.split('-').map(Number);
-            adjustedExercise.reps = `${Math.max(10, min + 2)}-${Math.max(15, max + 3)}`;
-          } else if (typeof adjustedExercise.reps === 'number') {
-            adjustedExercise.reps = Math.min(15, Math.max(10, adjustedExercise.reps + 3));
-          } else {
-            // Default for beginners if reps format is unknown
-            adjustedExercise.reps = '10-15';
-          }
-          
-          // Longer rest periods for beginners
-          if (adjustedExercise.rest) {
-            adjustedExercise.rest = `90-120s`;
-          } else {
-            adjustedExercise.rest = '90-120s';
-          }
-          break;
-          
-        case 'intermediate':
-          // Moderate adjustments for intermediates
-          if (adjustedExercise.sets > 4) {
-            adjustedExercise.sets = 4;
           }
           
           if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
             const [min, max] = adjustedExercise.reps.split('-').map(Number);
-            adjustedExercise.reps = `${Math.max(8, min)}-${Math.max(12, max)}`;
+            adjustedExercise.reps = `${Math.max(8, min - 2)}-${Math.max(12, max - 2)}`;
           } else if (typeof adjustedExercise.reps === 'number') {
             adjustedExercise.reps = Math.min(12, Math.max(8, adjustedExercise.reps));
           }
           
           if (adjustedExercise.rest) {
-            adjustedExercise.rest = `60-90s`;
+            adjustedExercise.rest = `90-120s`;
+          }
+          break;
+          
+        case 'intermediate':
+          if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
+            const [min, max] = adjustedExercise.reps.split('-').map(Number);
+            adjustedExercise.reps = `${Math.max(6, min - 1)}-${Math.max(10, max - 1)}`;
           }
           break;
           
         case 'advanced':
-          // Keep or slightly increase intensity for advanced users
           if (adjustedExercise.sets < 4) {
             adjustedExercise.sets += 1;
-          }
-          
-          if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
-            const [min, max] = adjustedExercise.reps.split('-').map(Number);
-            adjustedExercise.reps = `${Math.max(6, min - 1)}-${Math.max(10, max - 1)}`;
-          } else if (typeof adjustedExercise.reps === 'number') {
-            adjustedExercise.reps = Math.max(6, adjustedExercise.reps - 2);
-          }
-          
-          if (adjustedExercise.rest) {
-            adjustedExercise.rest = `45-60s`;
           }
           break;
           
@@ -175,7 +142,7 @@ const Influencers = () => {
           break;
       }
       
-      // Additional adjustments for age if available
+      // Adjust for age if available
       if (userData.age && userData.age > 40) {
         if (adjustedExercise.sets > 3) {
           adjustedExercise.sets = 3;
@@ -183,7 +150,7 @@ const Influencers = () => {
         
         if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
           const [min, max] = adjustedExercise.reps.split('-').map(Number);
-          adjustedExercise.reps = `${Math.max(10, min)}-${Math.max(15, max)}`;
+          adjustedExercise.reps = `${Math.max(8, min)}-${Math.max(12, max)}`;
         }
         
         if (adjustedExercise.rest) {
@@ -193,41 +160,16 @@ const Influencers = () => {
       
       // Adjust for weight goals
       if (userData.fitnessGoal === 'weightLoss') {
-        // Higher reps for endurance and calorie burn
         if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
           const [min, max] = adjustedExercise.reps.split('-').map(Number);
-          adjustedExercise.reps = `${min + 3}-${max + 5}`;
+          adjustedExercise.reps = `${min + 2}-${max + 4}`;
         } else if (typeof adjustedExercise.reps === 'number') {
-          adjustedExercise.reps = adjustedExercise.reps + 5;
-        }
-        
-        // Shorter rest for metabolic effect
-        if (adjustedExercise.rest) {
-          adjustedExercise.rest = `30-60s`;
+          adjustedExercise.reps = adjustedExercise.reps + 4;
         }
       } else if (userData.fitnessGoal === 'muscleGain') {
-        // Moderate reps for hypertrophy
         if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
           const [min, max] = adjustedExercise.reps.split('-').map(Number);
-          adjustedExercise.reps = `${Math.max(8, min)}-${Math.max(12, max)}`;
-        }
-        
-        // Adequate rest for recovery between sets
-        if (adjustedExercise.rest) {
-          adjustedExercise.rest = `60-90s`;
-        }
-      } else if (userData.fitnessGoal === 'strength') {
-        // Lower reps for strength focus
-        if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
-          const [min, max] = adjustedExercise.reps.split('-').map(Number);
-          adjustedExercise.reps = `${Math.max(4, min - 2)}-${Math.max(8, max - 2)}`;
-        } else if (typeof adjustedExercise.reps === 'number') {
-          adjustedExercise.reps = Math.max(4, adjustedExercise.reps - 3);
-        }
-        
-        // Longer rest for strength recovery
-        if (adjustedExercise.rest) {
-          adjustedExercise.rest = `120-180s`;
+          adjustedExercise.reps = `${Math.max(6, min)}-${Math.max(10, max)}`;
         }
       }
       
@@ -811,28 +753,22 @@ const Influencers = () => {
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full bg-black border border-green-600 text-white px-3 py-2 rounded-lg focus:outline-none focus:border-green-400 transition-all duration-300 shadow-lg text-sm flex justify-between items-center"
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 flex items-center justify-between border border-green-500 text-sm"
               >
-                <span>
-                  {selectedCategory === 'all' ? 'All Categories' : 
-                   selectedCategory === 'bodybuilders' ? 'Classic Bodybuilders' :
-                   selectedCategory === 'modern' ? 'Modern Influencers' :
-                   selectedCategory === 'science' ? 'Science-Based' :
-                   selectedCategory === 'coaches' ? 'Professional Coaches' : 'All Categories'}
-                </span>
+                <span>{selectedCategory === 'all' ? 'All Categories' : selectedCategory}</span>
                 <svg className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-black border border-green-600 rounded-lg shadow-xl z-10">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-black border border-green-600 rounded-lg shadow-2xl z-10">
                   {[
                     { value: 'all', label: 'All Categories' },
-                    { value: 'bodybuilders', label: 'Classic Bodybuilders' },
+                    { value: 'bodybuilders', label: 'Bodybuilders' },
                     { value: 'modern', label: 'Modern Influencers' },
                     { value: 'science', label: 'Science-Based' },
-                    { value: 'coaches', label: 'Professional Coaches' }
+                    { value: 'coaches', label: 'Coaches' }
                   ].map((category) => (
                     <button
                       key={category.value}
@@ -840,11 +776,9 @@ const Influencers = () => {
                         setSelectedCategory(category.value);
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm transition-colors duration-200 ${
-                        selectedCategory === category.value 
-                          ? 'bg-green-600 text-white' 
-                          : 'text-gray-300 hover:bg-green-800'
-                      } first:rounded-t-lg last:rounded-b-lg`}
+                      className={`w-full text-left px-3 py-2 hover:bg-green-600 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg text-sm ${
+                        selectedCategory === category.value ? 'bg-green-700 text-white' : 'text-gray-300'
+                      }`}
                     >
                       {category.label}
                     </button>
@@ -855,29 +789,20 @@ const Influencers = () => {
           </div>
         </div>
 
-        {!selectedInfluencer ? (
-          <div>
-            {filteredInfluencers.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="text-gray-400 text-lg mb-2">No influencers found</div>
-                <p className="text-gray-500 text-sm">Try adjusting your search or category</p>
-              </div>
-            ) : (
-              <PictureGrid influencers={filteredInfluencers} />
-            )}
-          </div>
+        {selectedInfluencer ? (
+          <InfluencerCard influencer={selectedInfluencer} />
         ) : (
-          <div>
+          <PictureGrid influencers={filteredInfluencers} />
+        )}
+
+        {selectedInfluencer && (
+          <div className="text-center mt-4">
             <button
               onClick={handleBackToGrid}
-              className="mb-4 flex items-center text-green-400 hover:text-green-300 transition-colors duration-300 font-medium text-sm"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-black uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-lg border border-green-500 text-sm"
             >
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
               Back to All Influencers
             </button>
-            <InfluencerCard influencer={selectedInfluencer} />
           </div>
         )}
 
