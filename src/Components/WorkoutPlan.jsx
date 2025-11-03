@@ -2329,7 +2329,6 @@ const WorkoutPlan = ({
           )}
         </div>
       )}
-      // Exercise Details Modal
       {isModalOpen && selectedExercise && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-gray-800 rounded-xl shadow-2xl border border-gray-700/50 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
