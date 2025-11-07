@@ -1,6 +1,6 @@
 // ProgressTracker.jsx
 import React, { useState, useEffect } from 'react';
-import UserForm from './UserForm';
+import UserForm from '../Components/UserForm';
 import { db } from '../Config/firebaseconfig';
 import { doc, getDoc, updateDoc, arrayUnion, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
