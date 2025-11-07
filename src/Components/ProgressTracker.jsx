@@ -1,6 +1,6 @@
 // ProgressTracker.jsx
 import React, { useState, useEffect } from 'react';
-import UserForm from '../Components/UserForm';
+import UserForm from './UserForm';
 import { db } from '../Config/firebaseconfig';
 import { doc, getDoc, updateDoc, arrayUnion, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -53,6 +53,10 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     generatePlan: false,
     clearWorkouts: false
   });
+
+  // New state for regeneration notification
+  const [showRegenerateNotification, setShowRegenerateNotification] = useState(false);
+  const [lastProgressDate, setLastProgressDate] = useState(null);
 
   // Enhanced responsive design with media queries
   useEffect(() => {
@@ -128,11 +132,36 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         generateChartData(userProgress.workoutHistory);
         
         checkAndAdjustWorkouts(userProgress);
+        checkForRegenerationNotification(userProgress); // Check for regeneration notification
       }
     });
 
     return () => unsubscribe();
   }, [userId]);
+
+  // New function to check if user needs regeneration notification
+  const checkForRegenerationNotification = (userProgress) => {
+    if (!userProgress.workoutHistory || userProgress.workoutHistory.length === 0) {
+      return; // No workouts yet, no notification needed
+    }
+
+    // Get the most recent workout date
+    const sortedWorkouts = [...userProgress.workoutHistory].sort((a, b) => 
+      new Date(b.completionDate) - new Date(a.completionDate)
+    );
+    
+    const lastWorkoutDate = new Date(sortedWorkouts[0].completionDate);
+    const currentDate = new Date();
+    const daysSinceLastWorkout = Math.floor((currentDate - lastWorkoutDate) / (1000 * 60 * 60 * 24));
+    
+    // Check if it's been 14-21 days (2-3 weeks) since last progress
+    if (daysSinceLastWorkout >= 14 && daysSinceLastWorkout <= 21) {
+      setShowRegenerateNotification(true);
+      setLastProgressDate(lastWorkoutDate.toLocaleDateString());
+    } else {
+      setShowRegenerateNotification(false);
+    }
+  };
 
   const checkAndAdjustWorkouts = async (userProgress) => {
     if (!userProgress.goalWeight || !userProgress.weightGoalSetDate || !userId) return;
@@ -216,6 +245,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         setProgress(userProgress);
         calculateWorkoutStats(userProgress.workoutHistory);
         generateChartData(userProgress.workoutHistory);
+        checkForRegenerationNotification(userProgress); // Check on initialization
       } else {
         const emptyProgress = {
           workoutHistory: [],
@@ -615,6 +645,11 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     setShowUserForm(true);
   };
 
+  // New function to handle regeneration notification
+  const handleRegenerateNotificationClose = () => {
+    setShowRegenerateNotification(false);
+  };
+
   const WeeklyProgressModal = () => {
     if (!showWeeklyModal || !selectedWeekData) return null;
 
@@ -774,6 +809,72 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
               >
                 Set Goal
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // New Regeneration Notification Component
+  const RegenerationNotification = () => {
+    if (!showRegenerateNotification) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+        <div className="bg-black rounded-2xl md:rounded-3xl shadow-2xl max-w-md w-full border-2 border-orange-500 gym-border">
+          <div className="p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
+                Time for a Refresh! 🔄
+              </h2>
+              <button
+                onClick={handleRegenerateNotificationClose}
+                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors gym-button"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-gray-900 rounded-lg p-4 border border-green-500">
+                <div className="text-center mb-3">
+                  <div className="text-4xl mb-2">💡</div>
+                  <h3 className="text-lg font-bold text-white gym-text mb-2">
+                    Boost Your Progress!
+                  </h3>
+                </div>
+                
+                <div className="space-y-2 text-sm text-green-300">
+                  <p>It's been <span className="text-orange-400 font-bold">2-3 weeks</span> since your last workout on <span className="text-orange-400">{lastProgressDate}</span>.</p>
+                  <p>Your body may have adapted to your current routine. Regenerating your workout plan can help:</p>
+                  
+                  <ul className="list-disc list-inside space-y-1 text-green-400">
+                    <li>Break through plateaus</li>
+                    <li>Prevent workout boredom</li>
+                    <li>Challenge new muscle groups</li>
+                    <li>Accelerate your results</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={handleRegenerateNotificationClose}
+                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm gym-button"
+                >
+                  Maybe Later
+                </button>
+                <button
+                  onClick={() => {
+                    handleRegenerateNotificationClose();
+                    handleGenerateNewPlanClick();
+                  }}
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
+                >
+                  Generate New Plan
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1287,6 +1388,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       {/* Modals */}
       <WeeklyProgressModal />
       <WeightInputModal />
+      <RegenerationNotification />
     </div>
   );
 };
