@@ -416,7 +416,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
 
         console.log('User data saved to Firestore');
         
-        window.location.href = '/workout-plan';
+        // window.location.href = '/workout-plan';
         setShowUserForm(false);
       } catch (error) {
         console.error('Error saving user data to Firestore:', error);
