@@ -1761,6 +1761,340 @@ const WorkoutPlan = ({
         "Arm Circles - 30 seconds forward, 30 seconds backward",
         "Bodyweight Squats - 10-15 reps",
       ];
+
+      // STRETCHING EXERCISES
+  if (matchesExercise(["hamstring stretch", "hamstring stretch"])) {
+    details.description = "Hamstring stretches improve flexibility in the back of your thighs, reduce lower back tension, and enhance overall leg mobility. Essential for preventing injuries and improving posture.";
+    details.properForm = [
+      "Sit on floor with one leg extended, other bent with foot against inner thigh",
+      "Keep extended leg straight with toes pointing up",
+      "Slowly hinge forward from hips, not waist",
+      "Reach toward toes until gentle stretch is felt",
+      "Hold for 20-30 seconds while breathing deeply",
+      "Keep back as straight as possible during stretch"
+    ];
+    details.commonMistakes = [
+      "Rounding the back excessively",
+      "Bouncing during the stretch",
+      "Pulling too hard causing pain",
+      "Holding breath instead of breathing deeply",
+      "Not keeping the extended leg straight"
+    ];
+    details.equipment = "Mat/Yoga Mat";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Hamstrings", "Lower Back", "Glutes"];
+    details.warmupExercises = [
+      "Light Jogging - 2-3 minutes to warm muscles",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Gentle Hip Circles - 30 seconds each direction"
+    ];
+  } else if (matchesExercise(["quad stretch", "quadriceps stretch"])) {
+    details.description = "Quad stretches target the front thigh muscles, improving knee flexibility and reducing tension in the quadriceps. Important for runners and athletes.";
+    details.properForm = [
+      "Stand holding wall or chair for balance",
+      "Bend one knee and grab ankle with same-side hand",
+      "Gently pull heel toward glutes until stretch is felt",
+      "Keep knees together and standing leg slightly bent",
+      "Hold for 20-30 seconds while maintaining upright posture",
+      "Avoid arching lower back during stretch"
+    ];
+    details.commonMistakes = [
+      "Letting knees drift apart",
+      "Arching lower back excessively",
+      "Pulling too hard on ankle",
+      "Not using support for balance",
+      "Holding stretch too briefly"
+    ];
+    details.equipment = "Wall/Chair for support";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Quadriceps", "Hip Flexors"];
+    details.warmupExercises = [
+      "Light Jogging - 2-3 minutes",
+      "Leg Swings - 30 seconds forward",
+      "Bodyweight Squats - 10-15 reps"
+    ];
+  } else if (matchesExercise(["calf stretch", "calf stretches"])) {
+    details.description = "Calf stretches improve ankle mobility and flexibility in the gastrocnemius and soleus muscles. Essential for walking, running, and preventing shin splints.";
+    details.properForm = [
+      "Stand facing wall with hands at shoulder height",
+      "Step one foot back, keeping heel flat on ground",
+      "Bend front knee while keeping back leg straight",
+      "Lean forward until stretch is felt in calf",
+      "Hold for 20-30 seconds, then switch legs",
+      "Keep both feet pointing forward"
+    ];
+    details.commonMistakes = [
+      "Lifting back heel off ground",
+      "Letting back knee bend",
+      "Feet pointing outward or inward",
+      "Rushing the stretch",
+      "Not keeping body aligned"
+    ];
+    details.equipment = "Wall";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Gastrocnemius", "Soleus"];
+    details.warmupExercises = [
+      "Ankle Circles - 30 seconds each direction",
+      "Calf Raises - 15-20 reps",
+      "Light Jogging - 2-3 minutes"
+    ];
+  } else if (matchesExercise(["hip flexor stretch", "hip flexors stretch"])) {
+    details.description = "Hip flexor stretches target the front of the hips, combating tightness from sitting and improving hip mobility for better movement patterns.";
+    details.properForm = [
+      "Kneel on one knee with other foot forward (lunge position)",
+      "Keep front knee at 90-degree angle",
+      "Gently push hips forward until stretch is felt",
+      "Engage glutes and core during stretch",
+      "Hold for 20-30 seconds, then switch sides",
+      "Keep torso upright throughout"
+    ];
+    details.commonMistakes = [
+      "Letting front knee go past toes",
+      "Arching lower back",
+      "Not engaging core muscles",
+      "Rushing the stretch",
+      "Insufficient hip forward movement"
+    ];
+    details.equipment = "Mat (optional)";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Hip Flexors", "Psoas", "Quadriceps"];
+    details.warmupExercises = [
+      "Hip Circles - 30 seconds each direction",
+      "Leg Swings - 30 seconds forward",
+      "Bodyweight Lunges - 10 reps per side"
+    ];
+  } else if (matchesExercise(["chest stretch", "chest stretches"])) {
+    details.description = "Chest stretches open up the pectoral muscles and shoulders, counteracting hunched posture from sitting and improving upper body mobility.";
+    details.properForm = [
+      "Stand in doorway or next to wall",
+      "Place forearm against door frame at 90-degree angle",
+      "Gently lean forward until stretch is felt in chest",
+      "Keep shoulders relaxed and down",
+      "Hold for 20-30 seconds, then switch arms",
+      "Breathe deeply throughout stretch"
+    ];
+    details.commonMistakes = [
+      "Shrugging shoulders up",
+      "Leaning too far too quickly",
+      "Holding breath",
+      "Not maintaining proper arm position",
+      "Stretching to the point of pain"
+    ];
+    details.equipment = "Doorway/Wall";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Pectoralis Major", "Anterior Deltoids"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Shoulder Rolls - 30 seconds each direction",
+      "Light Band Pull-Aparts - 10-15 reps"
+    ];
+  } else if (matchesExercise(["triceps stretch", "tricep stretch"])) {
+    details.description = "Triceps stretches target the back of the arms, improving shoulder and elbow mobility while relieving tension in the upper arms.";
+    details.properForm = [
+      "Stand or sit with tall posture",
+      "Raise one arm overhead and bend elbow",
+      "Use opposite hand to gently pull elbow behind head",
+      "Keep head neutral and shoulders relaxed",
+      "Hold for 20-30 seconds, then switch arms",
+      "Feel stretch along back of upper arm"
+    ];
+    details.commonMistakes = [
+      "Pulling too hard on elbow",
+      "Leaning to one side",
+      "Holding breath during stretch",
+      "Not keeping shoulders relaxed",
+      "Rushing the movement"
+    ];
+    details.equipment = "None";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Triceps", "Shoulders"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Shoulder Rolls - 30 seconds each direction",
+      "Light Triceps Extensions - 10-12 reps"
+    ];
+  } else if (matchesExercise(["child pose", "child's pose"])) {
+    details.description = "Child's Pose is a restorative yoga stretch that releases tension in the back, shoulders, and hips while promoting relaxation and deep breathing.";
+    details.properForm = [
+      "Kneel on mat with big toes touching and knees wide",
+      "Sit back on heels and fold forward",
+      "Rest forehead on mat and extend arms forward",
+      "Relax shoulders toward ground",
+      "Hold for 30-60 seconds, breathing deeply",
+      "Allow entire body to relax into the stretch"
+    ];
+    details.commonMistakes = [
+      "Not relaxing shoulders completely",
+      "Holding tension in neck or back",
+      "Breathing shallowly",
+      "Rushing the pose",
+      "Not allowing knees to spread comfortably"
+    ];
+    details.equipment = "Yoga Mat";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Back", "Shoulders", "Hips", "Glutes"];
+    details.warmupExercises = [
+      "Cat-Cow Stretch - 10-12 reps",
+      "Deep Breathing - 5-10 slow breaths",
+      "Gentle Spinal Twists - 30 seconds each side"
+    ];
+  }
+
+  // CARDIO EXERCISES
+  else if (matchesExercise(["running", "jogging", "treadmill"])) {
+    details.description = "Running is a fundamental cardiovascular exercise that improves heart health, endurance, and calorie burn. It can be performed outdoors or on a treadmill with varying intensity levels.";
+    details.properForm = [
+      "Maintain upright posture with slight forward lean",
+      "Land mid-foot with each stride, not on heel",
+      "Keep shoulders relaxed and down",
+      "Bend elbows at 90 degrees, swing arms forward and back",
+      "Take quick, light steps rather than long strides",
+      "Breathe rhythmically in through nose, out through mouth"
+    ];
+    details.commonMistakes = [
+      "Overstriding (landing with foot too far forward)",
+      "Hunching shoulders up toward ears",
+      "Looking down instead of forward",
+      "Holding tension in hands and arms",
+      "Breathing shallowly instead of deeply"
+    ];
+    details.equipment = "Running Shoes, Treadmill (optional)";
+    details.difficulty = "Beginner-Advanced";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Jogging - 5 minutes at slow pace",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "High Knees - 30 seconds to activate hip flexors"
+    ];
+  } else if (matchesExercise(["cycling", "bike", "stationary bike"])) {
+    details.description = "Cycling is a low-impact cardiovascular exercise that builds leg strength and endurance while being gentle on the joints. It can be performed outdoors or on stationary equipment.";
+    details.properForm = [
+      "Adjust seat height so knee has slight bend at bottom of pedal stroke",
+      "Keep shoulders relaxed, elbows slightly bent",
+      "Maintain neutral spine, avoid rounding back",
+      "Push and pull through full pedal revolution",
+      "Keep feet parallel to ground during cycling",
+      "Use gears appropriately for terrain/resistance"
+    ];
+    details.commonMistakes = [
+      "Seat too high or too low causing knee strain",
+      "Hunching over handlebars excessively",
+      "Pedaling in too high or too low gear",
+      "Not using full pedal stroke (only pushing down)",
+      "Holding tension in upper body"
+    ];
+    details.equipment = "Bicycle/Stationary Bike, Helmet";
+    details.difficulty = "Beginner-Advanced";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Cycling - 5 minutes at easy resistance",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Ankle Circles - 30 seconds each direction"
+    ];
+  } else if (matchesExercise(["jump rope", "jump ropeing", "skipping rope"])) {
+    details.description = "Jump rope is an excellent cardiovascular exercise that improves coordination, foot speed, and endurance while burning significant calories in a short time.";
+    details.properForm = [
+      "Stand with feet together, rope behind heels",
+      "Hold handles at hip level, elbows close to body",
+      "Use wrists to swing rope, not whole arms",
+      "Jump just high enough to clear rope (1-2 inches)",
+      "Land softly on balls of feet, knees slightly bent",
+      "Keep jumps small and efficient"
+    ];
+    details.commonMistakes = [
+      "Jumping too high off ground",
+      "Using arms instead of wrists to swing rope",
+      "Looking down at feet instead of forward",
+      "Holding tension in shoulders",
+      "Landing flat-footed or with straight legs"
+    ];
+    details.equipment = "Jump Rope";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Calves", "Quadriceps", "Shoulders", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Jogging - 2-3 minutes",
+      "Ankle Circles - 30 seconds each direction",
+      "Calf Raises - 15-20 reps",
+      "Wrist Circles - 30 seconds each direction"
+    ];
+  } else if (matchesExercise(["rowing", "rower", "rowing machine"])) {
+    details.description = "Rowing is a full-body cardiovascular exercise that engages both upper and lower body muscles while providing excellent cardiovascular benefits with low joint impact.";
+    details.properForm = [
+      "Start with knees bent, arms straight (catch position)",
+      "Drive back with legs while keeping back straight",
+      "When legs are nearly extended, lean back slightly",
+      "Pull handle to lower chest, elbows going back",
+      "Extend arms, hinge forward from hips, then bend knees",
+      "Maintain smooth, continuous motion throughout"
+    ];
+    details.commonMistakes = [
+      "Using arms before legs in the drive phase",
+      "Rounding back during the pull",
+      "Pulling handle too high (to neck level)",
+      "Rushing the recovery phase",
+      "Not using full leg drive"
+    ];
+    details.equipment = "Rowing Machine";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Back", "Shoulders", "Arms", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Rowing - 5 minutes at easy pace",
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Bodyweight Squats - 10-15 reps",
+      "Shoulder Rolls - 30 seconds each direction"
+    ];
+  } else if (matchesExercise(["elliptical", "elliptical trainer"])) {
+    details.description = "The elliptical trainer provides a low-impact cardiovascular workout that mimics running motion without joint stress, making it ideal for all fitness levels and rehabilitation.";
+    details.properForm = [
+      "Stand tall with shoulders back and down",
+      "Grab moving handles to engage upper body",
+      "Push through heels, not toes",
+      "Keep knees aligned with feet during motion",
+      "Maintain upright posture throughout",
+      "Use full range of motion in legs and arms"
+    ];
+    details.commonMistakes = [
+      "Leaning too heavily on handrails",
+      "Rising up on toes during push phase",
+      "Hunching forward over console",
+      "Not using full stride length",
+      "Letting knees collapse inward"
+    ];
+    details.equipment = "Elliptical Machine";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Chest", "Back", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Elliptical - 5 minutes at easy resistance",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Arm Circles - 30 seconds forward, 30 seconds backward"
+    ];
+  } else if (matchesExercise(["stair climber", "stair machine", "step mill"])) {
+    details.description = "The stair climber simulates stair climbing to provide an intense lower body and cardiovascular workout that builds leg strength and endurance while burning significant calories.";
+    details.properForm = [
+      "Stand tall with slight forward lean from ankles",
+      "Place entire foot on each step, not just toes",
+      "Use handrails for balance only, not for support",
+      "Push through heels to engage glutes and hamstrings",
+      "Keep core engaged throughout movement",
+      "Maintain steady, controlled pace"
+    ];
+    details.commonMistakes = [
+      "Leaning too heavily on handrails",
+      "Stepping only on balls of feet",
+      "Hunching forward excessively",
+      "Taking steps that are too high",
+      "Letting knees extend past toes excessively"
+    ];
+    details.equipment = "Stair Climber Machine";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Calves", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Stair Climbing - 5 minutes at slow pace",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Bodyweight Squats - 10-15 reps",
+      "Calf Raises - 15-20 reps"
+    ];
+  }
     }
 
     return details;

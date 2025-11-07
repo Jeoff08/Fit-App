@@ -6,6 +6,332 @@ import {
   medicalConditionWorkouts 
 } from '../Data/workouts';
 
+// Enhanced warm-up exercises database with muscle group specificity
+const warmUpExercises = {
+  general: [
+    {
+      name: 'Dynamic Stretching',
+      description: 'Arm circles, leg swings, torso twists - 30 seconds each',
+      duration: '3-5 minutes',
+      purpose: 'Increase blood flow and full body mobility',
+      equipment: 'bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body']
+    },
+    {
+      name: 'Light Cardio',
+      description: 'Jogging in place, jumping jacks, or stationary bike',
+      duration: '3-5 minutes',
+      purpose: 'Elevate heart rate and warm up muscles',
+      equipment: 'bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body']
+    }
+  ],
+
+  chest: [
+    {
+      name: 'Chest Activation',
+      description: 'Band chest stretches, push-up position planks, scapular protractions',
+      duration: '3-4 minutes',
+      purpose: 'Activate chest muscles and improve shoulder mobility',
+      equipment: 'bands/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['chest', 'shoulders']
+    },
+    {
+      name: 'Push-Up Prep',
+      description: 'Incline push-ups, wall push-ups, chest flyes with light bands',
+      duration: '3-5 minutes',
+      purpose: 'Prepare chest and triceps for pressing movements',
+      equipment: 'bands/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['chest', 'triceps']
+    }
+  ],
+
+  back: [
+    {
+      name: 'Back Activation',
+      description: 'Band pull-aparts, scapular retractions, cat-cow stretches',
+      duration: '3-4 minutes',
+      purpose: 'Activate back muscles and improve posture',
+      equipment: 'bands/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['back', 'rear delts']
+    },
+    {
+      name: 'Pull-Up Prep',
+      description: 'Scapular pull-ups, active hangs, band lat activations',
+      duration: '3-5 minutes',
+      purpose: 'Prepare back and biceps for pulling movements',
+      equipment: 'bands/bar',
+      difficulty: 'beginner',
+      muscleGroups: ['back', 'biceps']
+    }
+  ],
+
+  legs: [
+    {
+      name: 'Lower Body Dynamic',
+      description: 'Leg swings, hip circles, walking lunges, bodyweight squats',
+      duration: '4-5 minutes',
+      purpose: 'Activate legs and improve hip mobility',
+      equipment: 'bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['quads', 'hamstrings', 'glutes']
+    },
+    {
+      name: 'Glute Activation',
+      description: 'Glute bridges, fire hydrants, donkey kicks, band walks',
+      duration: '3-4 minutes',
+      purpose: 'Activate glutes for squats and deadlifts',
+      equipment: 'bands/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['glutes', 'hamstrings']
+    }
+  ],
+
+  shoulders: [
+    {
+      name: 'Shoulder Mobility',
+      description: 'Arm circles, shoulder dislocations with band, wall slides',
+      duration: '3-4 minutes',
+      purpose: 'Improve shoulder range of motion and stability',
+      equipment: 'bands/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['shoulders', 'traps']
+    }
+  ],
+
+  arms: [
+    {
+      name: 'Arm Activation',
+      description: 'Light band curls, triceps extensions, wrist mobility',
+      duration: '3-4 minutes',
+      purpose: 'Activate biceps and triceps for arm isolation work',
+      equipment: 'bands/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['biceps', 'triceps']
+    }
+  ],
+
+  backPain: [
+    {
+      name: 'Gentle Back Mobility',
+      description: 'Cat-cow stretches, pelvic tilts, gentle spinal twists',
+      duration: '4-5 minutes',
+      purpose: 'Safe mobility for back conditions, focus on core activation',
+      equipment: 'bodyweight/mat',
+      difficulty: 'beginner',
+      muscleGroups: ['core', 'back'],
+      medicalCondition: 'backPain'
+    }
+  ],
+
+  kneeProblems: [
+    {
+      name: 'Knee-Friendly Warm-up',
+      description: 'Seated leg extensions, ankle circles, gentle quad activation',
+      duration: '4-5 minutes',
+      purpose: 'Low-impact warm-up for knee conditions',
+      equipment: 'chair/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['quads', 'hamstrings'],
+      medicalCondition: 'kneeProblems'
+    }
+  ],
+
+  hypertension: [
+    {
+      name: 'Gentle Cardiovascular Warm-up',
+      description: 'Slow marching, seated cycling, deep breathing exercises',
+      duration: '5-6 minutes',
+      purpose: 'Gradual heart rate elevation for hypertension',
+      equipment: 'chair/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['cardiovascular'],
+      medicalCondition: 'hypertension'
+    }
+  ],
+
+  diabetes: [
+    {
+      name: 'Blood Sugar Friendly Warm-up',
+      description: 'Light walking, joint mobility, gradual intensity increase',
+      duration: '5-6 minutes',
+      purpose: 'Stable blood sugar maintenance during warm-up',
+      equipment: 'bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      medicalCondition: 'diabetes'
+    }
+  ],
+
+  arthritis: [
+    {
+      name: 'Joint-Friendly Mobility',
+      description: 'Gentle range of motion, heat application, supported stretches',
+      duration: '6-8 minutes',
+      purpose: 'Reduce joint stiffness and improve mobility',
+      equipment: 'chair/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      medicalCondition: 'arthritis'
+    }
+  ],
+
+  heartDisease: [
+    {
+      name: 'Cardiac-Safe Warm-up',
+      description: 'Very light movement, breathing focus, gradual progression',
+      duration: '6-8 minutes',
+      purpose: 'Safe warm-up for heart conditions with medical supervision',
+      equipment: 'chair/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['cardiovascular'],
+      medicalCondition: 'heartDisease'
+    }
+  ],
+
+  bodybuilding: [
+    {
+      name: 'Bodybuilding Full Body Warm-up',
+      description: 'Dynamic stretching, light cardio, muscle activation',
+      duration: '5-6 minutes',
+      purpose: 'Comprehensive warm-up for hypertrophy training',
+      equipment: 'bodyweight/bands',
+      difficulty: 'beginner',
+      muscleGroups: ['full body']
+    }
+  ],
+
+  powerlifting: [
+    {
+      name: 'Powerlifting Specific Warm-up',
+      description: 'Barbell warm-up sets, dynamic mobility, core activation',
+      duration: '6-8 minutes',
+      purpose: 'Prepare for heavy compound lifts',
+      equipment: 'barbell/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body']
+    }
+  ],
+
+  calisthenics: [
+    {
+      name: 'Calisthenics Mobility Flow',
+      description: 'Wrist prep, shoulder mobility, dynamic stretching',
+      duration: '5-7 minutes',
+      purpose: 'Prepare for bodyweight skills and movements',
+      equipment: 'bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body']
+    }
+  ],
+
+  female_focused: [
+    {
+      name: 'Female Focused Warm-up',
+      description: 'Hip mobility, glute activation, posture preparation',
+      duration: '5-6 minutes',
+      purpose: 'Focus on lower body and back activation',
+      equipment: 'bands/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body']
+    }
+  ],
+
+  medical: [
+    {
+      name: 'General Medical Warm-up',
+      description: 'Slow mobility, breathing exercises, supported stretching',
+      duration: '6-8 minutes',
+      purpose: 'Safe warm-up for general medical conditions',
+      equipment: 'chair/bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body']
+    }
+  ]
+};
+
+// Cardio exercises for the end of workouts
+const cardioExercises = {
+  general: [
+    {
+      name: 'Light Jogging',
+      description: 'Steady pace jogging or brisk walking',
+      duration: '5-10 minutes',
+      intensity: 'low',
+      equipment: 'bodyweight'
+    },
+    {
+      name: 'Jump Rope',
+      description: 'Basic jump rope or alternating foot jumps',
+      duration: '5-8 minutes',
+      intensity: 'moderate',
+      equipment: 'jump rope'
+    },
+    {
+      name: 'Stationary Bike',
+      description: 'Moderate pace cycling',
+      duration: '8-12 minutes',
+      intensity: 'low-moderate',
+      equipment: 'stationary bike'
+    }
+  ],
+  medical: [
+    {
+      name: 'Gentle Walking',
+      description: 'Slow to moderate pace walking',
+      duration: '8-12 minutes',
+      intensity: 'very low',
+      equipment: 'bodyweight'
+    },
+    {
+      name: 'Seated Cycling',
+      description: 'Very light cycling while seated',
+      duration: '10-15 minutes',
+      intensity: 'very low',
+      equipment: 'stationary bike'
+    }
+  ],
+  hiit: [
+    {
+      name: 'HIIT Circuit',
+      description: '30s high intensity, 30s rest: jumping jacks, high knees, mountain climbers',
+      duration: '8-10 minutes',
+      intensity: 'high',
+      equipment: 'bodyweight'
+    },
+    {
+      name: 'Tabata Intervals',
+      description: '20s max effort, 10s rest x 8 rounds',
+      duration: '4 minutes',
+      intensity: 'very high',
+      equipment: 'bodyweight'
+    }
+  ],
+  steady_state: [
+    {
+      name: 'Steady State Cardio',
+      description: 'Maintain consistent moderate pace',
+      duration: '15-20 minutes',
+      intensity: 'moderate',
+      equipment: 'various'
+    }
+  ],
+  cool_down: [
+    {
+      name: 'Active Recovery',
+      description: 'Very light movement to cool down',
+      duration: '5-8 minutes',
+      intensity: 'very low',
+      equipment: 'bodyweight'
+    }
+  ]
+};
+
 // Track previously provided workouts for each user
 const userWorkoutHistory = new Map();
 
@@ -183,6 +509,76 @@ const adjustWorkoutForGender = (workout, gender, fitnessGoal, weight) => {
   return adjustedWorkout;
 };
 
+// Function to select warm-up exercises
+const selectWarmUpExercises = (workoutPreference, workoutType, gender = 'male', isMedical = false) => {
+  let warmUpPool = [];
+  
+  // Determine primary muscle groups for this workout type
+  const targetMuscles = ['full body']; // Default
+  
+  // Add muscle-group specific warm-ups based on workout type
+  if (workoutType.includes('Chest') || workoutType.includes('Push') || workoutType.includes('Bench')) {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.chest];
+  }
+  if (workoutType.includes('Back') || workoutType.includes('Pull') || workoutType.includes('Deadlift')) {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.back];
+  }
+  if (workoutType.includes('Leg') || workoutType.includes('Lower') || workoutType.includes('Squat') || workoutType.includes('Glute')) {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.legs];
+  }
+  if (workoutType.includes('Shoulder') || workoutType.includes('Arm')) {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.shoulders, ...warmUpExercises.arms];
+  }
+  
+  // Add preference-specific warm-ups
+  if (workoutPreference === 'powerlifting') {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.powerlifting];
+  } else if (workoutPreference === 'calisthenics') {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.calisthenics];
+  } else if (workoutPreference === 'bodybuilding') {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.bodybuilding];
+  } else if (gender === 'female') {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.female_focused];
+  }
+  
+  // Add general warm-ups if pool is still small
+  if (warmUpPool.length < 2) {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.general];
+  }
+  
+  // Select 1 warm-up exercise
+  const shuffled = [...warmUpPool].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 1);
+  
+  return selected;
+};
+
+// Function to select cardio exercise
+const selectCardioExercise = (workoutType, fitnessGoal, fitnessLevel, isMedical = false) => {
+  let cardioPool = cardioExercises.general;
+  
+  // Medical conditions get gentle cardio
+  if (isMedical) {
+    return cardioExercises.medical[0];
+  }
+  
+  // Adjust cardio based on fitness goal
+  if (fitnessGoal === 'weightLoss' || fitnessGoal === 'cutting') {
+    cardioPool = [...cardioExercises.hiit, ...cardioExercises.general];
+  } else if (fitnessGoal === 'muscleGain' || fitnessGoal === 'bulking') {
+    cardioPool = cardioExercises.cool_down; // Lighter cardio for muscle gain
+  }
+  
+  // Adjust for fitness level
+  if (fitnessLevel === 'beginner') {
+    cardioPool = cardioPool.filter(cardio => cardio.intensity !== 'very high' && cardio.intensity !== 'high');
+  }
+  
+  // Select random cardio exercise
+  const shuffled = [...cardioPool].sort(() => 0.5 - Math.random());
+  return shuffled[0];
+};
+
 // Generate workout plan for users with medical conditions
 const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gender, userId) => {
   // For simplicity, we'll use the first detected condition
@@ -209,13 +605,40 @@ const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gend
   // Filter workouts by intensity
   const filteredWorkouts = shuffledWorkouts.filter(workout => workout.intensity === intensity);
   
-  // Distribute workouts across selected days
-  const workoutsPerDay = Math.min(4, Math.ceil(filteredWorkouts.length / selectedDays.length));
+  // Limit to 8 exercises per day
+  const maxExercisesPerDay = 8;
   
   const weeklyPlan = selectedDays.map((day, index) => {
-    const startIdx = index * workoutsPerDay;
-    const endIdx = startIdx + workoutsPerDay;
+    const startIdx = index * maxExercisesPerDay;
+    const endIdx = startIdx + maxExercisesPerDay;
     const dayWorkouts = filteredWorkouts.slice(startIdx, endIdx);
+    
+    // Add warm-up and cardio
+    const warmUp = selectWarmUpExercises('medical', 'Medical', gender, true);
+    const cardio = selectCardioExercise('Medical', 'maintenance', fitnessLevel, true);
+    
+    // Combine warm-up, main workouts, and cardio
+    const allWorkouts = [
+      ...warmUp.map(w => ({
+        ...w,
+        id: `${day}-warmup`,
+        isWarmUp: true,
+        sets: 1,
+        reps: w.duration,
+        rest: '0s'
+      })),
+      ...dayWorkouts,
+      {
+        ...cardio,
+        id: `${day}-cardio`,
+        name: `Cardio: ${cardio.name}`,
+        isCardio: true,
+        sets: 1,
+        reps: cardio.duration,
+        rest: '0s',
+        muscleGroup: 'cardiovascular'
+      }
+    ];
     
     // Track used workout IDs
     const workoutIds = dayWorkouts.map(workout => workout.id).filter(id => id);
@@ -225,10 +648,14 @@ const generateMedicalWorkoutPlan = (conditions, fitnessLevel, selectedDays, gend
     
     return {
       day,
-      workouts: dayWorkouts,
+      workouts: allWorkouts,
       medicalCondition: primaryCondition,
       intensity: intensity,
-      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard'
+      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
+      totalExercises: allWorkouts.length,
+      hasWarmUp: true,
+      hasCardio: true,
+      exerciseCountNote: `Medical plan: ${dayWorkouts.length} exercises + 1 warm-up + 1 cardio`
     };
   });
   
@@ -545,13 +972,43 @@ const generateNewWorkoutPlan = (userData) => {
     return adjustedWorkout;
   });
   
-  // Distribute workouts across selected days
-  const workoutsPerDay = Math.ceil(adjustedWorkouts.length / selectedDays.length);
+  // Limit to 8 exercises per day
+  const maxExercisesPerDay = 8;
   
+  // Generate weekly plan
   const weeklyPlan = selectedDays.map((day, index) => {
-    const startIdx = index * workoutsPerDay;
-    const endIdx = startIdx + workoutsPerDay;
+    const startIdx = index * maxExercisesPerDay;
+    const endIdx = startIdx + maxExercisesPerDay;
     const dayWorkouts = adjustedWorkouts.slice(startIdx, endIdx);
+    
+    // Select warm-up exercises
+    const warmUp = selectWarmUpExercises(workoutPreference, workoutSplit[0], gender, false);
+    
+    // Select cardio exercise
+    const cardio = selectCardioExercise(workoutSplit[0], fitnessGoal, fitnessLevel, false);
+    
+    // Combine warm-up, main workouts, and cardio
+    const allWorkouts = [
+      ...warmUp.map(w => ({
+        ...w,
+        id: `${day}-warmup`,
+        isWarmUp: true,
+        sets: 1,
+        reps: w.duration,
+        rest: '0s'
+      })),
+      ...dayWorkouts,
+      {
+        ...cardio,
+        id: `${day}-cardio`,
+        name: `Cardio: ${cardio.name}`,
+        isCardio: true,
+        sets: 1,
+        reps: cardio.duration,
+        rest: '0s',
+        muscleGroup: 'cardiovascular'
+      }
+    ];
     
     // Track used workout IDs
     const workoutIds = dayWorkouts.map(workout => workout.id).filter(id => id);
@@ -561,17 +1018,31 @@ const generateNewWorkoutPlan = (userData) => {
     
     return {
       day,
-      workouts: dayWorkouts,
+      workouts: allWorkouts,
+      workoutType: workoutSplit[0],
+      intensity: fitnessLevel,
       genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
-      fitnessLevel,
-      workoutPreference
+      totalExercises: allWorkouts.length,
+      hasWarmUp: true,
+      hasCardio: true,
+      exerciseCountNote: `Main plan: ${dayWorkouts.length} exercises + 1 warm-up + 1 cardio`
     };
   });
   
   return weeklyPlan;
 };
 
-// Nutrition plan functions (unchanged from original)
+// Generate a completely new workout plan (for when user wants fresh variety)
+export const generateNewWorkoutPlanVariety = (userData) => {
+  // Clear user history to force completely new workouts
+  if (userData.userId) {
+    userWorkoutHistory.delete(userData.userId);
+  }
+  
+  return generateNewWorkoutPlan(userData);
+};
+
+// Nutrition plan functions
 export const generateNutritionPlan = (userData, currentPlan = null, userProgress = null) => {
   // If we have progress data and current plan, adjust existing plan
   if (currentPlan && userProgress) {
@@ -789,4 +1260,21 @@ export const clearUserWorkoutHistory = (userId) => {
 
 export const getUserWorkoutHistoryCount = (userId) => {
   return getUserWorkoutHistory(userId).length;
+};
+
+// Export all functions
+export default {
+  generateWorkoutPlan,
+  adjustWorkoutPlan,
+  generateNewWorkoutPlanVariety,
+  generateNutritionPlan,
+  generateInitialNutritionPlan,
+  adjustNutritionPlan,
+  adjustNutritionForCutting,
+  calculateBMR,
+  calculateTDEE,
+  calculateCalorieIntake,
+  calculateProteinIntake,
+  clearUserWorkoutHistory,
+  getUserWorkoutHistoryCount
 };
