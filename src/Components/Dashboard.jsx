@@ -4,6 +4,7 @@ import WorkoutPlan from './WorkoutPlan';
 import NutritionPlan from './NutritionPlan';
 import ProgressTracker from './ProgressTracker';
 import Influencers from './Influencers'; 
+import UserProfile from './UserProfile';
 import { signOut } from 'firebase/auth';
 import { auth } from '../Config/firebaseconfig';
 
@@ -156,6 +157,16 @@ const Dashboard = ({
                   <i className="fas fa-chart-line mr-2"></i>Progress
                 </button>
                 <button
+                  onClick={() => handleTabChange('profile')}
+                  className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                    activeTab === 'profile'
+                      ? 'bg-white text-emerald-800 shadow-md border border-emerald-200 scale-105'
+                      : 'text-white hover:bg-emerald-700/40 border border-emerald-600/30 hover:shadow-lg'
+                  }`}
+                >
+                  <i className="fas fa-user mr-2"></i>Profile
+                </button>
+                <button
                   onClick={() => handleTabChange('influencers')}
                   className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
                     activeTab === 'influencers'
@@ -188,7 +199,7 @@ const Dashboard = ({
         {/* Mobile Navigation */}
         <div className="md:hidden bg-white/10 backdrop-blur-sm border-b border-emerald-600/30 shadow-md transform transition-all duration-500">
           <div className="container mx-auto px-2 sm:px-4 py-2">
-            <div className="grid grid-cols-5 gap-1 sm:gap-2">
+            <div className="grid grid-cols-6 gap-1 sm:gap-2">
               <button
                 onClick={() => handleTabChange('dashboard')}
                 className={`flex flex-col items-center p-1 sm:p-2 rounded-lg transition-all duration-300 transform hover:scale-105 ${
@@ -232,6 +243,17 @@ const Dashboard = ({
               >
                 <i className="fas fa-chart-line text-xs sm:text-sm mb-1"></i>
                 <span className="text-xs">Progress</span>
+              </button>
+              <button
+                onClick={() => handleTabChange('profile')}
+                className={`flex flex-col items-center p-1 sm:p-2 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+                  activeTab === 'profile'
+                    ? 'bg-emerald-700/80 text-white shadow-inner scale-105'
+                    : 'text-white bg-white/10 hover:bg-emerald-700/40'
+                }`}
+              >
+                <i className="fas fa-user text-xs sm:text-sm mb-1"></i>
+                <span className="text-xs">Profile</span>
               </button>
               <button
                 onClick={() => handleTabChange('influencers')}
@@ -339,6 +361,17 @@ const Dashboard = ({
                   onGenerateNewPlan={onGenerateNewPlan}
                   isMobile={isMobile}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className={`transition-all duration-500 ease-in-out ${
+              contentVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            }`}>
+              <div className="bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-4 sm:p-6 border border-emerald-600/30 transform transition-all duration-500 hover:shadow-xl overflow-x-auto">
+                <UserProfile userData={userData} />
               </div>
             </div>
           )}

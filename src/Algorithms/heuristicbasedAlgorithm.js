@@ -252,6 +252,29 @@ const warmUpExercises = {
       difficulty: 'beginner',
       muscleGroups: ['full body']
     }
+  ],
+
+  senior: [
+    {
+      name: 'Senior Dynamic Stretching',
+      description: 'Gentle arm circles, leg swings, torso twists - 20 seconds each',
+      duration: '2-3 minutes',
+      purpose: 'Gradual mobility increase for older adults',
+      equipment: 'bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      ageGroup: 'senior'
+    },
+    {
+      name: 'Senior Light Cardio',
+      description: 'Slow marching, gentle stepping, seated cycling',
+      duration: '2-3 minutes',
+      purpose: 'Gradual heart rate elevation for older adults',
+      equipment: 'bodyweight/chair',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      ageGroup: 'senior'
+    }
   ]
 };
 
@@ -477,6 +500,44 @@ const filterWorkoutsByGender = (workouts, gender, workoutPreference) => {
   return workouts;
 };
 
+// Function to adjust workouts for users above 40 years old
+const adjustWorkoutForAge = (workout, age, fitnessLevel) => {
+  if (age <= 40) return workout;
+  
+  let adjustedWorkout = { ...workout };
+  
+  // For users above 40, adjust reps and sets
+  if (age > 40) {
+    // Reduce sets to 2 for most exercises
+    adjustedWorkout.sets = 2;
+    
+    // Adjust reps to 8-10 range for safety and joint health
+    if (fitnessLevel === 'beginner' || fitnessLevel === 'intermediate') {
+      adjustedWorkout.reps = '8-10';
+    } else if (fitnessLevel === 'advanced') {
+      // Advanced users above 40 can handle slightly higher reps
+      adjustedWorkout.reps = '10-12';
+    }
+    
+    // Increase rest time for better recovery
+    if (!adjustedWorkout.rest || adjustedWorkout.rest === '60s') {
+      adjustedWorkout.rest = '90s';
+    } else if (adjustedWorkout.rest === '90s') {
+      adjustedWorkout.rest = '120s';
+    }
+    
+    // Reduce weight percentage for heavy compound lifts
+    if (adjustedWorkout.weightPercentage && adjustedWorkout.weightPercentage > 0.7) {
+      adjustedWorkout.weightPercentage = Math.max(0.5, adjustedWorkout.weightPercentage * 0.9);
+    }
+    
+    // Add age consideration note
+    adjustedWorkout.ageConsideration = 'adjusted_for_40_plus';
+  }
+  
+  return adjustedWorkout;
+};
+
 // Adjust workout parameters based on gender
 const adjustWorkoutForGender = (workout, gender, fitnessGoal, weight) => {
   let adjustedWorkout = { ...workout };
@@ -509,8 +570,15 @@ const adjustWorkoutForGender = (workout, gender, fitnessGoal, weight) => {
   return adjustedWorkout;
 };
 
+// Update the main workout adjustment function to include age
+const adjustWorkoutForGenderAndAge = (workout, gender, fitnessGoal, weight, age, fitnessLevel) => {
+  let adjustedWorkout = adjustWorkoutForGender(workout, gender, fitnessGoal, weight);
+  adjustedWorkout = adjustWorkoutForAge(adjustedWorkout, age, fitnessLevel);
+  return adjustedWorkout;
+};
+
 // Function to select warm-up exercises
-const selectWarmUpExercises = (workoutPreference, workoutType, gender = 'male', isMedical = false) => {
+const selectWarmUpExercises = (workoutPreference, workoutType, gender = 'male', isMedical = false, age = 30) => {
   let warmUpPool = [];
   
   // Determine primary muscle groups for this workout type
@@ -539,6 +607,28 @@ const selectWarmUpExercises = (workoutPreference, workoutType, gender = 'male', 
     warmUpPool = [...warmUpPool, ...warmUpExercises.bodybuilding];
   } else if (gender === 'female') {
     warmUpPool = [...warmUpPool, ...warmUpExercises.female_focused];
+  }
+  
+  // Add age-specific warm-ups for users above 40
+  if (age > 40) {
+    warmUpPool = [...warmUpPool, ...warmUpExercises.senior];
+    
+    // Reduce duration for existing warm-ups for users above 40
+    warmUpPool = warmUpPool.map(warmup => {
+      if (warmup.duration && !warmup.ageGroup) {
+        const durationMatch = warmup.duration.match(/(\d+)-(\d+)/);
+        if (durationMatch) {
+          const min = Math.max(1, parseInt(durationMatch[1]) - 1);
+          const max = Math.max(2, parseInt(durationMatch[2]) - 2);
+          return {
+            ...warmup,
+            duration: `${min}-${max} minutes`,
+            ageAdjusted: true
+          };
+        }
+      }
+      return warmup;
+    });
   }
   
   // Add general warm-ups if pool is still small
@@ -739,9 +829,220 @@ const getAlternativeExercises = (baseWorkouts, muscleGroup, difficulty, gender, 
     .slice(0, count);
 };
 
+// Sort workouts by muscle group priority based on gender
+const sortWorkoutsByGenderPriority = (workouts, gender) => {
+  if (gender === 'male') {
+    // For males: prioritize upper body exercises first (chest, back, shoulders, arms), then legs
+    return workouts.sort((a, b) => {
+      const aIsUpper = ['chest', 'back', 'shoulders', 'arms'].some(group => 
+        a.muscleGroup?.toLowerCase().includes(group)
+      );
+      const bIsUpper = ['chest', 'back', 'shoulders', 'arms'].some(group => 
+        b.muscleGroup?.toLowerCase().includes(group)
+      );
+      
+      if (aIsUpper && !bIsUpper) return -1;
+      if (!aIsUpper && bIsUpper) return 1;
+      return 0;
+    });
+  } else {
+    // For females: prioritize leg exercises first, then upper body
+    return workouts.sort((a, b) => {
+      const aIsLeg = ['legs', 'quads', 'hamstrings', 'glutes', 'calves'].some(group => 
+        a.muscleGroup?.toLowerCase().includes(group)
+      );
+      const bIsLeg = ['legs', 'quads', 'hamstrings', 'glutes', 'calves'].some(group => 
+        b.muscleGroup?.toLowerCase().includes(group)
+      );
+      
+      if (aIsLeg && !bIsLeg) return -1;
+      if (!aIsLeg && bIsLeg) return 1;
+      return 0;
+    });
+  }
+};
+
+// Generate a completely new workout plan based on user data using heuristic approach
+const generateNewWorkoutPlan = (userData) => {
+  const { fitnessGoal, fitnessLevel, workoutPreference, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, userId, age } = userData;
+  
+  // Check if user has medical conditions
+  const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
+  
+  // If medical conditions are detected, prioritize medical workouts
+  if (detectedConditions.length > 0) {
+    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender, userId);
+  }
+  
+  let selectedWorkouts = [];
+  let workoutSplit = [];
+  
+  // Select workout type based on preference
+  if (workoutPreference === 'bodybuilding') {
+    if (selectedDays.length <= 3) {
+      workoutSplit = ['UpperLower'];
+      selectedWorkouts = bodybuildingWorkouts.UpperLower || [];
+    } else if (selectedDays.length <= 4) {
+      workoutSplit = ['BroSplits'];
+      selectedWorkouts = bodybuildingWorkouts.BroSplits || [];
+    } else {
+      workoutSplit = ['PPL'];
+      selectedWorkouts = bodybuildingWorkouts.PPL || [];
+    }
+  } else if (workoutPreference === 'powerlifting') {
+    workoutSplit = ['SBD'];
+    selectedWorkouts = powerliftingWorkouts || [];
+  } else if (workoutPreference === 'calisthenics') {
+    workoutSplit = ['Bodyweight'];
+    selectedWorkouts = calisthenicsWorkouts || [];
+  }
+  
+  // Flatten workouts if they are nested
+  if (selectedWorkouts && typeof selectedWorkouts === 'object' && !Array.isArray(selectedWorkouts)) {
+    selectedWorkouts = Object.values(selectedWorkouts).flat();
+  }
+  
+  // Filter workouts based on gender to avoid redundancy
+  selectedWorkouts = filterWorkoutsByGender(selectedWorkouts, gender, workoutPreference);
+  
+  // Filter out previously used workouts
+  const unusedWorkouts = filterOutUsedWorkouts(selectedWorkouts, userId);
+  
+  // Shuffle for variety - use unused workouts first, then fallback to all if needed
+  const availableWorkouts = unusedWorkouts.length > 0 ? unusedWorkouts : selectedWorkouts;
+  const shuffledWorkouts = shuffleArray(availableWorkouts);
+  
+  // Sort workouts by gender priority - males start with upper body, females with legs
+  const sortedWorkouts = sortWorkoutsByGenderPriority(shuffledWorkouts, gender);
+  
+  // Adjust workout intensity based on fitness level, weight, gender, and AGE
+  const adjustedWorkouts = sortedWorkouts.map(workout => {
+    let adjustedWorkout = adjustWorkoutForGenderAndAge(workout, gender, fitnessGoal, weight, age, fitnessLevel);
+    
+    // Additional age-based adjustments for users above 40
+    if (age > 40) {
+      // Further reduce intensity for beginners above 40
+      if (fitnessLevel === 'beginner') {
+        adjustedWorkout.sets = Math.max(2, adjustedWorkout.sets);
+        adjustedWorkout.reps = '8-10';
+      }
+      
+      // Avoid extremely high intensity exercises for users above 40
+      if (workout.intensity === 'very high' || workout.difficulty === 'advanced') {
+        adjustedWorkout.intensity = 'moderate';
+        adjustedWorkout.difficulty = 'intermediate';
+      }
+    }
+    
+    // Adjust sets based on fitness level (unless already adjusted for age)
+    if (!adjustedWorkout.ageConsideration) {
+      if (fitnessLevel === 'beginner') {
+        adjustedWorkout.sets = Math.max(2, (workout.sets || 3) - 1);
+      } else if (fitnessLevel === 'advanced') {
+        adjustedWorkout.sets = (workout.sets || 3) + 1;
+      } else {
+        adjustedWorkout.sets = workout.sets || 3;
+      }
+    }
+    
+    // Adjust reps based on goal (gender and age-specific adjustments already applied)
+    if (!adjustedWorkout.reps && !adjustedWorkout.ageConsideration) {
+      if (fitnessGoal === 'muscleGain' || fitnessGoal === 'bulking') {
+        adjustedWorkout.reps = '8-12';
+      } else if (fitnessGoal === 'weightLoss' || fitnessGoal === 'cutting') {
+        adjustedWorkout.reps = '12-15';
+      } else if (fitnessGoal === 'maintenance' || fitnessGoal === 'leanMuscle' || fitnessGoal === 'muscleTone') {
+        adjustedWorkout.reps = '6-10';
+      }
+    }
+    
+    return adjustedWorkout;
+  });
+  
+  // Limit to 8 exercises per day (reduce to 6 for users above 40)
+  const maxExercisesPerDay = age > 40 ? 6 : 8;
+  
+  // Generate weekly plan
+  const weeklyPlan = selectedDays.map((day, index) => {
+    const startIdx = index * maxExercisesPerDay;
+    const endIdx = startIdx + maxExercisesPerDay;
+    const dayWorkouts = adjustedWorkouts.slice(startIdx, endIdx);
+    
+    // Select warm-up exercises (now including age parameter)
+    const warmUp = selectWarmUpExercises(workoutPreference, workoutSplit[0], gender, false, age);
+    
+    // Select cardio exercise
+    const cardio = selectCardioExercise(workoutSplit[0], fitnessGoal, fitnessLevel, false);
+    
+    // Reduce cardio intensity for users above 40
+    let adjustedCardio = { ...cardio };
+    if (age > 40) {
+      if (adjustedCardio.intensity === 'high' || adjustedCardio.intensity === 'very high') {
+        adjustedCardio.intensity = 'moderate';
+        adjustedCardio.description = `Modified for age: ${adjustedCardio.description}`;
+      }
+      // Reduce duration for users above 40
+      if (adjustedCardio.duration) {
+        const durationMatch = adjustedCardio.duration.match(/(\d+)-(\d+)/);
+        if (durationMatch) {
+          const min = Math.max(3, parseInt(durationMatch[1]) - 2);
+          const max = Math.max(5, parseInt(durationMatch[2]) - 3);
+          adjustedCardio.duration = `${min}-${max} minutes`;
+        }
+      }
+    }
+    
+    // Combine warm-up, main workouts, and cardio
+    const allWorkouts = [
+      ...warmUp.map(w => ({
+        ...w,
+        id: `${day}-warmup`,
+        isWarmUp: true,
+        sets: 1,
+        reps: w.duration,
+        rest: '0s'
+      })),
+      ...dayWorkouts,
+      {
+        ...adjustedCardio,
+        id: `${day}-cardio`,
+        name: `Cardio: ${adjustedCardio.name}`,
+        isCardio: true,
+        sets: 1,
+        reps: adjustedCardio.duration,
+        rest: '0s',
+        muscleGroup: 'cardiovascular'
+      }
+    ];
+    
+    // Track used workout IDs
+    const workoutIds = dayWorkouts.map(workout => workout.id).filter(id => id);
+    if (workoutIds.length > 0) {
+      addToUserWorkoutHistory(userId, workoutIds);
+    }
+    
+    return {
+      day,
+      workouts: allWorkouts,
+      workoutType: workoutSplit[0],
+      intensity: fitnessLevel,
+      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
+      ageConsideration: age > 40 ? 'adjusted_for_40_plus' : 'standard',
+      totalExercises: allWorkouts.length,
+      hasWarmUp: true,
+      hasCardio: true,
+      exerciseCountNote: age > 40 ? 
+        `Senior plan: ${dayWorkouts.length} exercises + 1 warm-up + 1 cardio (age-adjusted)` :
+        `Main plan: ${dayWorkouts.length} exercises + 1 warm-up + 1 cardio`
+    };
+  });
+  
+  return weeklyPlan;
+};
+
 // Main heuristic-based workout plan generator
 export const generateWorkoutPlan = (userData, currentPlan = null, userProgress = null) => {
-  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, preferredWorkoutDays, userId } = userData;
+  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, preferredWorkoutDays, userId, age } = userData;
   
   // Check if user has medical conditions
   const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
@@ -762,7 +1063,7 @@ export const generateWorkoutPlan = (userData, currentPlan = null, userProgress =
 
 // Adjust existing workout plan based on user progress
 export const adjustWorkoutPlan = (currentPlan, userProgress, userData) => {
-  const { fitnessGoal, weight, medicalConditions, userId, gender, fitnessLevel } = userData;
+  const { fitnessGoal, weight, medicalConditions, userId, gender, fitnessLevel, age } = userData;
   const { weightChange, performanceData } = userProgress;
   
   let adjustedPlan = JSON.parse(JSON.stringify(currentPlan));
@@ -775,6 +1076,22 @@ export const adjustWorkoutPlan = (currentPlan, userProgress, userData) => {
         workouts: day.workouts.filter(workout => 
           !isExerciseContraindicated(workout, medicalConditions)
         )
+      };
+    });
+  }
+  
+  // Apply age-based adjustments if user is above 40
+  if (age > 40) {
+    adjustedPlan = adjustedPlan.map(day => {
+      return {
+        ...day,
+        workouts: day.workouts.map(workout => {
+          if (workout.isWarmUp || workout.isCardio) {
+            return workout; // Skip warm-up and cardio for age adjustment
+          }
+          return adjustWorkoutForAge(workout, age, fitnessLevel);
+        }),
+        ageConsideration: 'adjusted_for_40_plus'
       };
     });
   }
@@ -893,143 +1210,6 @@ export const adjustWorkoutPlan = (currentPlan, userProgress, userData) => {
   }
   
   return adjustedPlan;
-};
-
-// Generate a completely new workout plan based on user data using heuristic approach
-const generateNewWorkoutPlan = (userData) => {
-  const { fitnessGoal, fitnessLevel, workoutPreference, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, userId } = userData;
-  
-  // Check if user has medical conditions
-  const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
-  
-  // If medical conditions are detected, prioritize medical workouts
-  if (detectedConditions.length > 0) {
-    return generateMedicalWorkoutPlan(detectedConditions, fitnessLevel, selectedDays, gender, userId);
-  }
-  
-  let selectedWorkouts = [];
-  let workoutSplit = [];
-  
-  // Select workout type based on preference
-  if (workoutPreference === 'bodybuilding') {
-    if (selectedDays.length <= 3) {
-      workoutSplit = ['UpperLower'];
-      selectedWorkouts = bodybuildingWorkouts.UpperLower || [];
-    } else if (selectedDays.length <= 4) {
-      workoutSplit = ['BroSplits'];
-      selectedWorkouts = bodybuildingWorkouts.BroSplits || [];
-    } else {
-      workoutSplit = ['PPL'];
-      selectedWorkouts = bodybuildingWorkouts.PPL || [];
-    }
-  } else if (workoutPreference === 'powerlifting') {
-    workoutSplit = ['SBD'];
-    selectedWorkouts = powerliftingWorkouts || [];
-  } else if (workoutPreference === 'calisthenics') {
-    workoutSplit = ['Bodyweight'];
-    selectedWorkouts = calisthenicsWorkouts || [];
-  }
-  
-  // Flatten workouts if they are nested
-  if (selectedWorkouts && typeof selectedWorkouts === 'object' && !Array.isArray(selectedWorkouts)) {
-    selectedWorkouts = Object.values(selectedWorkouts).flat();
-  }
-  
-  // Filter workouts based on gender to avoid redundancy
-  selectedWorkouts = filterWorkoutsByGender(selectedWorkouts, gender, workoutPreference);
-  
-  // Filter out previously used workouts
-  const unusedWorkouts = filterOutUsedWorkouts(selectedWorkouts, userId);
-  
-  // Shuffle for variety - use unused workouts first, then fallback to all if needed
-  const availableWorkouts = unusedWorkouts.length > 0 ? unusedWorkouts : selectedWorkouts;
-  const shuffledWorkouts = shuffleArray(availableWorkouts);
-  
-  // Adjust workout intensity based on fitness level, weight, and gender
-  const adjustedWorkouts = shuffledWorkouts.map(workout => {
-    let adjustedWorkout = adjustWorkoutForGender(workout, gender, fitnessGoal, weight);
-    
-    // Adjust sets based on fitness level
-    if (fitnessLevel === 'beginner') {
-      adjustedWorkout.sets = Math.max(2, (workout.sets || 3) - 1);
-    } else if (fitnessLevel === 'advanced') {
-      adjustedWorkout.sets = (workout.sets || 3) + 1;
-    } else {
-      adjustedWorkout.sets = workout.sets || 3;
-    }
-    
-    // Adjust reps based on goal (gender-specific adjustments already applied)
-    if (!adjustedWorkout.reps) {
-      if (fitnessGoal === 'muscleGain' || fitnessGoal === 'bulking') {
-        adjustedWorkout.reps = '8-12';
-      } else if (fitnessGoal === 'weightLoss' || fitnessGoal === 'cutting') {
-        adjustedWorkout.reps = '12-15';
-      } else if (fitnessGoal === 'maintenance' || fitnessGoal === 'leanMuscle' || fitnessGoal === 'muscleTone') {
-        adjustedWorkout.reps = '6-10';
-      }
-    }
-    
-    return adjustedWorkout;
-  });
-  
-  // Limit to 8 exercises per day
-  const maxExercisesPerDay = 8;
-  
-  // Generate weekly plan
-  const weeklyPlan = selectedDays.map((day, index) => {
-    const startIdx = index * maxExercisesPerDay;
-    const endIdx = startIdx + maxExercisesPerDay;
-    const dayWorkouts = adjustedWorkouts.slice(startIdx, endIdx);
-    
-    // Select warm-up exercises
-    const warmUp = selectWarmUpExercises(workoutPreference, workoutSplit[0], gender, false);
-    
-    // Select cardio exercise
-    const cardio = selectCardioExercise(workoutSplit[0], fitnessGoal, fitnessLevel, false);
-    
-    // Combine warm-up, main workouts, and cardio
-    const allWorkouts = [
-      ...warmUp.map(w => ({
-        ...w,
-        id: `${day}-warmup`,
-        isWarmUp: true,
-        sets: 1,
-        reps: w.duration,
-        rest: '0s'
-      })),
-      ...dayWorkouts,
-      {
-        ...cardio,
-        id: `${day}-cardio`,
-        name: `Cardio: ${cardio.name}`,
-        isCardio: true,
-        sets: 1,
-        reps: cardio.duration,
-        rest: '0s',
-        muscleGroup: 'cardiovascular'
-      }
-    ];
-    
-    // Track used workout IDs
-    const workoutIds = dayWorkouts.map(workout => workout.id).filter(id => id);
-    if (workoutIds.length > 0) {
-      addToUserWorkoutHistory(userId, workoutIds);
-    }
-    
-    return {
-      day,
-      workouts: allWorkouts,
-      workoutType: workoutSplit[0],
-      intensity: fitnessLevel,
-      genderConsideration: gender === 'female' ? 'female_optimized' : 'standard',
-      totalExercises: allWorkouts.length,
-      hasWarmUp: true,
-      hasCardio: true,
-      exerciseCountNote: `Main plan: ${dayWorkouts.length} exercises + 1 warm-up + 1 cardio`
-    };
-  });
-  
-  return weeklyPlan;
 };
 
 // Generate a completely new workout plan (for when user wants fresh variety)
@@ -1276,5 +1456,7 @@ export default {
   calculateCalorieIntake,
   calculateProteinIntake,
   clearUserWorkoutHistory,
-  getUserWorkoutHistoryCount
+  getUserWorkoutHistoryCount,
+  adjustWorkoutForAge,
+  selectWarmUpExercises
 };

@@ -34,6 +34,12 @@ const WorkoutPlan = ({
   // New state to track completed sets per exercise
   const [completedSetsCount, setCompletedSetsCount] = useState({});
 
+  // New state for cardio timer (countdown)
+  const [cardioTime, setCardioTime] = useState(0);
+  const [initialCardioTime, setInitialCardioTime] = useState(0);
+  const [isCardioRunning, setIsCardioRunning] = useState(false);
+  const cardioTimerRef = useRef(null);
+
   // New state for applied workouts
   const [appliedWorkouts, setAppliedWorkouts] = useState([]);
   const [selectedAppliedWorkout, setSelectedAppliedWorkout] = useState(null);
@@ -151,6 +157,95 @@ const WorkoutPlan = ({
       return modifiedWorkouts[dayKey];
     }
     return currentPlan[dayIndex]?.workouts?.[exerciseIndex];
+  };
+
+  // NEW: Function to check if exercise is cardio or warmup
+  const isCardioOrWarmup = (exercise) => {
+    if (!exercise) return false;
+    
+    const exerciseName = exercise.name.toLowerCase();
+    const isCardio = exerciseName.includes('cardio') || 
+                     exerciseName.includes('running') || 
+                     exerciseName.includes('cycling') || 
+                     exerciseName.includes('rowing') ||
+                     exerciseName.includes('jump rope') ||
+                     exerciseName.includes('treadmill') ||
+                     exerciseName.includes('elliptical') ||
+                     exerciseName.includes('stationary bike');
+    
+    const isWarmup = exerciseName.includes('warm') || 
+                     exerciseName.includes('dynamic') || 
+                     exerciseName.includes('activation') || 
+                     exerciseName.includes('mobility');
+    
+    return isCardio || isWarmup;
+  };
+
+  // NEW: Function to parse time string to seconds
+  const parseTimeToSeconds = (timeString) => {
+    if (!timeString) return 0;
+    
+    // Handle formats like "30s", "1m", "2m 30s", "1:30", etc.
+    if (typeof timeString === 'string') {
+      // If it's just a number, assume seconds
+      if (!isNaN(timeString)) {
+        return parseInt(timeString);
+      }
+      
+      // Handle "Xs" format (e.g., "30s")
+      if (timeString.includes('s') && !timeString.includes('m')) {
+        return parseInt(timeString.replace('s', '')) || 0;
+      }
+      
+      // Handle "Xm" format (e.g., "1m")
+      if (timeString.includes('m') && !timeString.includes('s')) {
+        return (parseInt(timeString.replace('m', '')) || 0) * 60;
+      }
+      
+      // Handle "Xm Ys" format (e.g., "1m 30s")
+      if (timeString.includes('m') && timeString.includes('s')) {
+        const parts = timeString.split(' ');
+        const minutes = parseInt(parts[0].replace('m', '')) || 0;
+        const seconds = parseInt(parts[1].replace('s', '')) || 0;
+        return minutes * 60 + seconds;
+      }
+      
+      // Handle "X:Y" format (e.g., "1:30")
+      if (timeString.includes(':')) {
+        const parts = timeString.split(':');
+        const minutes = parseInt(parts[0]) || 0;
+        const seconds = parseInt(parts[1]) || 0;
+        return minutes * 60 + seconds;
+      }
+    }
+    
+    // If it's a number, return it directly
+    if (typeof timeString === 'number') {
+      return timeString;
+    }
+    
+    return 0;
+  };
+
+  // NEW: Function to get cardio duration from exercise
+  const getCardioDuration = (exercise) => {
+    // First check if there's a specific cardio time in the exercise data
+    if (exercise.cardioTime) {
+      return parseTimeToSeconds(exercise.cardioTime);
+    }
+    
+    // Check if reps indicate time (e.g., "30s" or "1m")
+    if (exercise.reps && typeof exercise.reps === 'string') {
+      return parseTimeToSeconds(exercise.reps);
+    }
+    
+    // Default cardio durations based on exercise type
+    const exerciseName = exercise.name.toLowerCase();
+    if (exerciseName.includes('warm') || exerciseName.includes('activation') || exerciseName.includes('mobility')) {
+      return 300; // 5 minutes for warmups
+    }
+    
+    return 600; // 10 minutes for general cardio
   };
 
   // NEW: Function to toggle alternatives visibility for an exercise
@@ -317,6 +412,29 @@ const WorkoutPlan = ({
     }
     return () => clearInterval(countdownTimerRef.current);
   }, [isCountdownRunning, countdownTime]);
+
+  // Cardio timer effect (countdown)
+  useEffect(() => {
+    if (isCardioRunning && cardioTime > 0) {
+      cardioTimerRef.current = setInterval(() => {
+        setCardioTime((prevTime) => prevTime - 1);
+      }, 1000);
+    } else if (isCardioRunning && cardioTime === 0) {
+      clearInterval(cardioTimerRef.current);
+      setIsCardioRunning(false);
+      // Auto-complete the exercise when timer reaches 0
+      const currentExercises = currentPlan[currentDay]?.workouts || [];
+      currentExercises.forEach((_, index) => {
+        const exercise = getCurrentExercise(currentDay, index);
+        if (isCardioOrWarmup(exercise) && !completedExercises.has(index)) {
+          handleCompleteExercise(index);
+        }
+      });
+    } else if (!isCardioRunning && cardioTimerRef.current) {
+      clearInterval(cardioTimerRef.current);
+    }
+    return () => clearInterval(cardioTimerRef.current);
+  }, [isCardioRunning, cardioTime]);
 
   // Function to get workouts for the selected day (for overview mode)
   const getWorkoutsForSelectedDay = () => {
@@ -504,6 +622,27 @@ const WorkoutPlan = ({
     setTime(0);
   };
 
+  // NEW: Cardio timer functions (countdown)
+  const handleStartCardioTimer = (exercise) => {
+    if (!isCardioRunning) {
+      const duration = getCardioDuration(exercise);
+      setInitialCardioTime(duration);
+      setCardioTime(duration);
+      setIsCardioRunning(true);
+    }
+  };
+
+  const handleStopCardioTimer = () => {
+    setIsCardioRunning(false);
+  };
+
+  const handleResetCardioTimer = (exercise) => {
+    setIsCardioRunning(false);
+    const duration = getCardioDuration(exercise);
+    setCardioTime(duration);
+    setInitialCardioTime(duration);
+  };
+
   const handleCompleteSet = (exerciseIndex, restTime) => {
     const newCount = (completedSetsCount[exerciseIndex] || 0) + 1;
     setCompletedSetsCount((prev) => ({
@@ -685,1085 +824,959 @@ const WorkoutPlan = ({
     )}`;
   };
 
-  const getExerciseDetails = (exercise) => {
-    const details = {
-      description:
-        "This exercise targets multiple muscle groups for overall strength development.",
-      properForm: [
-        "Maintain proper posture throughout the movement",
-        "Control the weight through the full range of motion",
-        "Breathe consistently during the exercise",
-      ],
-      commonMistakes: [
-        "Using momentum instead of muscle control",
-        "Not using full range of motion",
-        "Holding your breath during exertion",
-      ],
-      equipment: "Barbell/Dumbbells",
-      difficulty: "Intermediate",
-      targetMuscles: ["Multiple muscle groups"],
-      warmupExercises: [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Bodyweight Squats - 10-15 reps to activate lower body",
-        "Dynamic Stretching - 5-10 minutes of light cardio",
-      ],
+  // NEW: Function to format time with progress for countdown
+  const formatTimeWithProgress = (currentTime, initialTime) => {
+    if (!initialTime) return formatTime(currentTime);
+    
+    const percentage = initialTime > 0 ? ((initialTime - currentTime) / initialTime) * 100 : 0;
+    return {
+      time: formatTime(currentTime),
+      percentage: Math.min(100, Math.max(0, percentage))
     };
+  };
 
-    if (exercise.description) {
-      details.description = exercise.description;
-    }
-
-    const exerciseName = exercise.name.toLowerCase().trim();
-
-    // Improved exercise matching with exact and partial matching
-    const matchesExercise = (keywords) => {
-      return keywords.some((keyword) =>
-        exerciseName.includes(keyword.toLowerCase())
-      );
+  // NEW: Function to get cardio display info
+  const getCardioDisplayInfo = (exercise) => {
+    const duration = getCardioDuration(exercise);
+    const timeInfo = formatTimeWithProgress(cardioTime, initialCardioTime);
+    
+    return {
+      duration: formatTime(duration),
+      currentTime: timeInfo.time,
+      progress: timeInfo.percentage,
+      isCompleted: cardioTime === 0 && isCardioRunning === false && initialCardioTime > 0
     };
+  };
 
-    // NEW EXERCISES - WARMUP AND BEGINNER FRIENDLY
-    if (matchesExercise(["arm circle", "arm circles"])) {
-      details.description =
-        "Arm circles are a dynamic warm-up exercise that improves shoulder mobility, increases blood flow to the shoulder joints, and prepares the upper body for more intense exercise.";
-      details.properForm = [
-        "Stand with feet shoulder-width apart, arms extended out to sides",
-        "Keep arms straight with slight bend in elbows",
-        "Make small circles forward, gradually increasing size",
-        "After 15-20 reps, reverse direction for backward circles",
-        "Keep shoulders relaxed and down away from ears",
-        "Maintain engaged core and good posture throughout",
-      ];
-      details.commonMistakes = [
-        "Making circles too large too quickly",
-        "Shrugging shoulders up toward ears",
-        "Bending elbows excessively during movement",
-        "Moving too fast without control",
-        "Not maintaining proper standing posture",
-      ];
-      details.equipment = "None/Bodyweight";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Shoulders", "Rotator Cuff", "Upper Back"];
-      details.warmupExercises = [
-        "Neck Rolls - 30 seconds each direction",
-        "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
-        "Deep Breathing - 5-10 slow breaths to relax",
-      ];
-    } else if (
-      matchesExercise(["wall push-up", "wall push ups", "wall pushup"])
-    ) {
-      details.description =
-        "Wall push-ups are a beginner-friendly upper body exercise that builds chest, shoulder, and triceps strength with minimal joint stress. Perfect for building foundational pushing strength.";
-      details.properForm = [
-        "Stand facing wall about arm's length away",
-        "Place hands on wall slightly wider than shoulder-width",
-        "Keep body in straight line from head to heels",
-        "Bend elbows and lower chest toward wall",
-        "Go until nose nearly touches wall",
-        "Push back to starting position by extending arms",
-      ];
-      details.commonMistakes = [
-        "Standing too close or too far from wall",
-        "Arching back or sagging hips",
-        "Not going through full range of motion",
-        "Flaring elbows out excessively",
-        "Moving too quickly without control",
-      ];
-      details.equipment = "Wall";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Chest", "Shoulders", "Triceps", "Core"];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Shoulder Rolls - 30 seconds each direction",
-        "Wrist Circles - 30 seconds each direction",
-      ];
-    } else if (matchesExercise(["neck roll", "neck rolls", "neck rotation"])) {
-      details.description =
-        "Neck rolls gently mobilize the cervical spine and relieve tension in the neck and upper trapezius muscles. Important for maintaining neck flexibility and reducing stiffness.";
-      details.properForm = [
-        "Sit or stand with straight spine and relaxed shoulders",
-        "Slowly lower chin to chest, feeling gentle stretch",
-        "Roll head to right, bringing right ear toward right shoulder",
-        "Continue rolling head backward, looking up toward ceiling",
-        "Complete circle by rolling to left side",
-        "Repeat in opposite direction for balanced mobility",
-      ];
-      details.commonMistakes = [
-        "Rolling head too quickly or forcefully",
-        "Dropping head back too far causing compression",
-        "Not maintaining controlled, smooth movement",
-        "Shrugging shoulders during the movement",
-        "Holding breath instead of breathing naturally",
-      ];
-      details.equipment = "None";
-      details.difficulty = "Beginner";
-      details.targetMuscles = [
-        "Neck Muscles",
-        "Upper Trapezius",
-        "Sternocleidomastoid",
-      ];
-      details.warmupExercises = [
-        "Shoulder Shrugs - 10-15 reps",
-        "Deep Breathing - 5-10 slow breaths",
-        "Gentle Head Tilts - 30 seconds each side",
-      ];
-    } else if (
-      matchesExercise(["resistance band triceps", "band triceps extension"])
-    ) {
-      details.description =
-        "Resistance band triceps extensions target all three heads of the triceps using portable equipment. The constant tension builds arm strength and definition with joint-friendly resistance.";
-      details.properForm = [
-        "Stand on middle of resistance band with one foot",
-        "Grab band ends with each hand, palms facing each other",
-        "Bend forward slightly at hips, keeping back straight",
-        "Start with elbows bent at 90 degrees, upper arms stationary",
-        "Extend arms backward until fully straight",
-        "Squeeze triceps at peak contraction, then return with control",
-      ];
-      details.commonMistakes = [
-        "Moving elbows away from body during extension",
-        "Using shoulders instead of triceps to move band",
-        "Not achieving full arm extension",
-        "Rounding back excessively",
-        "Using band with too much resistance",
-      ];
-      details.equipment = "Resistance Band";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = ["Triceps", "Shoulders"];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Band Pull-Aparts - 10-15 reps",
-        "Wrist Flexor Stretch - 30 seconds each arm",
-      ];
-    } else if (matchesExercise(["bird-dog", "bird dog", "quadruped"])) {
-      details.description =
-        "The bird-dog exercise develops core stability, balance, and coordination while strengthening the back, glutes, and shoulders. Excellent for improving spinal stability and posture.";
-      details.properForm = [
-        "Start on hands and knees in tabletop position",
-        "Keep hands under shoulders, knees under hips",
-        "Engage core and maintain neutral spine",
-        "Simultaneously extend right arm forward and left leg backward",
-        "Keep hips and shoulders parallel to floor",
-        "Hold for 2-3 seconds, then return to start and alternate sides",
-      ];
-      details.commonMistakes = [
-        "Arching or rounding the lower back",
-        "Letting hips rotate during movement",
-        "Raising arm or leg too high causing imbalance",
-        "Moving too quickly without control",
-        "Not maintaining engaged core throughout",
-      ];
-      details.equipment = "Mat/Bodyweight";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = ["Core", "Glutes", "Shoulders", "Back"];
-      details.warmupExercises = [
-        "Cat-Cow Stretch - 10-12 reps",
-        "Quadruped Rocking - 30 seconds forward and back",
-        "Child's Pose - 30 second hold",
-      ];
-    } else if (
-      matchesExercise(["bodyweight squat", "air squat", "no weight squat"])
-    ) {
-      details.description =
-        "Bodyweight squats build foundational lower body strength, mobility, and movement patterns without external load. Perfect for learning proper squat mechanics and building leg endurance.";
-      details.properForm = [
-        "Stand with feet shoulder-width or slightly wider",
-        "Keep chest up and back straight throughout movement",
-        "Initiate movement by pushing hips back first",
-        "Lower until thighs are parallel to ground or as deep as comfortable",
-        "Keep knees in line with toes during descent and ascent",
-        "Drive through heels to return to standing position",
-      ];
-      details.commonMistakes = [
-        "Letting knees cave inward",
-        "Rounding lower back during descent",
-        "Rising onto toes instead of driving through heels",
-        "Not going deep enough in squat",
-        "Looking down instead of keeping head neutral",
-      ];
-      details.equipment = "None/Bodyweight";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Core"];
-      details.warmupExercises = [
-        "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-        "Hip Circles - 30 seconds each direction",
-        "Ankle Circles - 30 seconds each direction",
-      ];
-    } else if (
-      matchesExercise(["breathing with arm raises", "breath with arm raise"])
-    ) {
-      details.description =
-        "This breathing and mobility exercise combines diaphragmatic breathing with shoulder mobility to reduce stress, improve posture, and increase oxygen flow throughout the body.";
-      details.properForm = [
-        "Stand with feet shoulder-width apart, arms at sides",
-        "Inhale deeply through nose while slowly raising arms overhead",
-        "Reach arms fully overhead as you complete inhalation",
-        "Pause briefly at top while maintaining expansion",
-        "Exhale slowly through mouth while lowering arms",
-        "Focus on deep belly breathing rather than chest breathing",
-      ];
-      details.commonMistakes = [
-        "Shrugging shoulders toward ears during raise",
-        "Breathing shallowly into chest only",
-        "Moving arms too quickly without coordinating breath",
-        "Arching lower back excessively",
-        "Holding breath instead of continuous flow",
-      ];
-      details.equipment = "None";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Diaphragm", "Shoulders", "Respiratory Muscles"];
-      details.warmupExercises = [
-        "Deep Breathing - 5-10 slow breaths",
-        "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
-        "Rib Cage Expansion - 5 deep breaths with hands on ribs",
-      ];
-    } else if (
-      matchesExercise(["chair squat", "chair squats", "sit to stand"])
-    ) {
-      details.description =
-        "Chair squats are a safe, controlled way to build lower body strength and practice proper squat mechanics using a chair for guidance and support. Ideal for beginners and rehabilitation.";
-      details.properForm = [
-        "Stand in front of chair with feet shoulder-width apart",
-        "Extend arms forward for balance",
-        "Slowly lower hips back and down toward chair",
-        "Lightly touch chair with glutes, don't sit completely",
-        "Keep chest up and knees behind toes",
-        "Drive through heels to return to standing position",
-      ];
-      details.commonMistakes = [
-        "Plummeting down and bouncing off chair",
-        "Rounding back during descent",
-        "Letting knees travel past toes",
-        "Not using full range of motion",
-        "Using momentum instead of controlled movement",
-      ];
-      details.equipment = "Chair/Stool";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Core"];
-      details.warmupExercises = [
-        "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-        "Bodyweight Squats - 10-15 reps",
-        "Hip Circles - 30 seconds each direction",
-      ];
+const getExerciseDetails = (exercise) => {
+  const details = {
+    description: "This exercise targets multiple muscle groups for overall strength development.",
+    properForm: [
+      "Maintain proper posture throughout the movement",
+      "Control the weight through the full range of motion",
+      "Breathe consistently during the exercise",
+    ],
+    commonMistakes: [
+      "Using momentum instead of muscle control",
+      "Not using full range of motion",
+      "Holding your breath during exertion",
+    ],
+    equipment: "Barbell/Dumbbells",
+    difficulty: "Intermediate",
+    targetMuscles: ["Multiple muscle groups"],
+    warmupExercises: [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Bodyweight Squats - 10-15 reps to activate lower body",
+      "Dynamic Stretching - 5-10 minutes of light cardio",
+    ],
+  };
 
-      // CHEST EXERCISES
-    } else if (
-      matchesExercise(["bench press", "barbell bench", "flat bench"])
-    ) {
-      details.description =
-        "The bench press is a fundamental compound exercise that primarily targets the pectoralis major (chest), anterior deltoids (front shoulders), and triceps. It's essential for building upper body strength and muscle mass.";
-      details.properForm = [
-        "Lie flat on bench with feet firmly planted on the floor",
-        "Grip barbell slightly wider than shoulder-width",
-        "Unrack bar and lower to mid-chest with control",
-        "Keep elbows at 45-60 degree angle from body",
-        "Press bar explosively upward while keeping shoulders retracted",
-        "Lock out elbows at top without shrugging shoulders",
-      ];
-      details.commonMistakes = [
-        "Bouncing bar off chest to use momentum",
-        "Flaring elbows out to 90 degrees causing shoulder strain",
-        "Lifting hips off bench excessively",
-        "Not touching chest with the bar each rep",
-        "Using uneven grip or pressing unevenly",
-      ];
-      details.equipment = "Barbell, Bench";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = [
-        "Pectoralis Major",
-        "Anterior Deltoids",
-        "Triceps",
-      ];
-      details.warmupExercises = [
-        "Push-ups - 10-15 reps",
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Dumbbell Press - 10-12 reps with light weight",
-      ];
-    } else if (
-      matchesExercise(["incline bench", "incline press", "incline barbell"])
-    ) {
-      details.description =
-        "The incline bench press emphasizes the upper pectoral fibers (clavicular head) and front deltoids. The angled position shifts focus to the upper chest for balanced chest development.";
-      details.properForm = [
-        "Set bench to 30-45 degree incline angle",
-        "Lie back with feet flat and arch back slightly",
-        "Grip bar slightly wider than shoulder-width",
-        "Lower bar to upper chest/clavicle area",
-        "Keep elbows at 45-degree angle during descent",
-        "Press bar upward in slight arc back to starting position",
-      ];
-      details.commonMistakes = [
-        "Using too steep an angle (becomes shoulder press)",
-        "Lowering bar too low on chest",
-        "Not maintaining shoulder retraction",
-        "Using excessive arch in lower back",
-        "Bouncing bar off chest",
-      ];
-      details.equipment = "Incline Bench, Barbell/Dumbbells";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = [
-        "Upper Pectorals",
-        "Anterior Deltoids",
-        "Triceps",
-      ];
-      details.warmupExercises = [
-        "Incline Push-ups - 10-15 reps",
-        "Band Chest Stretch - 30 seconds each side",
-        "Light Incline Press - 10-12 reps with light weight",
-      ];
-    } else if (matchesExercise(["dumbbell fly", "db fly", "dumbbell flyes"])) {
-      details.description =
-        "Dumbbell flyes isolate the chest muscles through horizontal shoulder abduction, providing an excellent stretch and peak contraction. They build chest width and definition.";
-      details.properForm = [
-        "Lie on flat bench with dumbbells extended above chest",
-        "Maintain slight bend in elbows (20-30 degrees)",
-        "Lower weights in wide arc until chest stretch is felt",
-        "Keep palms facing each other throughout movement",
-        "Return to start using same arc pattern",
-        "Squeeze chest muscles at top position",
-      ];
-      details.commonMistakes = [
-        "Bending elbows too much (turns into press)",
-        "Lowering weights too far causing shoulder strain",
-        "Using momentum to swing weights up",
-        "Not maintaining control during eccentric phase",
-        "Going too heavy compromising form",
-      ];
-      details.equipment = "Dumbbells, Bench";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = ["Pectoralis Major", "Anterior Deltoids"];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Dumbbell Press - 10-12 reps with light weight",
-        "Doorway Chest Stretch - 30 seconds",
-      ];
-    } else if (matchesExercise(["cable crossover", "cable fly"])) {
-      details.description =
-        "Cable crossovers provide constant tension throughout the entire range of motion, targeting the pectoral muscles with emphasis on the inner chest and sternal fibers.";
-      details.properForm = [
-        "Set cable pulleys above head height",
-        "Stand centered with one foot slightly forward",
-        "Grab handles with palms facing down",
-        "Bring handles together in wide arc motion",
-        "Cross hands slightly at peak contraction",
-        "Return with control feeling chest stretch",
-      ];
-      details.commonMistakes = [
-        "Using too much weight bending elbows excessively",
-        "Leaning forward too much using body momentum",
-        "Not squeezing chest at peak contraction",
-        "Moving too quickly without control",
-        "Setting pulleys at wrong height",
-      ];
-      details.equipment = "Cable Crossover Machine";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = ["Pectoralis Major", "Anterior Deltoids"];
-      details.warmupExercises = [
-        "Band Chest Stretch - 30 seconds each side",
-        "Light Cable Press - 10-12 reps with light weight",
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-      ];
+  if (exercise.description) {
+    details.description = exercise.description;
+  }
 
-      // BACK EXERCISES
-    } else if (matchesExercise(["pull-up", "pull up", "chin-up", "chin up"])) {
-      details.description =
-        "Pull-ups are a fundamental bodyweight exercise that develops back width, biceps strength, and grip endurance. They target the latissimus dorsi and create the coveted V-taper physique.";
-      details.properForm = [
-        "Grip bar slightly wider than shoulder-width",
-        "Hang with arms fully extended, shoulders engaged",
-        "Pull chest toward bar by driving elbows down",
-        "Focus on using back muscles rather than arms",
-        "Touch chest to bar or get chin over bar",
-        "Lower with control to full extension",
-      ];
-      details.commonMistakes = [
-        "Using momentum (kipping) instead of strict form",
-        "Not achieving full range of motion",
-        "Shrugging shoulders at the top",
-        "Not fully extending arms at bottom",
-        "Using only arm strength instead of back",
-      ];
-      details.equipment = "Pull-up Bar";
-      details.difficulty = "Intermediate-Advanced";
-      details.targetMuscles = [
-        "Latissimus Dorsi",
-        "Biceps",
-        "Rhomboids",
-        "Rear Delts",
-      ];
-      details.warmupExercises = [
-        "Scapular Pull-ups - 10-15 reps",
-        "Band Pull-Aparts - 15-20 reps",
-        "Active Hang - 30 seconds to engage grip",
-      ];
-    } else if (matchesExercise(["bent over row", "barbell row"])) {
-      details.description =
-        "Bent over rows are a compound back exercise that builds thickness in the mid-back, lats, and rear delts. They develop overall back strength and improve posture.";
-      details.properForm = [
-        "Stand with feet shoulder-width apart, knees slightly bent",
-        "Hinge at hips until torso is near parallel to floor",
-        "Grip barbell with hands slightly wider than shoulders",
-        "Pull bar to lower chest/upper abdomen",
-        "Keep back straight and core tight throughout",
-        "Squeeze shoulder blades together at top",
-      ];
-      details.commonMistakes = [
-        "Rounding the back during the movement",
-        "Using momentum to jerk the weight up",
-        "Pulling bar too high (to chest instead of abdomen)",
-        "Not maintaining hip hinge position",
-        "Using too heavy weight compromising form",
-      ];
-      details.equipment = "Barbell";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = [
-        "Latissimus Dorsi",
-        "Rhomboids",
-        "Rear Delts",
-        "Traps",
-      ];
-      details.warmupExercises = [
-        "Cat-Cow Stretch - 10-12 reps",
-        "Light Deadlifts - 8-10 reps with light weight",
-        "Band Rows - 12-15 reps to activate back",
-      ];
-    } else if (matchesExercise(["lat pulldown", "lat pull down"])) {
-      details.description =
-        "Lat pulldowns target the latissimus dorsi muscles, building back width and strength. This machine exercise is excellent for developing the mind-muscle connection with the lats.";
-      details.properForm = [
-        "Sit with thighs secured under pads",
-        "Grip bar wide with palms facing forward",
-        "Lean back slightly with chest up",
-        "Pull bar to upper chest while driving elbows down",
-        "Squeeze lats at bottom position",
-        "Return with control to full extension",
-      ];
-      details.commonMistakes = [
-        "Leaning back too far using body weight",
-        "Pulling bar behind neck (risky for shoulders)",
-        "Not achieving full stretch at top",
-        "Using arms instead of back muscles",
-        "Rounding shoulders forward",
-      ];
-      details.equipment = "Lat Pulldown Machine";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = ["Latissimus Dorsi", "Biceps", "Rhomboids"];
-      details.warmupExercises = [
-        "Band Pull-Aparts - 15-20 reps",
-        "Face Pulls - 12-15 reps with light weight",
-        "Scapular Retractions - 10-12 reps",
-      ];
-    } else if (matchesExercise(["face pull", "face pulls"])) {
-      details.description =
-        "Face pulls target the rear deltoids, rotator cuff, and upper back muscles. They are crucial for shoulder health, posture correction, and balancing pushing exercises.";
-      details.properForm = [
-        "Set cable pulley at upper chest height with rope attachment",
-        "Grab rope with neutral grip (palms facing each other)",
-        "Step back to create tension, elbows slightly bent",
-        "Pull rope toward face while externally rotating shoulders",
-        "Squeeze rear delts and upper back at peak contraction",
-        "Return with control maintaining tension",
-      ];
-      details.commonMistakes = [
-        "Using too much weight compromising form",
-        "Pulling toward chest instead of face",
-        "Not externally rotating shoulders",
-        "Using momentum to move weight",
-        "Shrugging shoulders instead of retracting",
-      ];
-      details.equipment = "Cable Machine, Rope Attachment";
-      details.difficulty = "Beginner";
-      details.targetMuscles = [
-        "Rear Deltoids",
-        "Rotator Cuff",
-        "Rhomboids",
-        "Traps",
-      ];
-      details.warmupExercises = [
-        "Band Pull-Aparts - 15-20 reps",
-        "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
-        "Light External Rotations - 12-15 reps",
-      ];
+  const exerciseName = exercise.name.toLowerCase().trim();
 
-      // SHOULDER EXERCISES
-    } else if (
-      matchesExercise(["overhead press", "shoulder press", "military press"])
-    ) {
-      details.description =
-        "The overhead press is a fundamental compound exercise for shoulder development, targeting the anterior and medial deltoids, triceps, and upper chest. It builds strong, well-rounded shoulders.";
-      details.properForm = [
-        "Stand with feet shoulder-width apart, core tight",
-        "Grip barbell slightly wider than shoulder-width",
-        "Press bar overhead in straight line",
-        "Keep head neutral - push head slightly forward as bar passes",
-        "Lock out elbows at top without shrugging",
-        "Lower with control back to starting position",
-      ];
-      details.commonMistakes = [
-        "Arching lower back excessively",
-        "Using leg drive (becomes push press)",
-        "Not going through full range of motion",
-        "Flaring elbows out too wide",
-        "Shrugging shoulders at lockout",
-      ];
-      details.equipment = "Barbell/Dumbbells";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = [
-        "Anterior Deltoids",
-        "Medial Deltoids",
-        "Triceps",
-        "Upper Chest",
-      ];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Dumbbell Press - 10-12 reps with light weight",
-        "Band Pull-Aparts - 15-20 reps",
-      ];
-    } else if (matchesExercise(["lateral raise", "side lateral raise"])) {
-      details.description =
-        "Lateral raises isolate the medial deltoids (side shoulders), creating shoulder width and the 'capped' shoulder appearance. They are essential for balanced shoulder development.";
-      details.properForm = [
-        "Stand with feet shoulder-width apart, dumbbells at sides",
-        "Maintain slight bend in elbows throughout movement",
-        "Raise arms out to sides until parallel to floor",
-        "Lead with elbows, keep palms facing down",
-        "Pause briefly at top while squeezing shoulders",
-        "Lower with control back to starting position",
-      ];
-      details.commonMistakes = [
-        "Using momentum to swing weights up",
-        "Raising weights above shoulder height",
-        "Shrugging shoulders instead of isolating delts",
-        "Bending elbows too much during movement",
-        "Using too heavy weight with poor form",
-      ];
-      details.equipment = "Dumbbells";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Medial Deltoids", "Supraspinatus"];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Front Raises - 10-12 reps with light weight",
-        "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
-      ];
-    } else if (matchesExercise(["front raise", "dumbbell front raise"])) {
-      details.description =
-        "Front raises target the anterior deltoids (front shoulders), helping to develop well-rounded shoulder strength and size. They complement overhead pressing movements.";
-      details.properForm = [
-        "Stand with feet shoulder-width apart",
-        "Hold dumbbells in front of thighs, palms facing down",
-        "Raise one or both arms forward to shoulder height",
-        "Keep arms straight with slight elbow bend",
-        "Pause at top while squeezing front delts",
-        "Lower with control back to start",
-      ];
-      details.commonMistakes = [
-        "Using momentum to swing weights up",
-        "Raising above shoulder height",
-        "Bending elbows excessively",
-        "Leaning backward during movement",
-        "Going too heavy compromising form",
-      ];
-      details.equipment = "Dumbbells/Barbell Plate";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Anterior Deltoids"];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
-        "Light Upright Rows - 10-12 reps with light weight",
-      ];
+  // Improved exercise matching with exact and partial matching
+  const matchesExercise = (keywords) => {
+    return keywords.some((keyword) =>
+      exerciseName.includes(keyword.toLowerCase())
+    );
+  };
 
-      // LEG EXERCISES
-    } else if (matchesExercise(["squat", "barbell squat", "back squat"])) {
-      details.description =
-        "Squats are the king of lower body exercises, targeting the quadriceps, glutes, hamstrings, and core. They build leg strength, power, and functional movement patterns.";
-      details.properForm = [
-        "Stand with feet shoulder-width or slightly wider",
-        "Place barbell across upper back, not neck",
-        "Keep chest up and back straight throughout",
-        "Break at hips and knees simultaneously",
-        "Descend until thighs are parallel or below",
-        "Drive through heels to return to standing",
-      ];
-      details.commonMistakes = [
-        "Letting knees cave inward",
-        "Rounding lower back during descent",
-        "Rising onto toes during ascent",
-        "Not going deep enough in squat",
-        "Looking down instead of forward",
-      ];
-      details.equipment = "Barbell, Squat Rack";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = [
-        "Quadriceps",
-        "Glutes",
-        "Hamstrings",
-        "Adductors",
-        "Core",
-      ];
-      details.warmupExercises = [
-        "Bodyweight Squats - 15-20 reps",
-        "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-        "Hip Circles - 30 seconds each direction",
-      ];
-    } else if (matchesExercise(["deadlift", "conventional deadlift"])) {
-      details.description =
-        "Deadlifts are a fundamental compound exercise that builds total-body strength, targeting the posterior chain (hamstrings, glutes, back) while engaging the core and grip strength.";
-      details.properForm = [
-        "Stand with feet hip-width apart, bar over mid-foot",
-        "Hinge at hips and bend knees to grip bar",
-        "Keep back straight, chest up, shoulders back",
-        "Drive through heels while extending hips and knees",
-        "Stand tall at top without leaning back",
-        "Lower with control following same path",
-      ];
-      details.commonMistakes = [
-        "Rounding the back during lift",
-        "Starting with hips too high or too low",
-        "Pulling with arms instead of legs/hips",
-        "Not keeping bar close to body",
-        "Hyperextending at lockout",
-      ];
-      details.equipment = "Barbell";
-      details.difficulty = "Intermediate-Advanced";
-      details.targetMuscles = [
-        "Hamstrings",
-        "Glutes",
-        "Erector Spinae",
-        "Lats",
-        "Traps",
-      ];
-      details.warmupExercises = [
-        "Good Mornings - 10-12 reps with bodyweight",
-        "Romanian Deadlifts - 8-10 reps with light weight",
-        "Cat-Cow Stretch - 10-12 reps",
-      ];
-    } else if (matchesExercise(["romanian deadlift", "rdl"])) {
-      details.description =
-        "Romanian deadlifts focus on the posterior chain with minimal knee bend, emphasizing hamstring and glute development while improving hip hinge mechanics.";
-      details.properForm = [
-        "Stand with feet hip-width apart, knees slightly bent",
-        "Hold barbell or dumbbells in front of thighs",
-        "Hinge at hips while maintaining flat back",
-        "Lower weight along legs until hamstring stretch",
-        "Keep bar close to body throughout movement",
-        "Drive hips forward to return to standing",
-      ];
-      details.commonMistakes = [
-        "Rounding the back during descent",
-        "Bending knees too much (becomes squat)",
-        "Letting weight drift away from body",
-        "Not achieving sufficient depth in hinge",
-        "Going too heavy compromising form",
-      ];
-      details.equipment = "Barbell/Dumbbells";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = ["Hamstrings", "Glutes", "Erector Spinae"];
-      details.warmupExercises = [
-        "Bodyweight Good Mornings - 10-12 reps",
-        "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-        "Hip Hinge Practice - 10-12 reps without weight",
-      ];
-    } else if (matchesExercise(["lunges", "walking lunge", "dumbbell lunge"])) {
-      details.description =
-        "Lunges are a unilateral leg exercise that develops quadriceps, glutes, and hamstrings while improving balance, coordination, and addressing muscle imbalances.";
-      details.properForm = [
-        "Stand with feet together, weights at sides if used",
-        "Step forward with one leg, landing on heel",
-        "Lower until both knees are bent at 90 degrees",
-        "Keep front knee behind toes, torso upright",
-        "Drive through front heel to return to start",
-        "Maintain control and balance throughout",
-      ];
-      details.commonMistakes = [
-        "Stepping too short or too long",
-        "Letting front knee travel past toes",
-        "Leaning forward excessively",
-        "Not going deep enough in lunge",
-        "Losing balance during movement",
-      ];
-      details.equipment = "Dumbbells/Barbell/Bodyweight";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Core"];
-      details.warmupExercises = [
-        "Bodyweight Lunges - 10-12 reps per side",
-        "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-        "Hip Circles - 30 seconds each direction",
-      ];
-    } else if (matchesExercise(["leg press", "leg press machine"])) {
-      details.description =
-        "The leg press targets the quadriceps, glutes, and hamstrings with minimal spinal loading, allowing for heavy lower body training without technical demands of squats.";
-      details.properForm = [
-        "Sit with back and hips firmly against pads",
-        "Place feet shoulder-width on platform",
-        "Lower weight until knees are at 90 degrees",
-        "Keep knees in line with feet during movement",
-        "Press through heels to extend legs",
-        "Don't lock knees completely at top",
-      ];
-      details.commonMistakes = [
-        "Going too deep causing lower back rounding",
-        "Placing feet too high or too low",
-        "Letting knees cave inward",
-        "Locking knees at top of movement",
-        "Bouncing at bottom of movement",
-      ];
-      details.equipment = "Leg Press Machine";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings"];
-      details.warmupExercises = [
-        "Bodyweight Squats - 15-20 reps",
-        "Leg Extensions - 12-15 reps with light weight",
-        "Hip Circles - 30 seconds each direction",
-      ];
+  // NEW EXERCISES - WARMUP AND BEGINNER FRIENDLY
+  if (matchesExercise(["arm circle", "arm circles"])) {
+    details.description = "Arm circles are a dynamic warm-up exercise that improves shoulder mobility, increases blood flow to the shoulder joints, and prepares the upper body for more intense exercise.";
+    details.properForm = [
+      "Stand with feet shoulder-width apart, arms extended out to sides",
+      "Keep arms straight with slight bend in elbows",
+      "Make small circles forward, gradually increasing size",
+      "After 15-20 reps, reverse direction for backward circles",
+      "Keep shoulders relaxed and down away from ears",
+      "Maintain engaged core and good posture throughout",
+    ];
+    details.commonMistakes = [
+      "Making circles too large too quickly",
+      "Shrugging shoulders up toward ears",
+      "Bending elbows excessively during movement",
+      "Moving too fast without control",
+      "Not maintaining proper standing posture",
+    ];
+    details.equipment = "None/Bodyweight";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Shoulders", "Rotator Cuff", "Upper Back"];
+    details.warmupExercises = [
+      "Neck Rolls - 30 seconds each direction",
+      "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
+      "Deep Breathing - 5-10 slow breaths to relax",
+    ];
+  } else if (matchesExercise(["wall push-up", "wall push ups", "wall pushup"])) {
+    details.description = "Wall push-ups are a beginner-friendly upper body exercise that builds chest, shoulder, and triceps strength with minimal joint stress. Perfect for building foundational pushing strength.";
+    details.properForm = [
+      "Stand facing wall about arm's length away",
+      "Place hands on wall slightly wider than shoulder-width",
+      "Keep body in straight line from head to heels",
+      "Bend elbows and lower chest toward wall",
+      "Go until nose nearly touches wall",
+      "Push back to starting position by extending arms",
+    ];
+    details.commonMistakes = [
+      "Standing too close or too far from wall",
+      "Arching back or sagging hips",
+      "Not going through full range of motion",
+      "Flaring elbows out excessively",
+      "Moving too quickly without control",
+    ];
+    details.equipment = "Wall";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Chest", "Shoulders", "Triceps", "Core"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Shoulder Rolls - 30 seconds each direction",
+      "Wrist Circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["neck roll", "neck rolls", "neck rotation"])) {
+    details.description = "Neck rolls gently mobilize the cervical spine and relieve tension in the neck and upper trapezius muscles. Important for maintaining neck flexibility and reducing stiffness.";
+    details.properForm = [
+      "Sit or stand with straight spine and relaxed shoulders",
+      "Slowly lower chin to chest, feeling gentle stretch",
+      "Roll head to right, bringing right ear toward right shoulder",
+      "Continue rolling head backward, looking up toward ceiling",
+      "Complete circle by rolling to left side",
+      "Repeat in opposite direction for balanced mobility",
+    ];
+    details.commonMistakes = [
+      "Rolling head too quickly or forcefully",
+      "Dropping head back too far causing compression",
+      "Not maintaining controlled, smooth movement",
+      "Shrugging shoulders during the movement",
+      "Holding breath instead of breathing naturally",
+    ];
+    details.equipment = "None";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Neck Muscles", "Upper Trapezius", "Sternocleidomastoid"];
+    details.warmupExercises = [
+      "Shoulder Shrugs - 10-15 reps",
+      "Deep Breathing - 5-10 slow breaths",
+      "Gentle Head Tilts - 30 seconds each side",
+    ];
+  } else if (matchesExercise(["resistance band triceps", "band triceps extension"])) {
+    details.description = "Resistance band triceps extensions target all three heads of the triceps using portable equipment. The constant tension builds arm strength and definition with joint-friendly resistance.";
+    details.properForm = [
+      "Stand on middle of resistance band with one foot",
+      "Grab band ends with each hand, palms facing each other",
+      "Bend forward slightly at hips, keeping back straight",
+      "Start with elbows bent at 90 degrees, upper arms stationary",
+      "Extend arms backward until fully straight",
+      "Squeeze triceps at peak contraction, then return with control",
+    ];
+    details.commonMistakes = [
+      "Moving elbows away from body during extension",
+      "Using shoulders instead of triceps to move band",
+      "Not achieving full arm extension",
+      "Rounding back excessively",
+      "Using band with too much resistance",
+    ];
+    details.equipment = "Resistance Band";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Triceps", "Shoulders"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Band Pull-Aparts - 10-15 reps",
+      "Wrist Flexor Stretch - 30 seconds each arm",
+    ];
+  } else if (matchesExercise(["bird-dog", "bird dog", "quadruped"])) {
+    details.description = "The bird-dog exercise develops core stability, balance, and coordination while strengthening the back, glutes, and shoulders. Excellent for improving spinal stability and posture.";
+    details.properForm = [
+      "Start on hands and knees in tabletop position",
+      "Keep hands under shoulders, knees under hips",
+      "Engage core and maintain neutral spine",
+      "Simultaneously extend right arm forward and left leg backward",
+      "Keep hips and shoulders parallel to floor",
+      "Hold for 2-3 seconds, then return to start and alternate sides",
+    ];
+    details.commonMistakes = [
+      "Arching or rounding the lower back",
+      "Letting hips rotate during movement",
+      "Raising arm or leg too high causing imbalance",
+      "Moving too quickly without control",
+      "Not maintaining engaged core throughout",
+    ];
+    details.equipment = "Mat/Bodyweight";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Core", "Glutes", "Shoulders", "Back"];
+    details.warmupExercises = [
+      "Cat-Cow Stretch - 10-12 reps",
+      "Quadruped Rocking - 30 seconds forward and back",
+      "Child's Pose - 30 second hold",
+    ];
+  } else if (matchesExercise(["bodyweight squat", "air squat", "no weight squat"])) {
+    details.description = "Bodyweight squats build foundational lower body strength, mobility, and movement patterns without external load. Perfect for learning proper squat mechanics and building leg endurance.";
+    details.properForm = [
+      "Stand with feet shoulder-width or slightly wider",
+      "Keep chest up and back straight throughout movement",
+      "Initiate movement by pushing hips back first",
+      "Lower until thighs are parallel to ground or as deep as comfortable",
+      "Keep knees in line with toes during descent and ascent",
+      "Drive through heels to return to standing position",
+    ];
+    details.commonMistakes = [
+      "Letting knees cave inward",
+      "Rounding lower back during descent",
+      "Rising onto toes instead of driving through heels",
+      "Not going deep enough in squat",
+      "Looking down instead of keeping head neutral",
+    ];
+    details.equipment = "None/Bodyweight";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Core"];
+    details.warmupExercises = [
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Hip Circles - 30 seconds each direction",
+      "Ankle Circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["breathing with arm raises", "breath with arm raise"])) {
+    details.description = "This breathing and mobility exercise combines diaphragmatic breathing with shoulder mobility to reduce stress, improve posture, and increase oxygen flow throughout the body.";
+    details.properForm = [
+      "Stand with feet shoulder-width apart, arms at sides",
+      "Inhale deeply through nose while slowly raising arms overhead",
+      "Reach arms fully overhead as you complete inhalation",
+      "Pause briefly at top while maintaining expansion",
+      "Exhale slowly through mouth while lowering arms",
+      "Focus on deep belly breathing rather than chest breathing",
+    ];
+    details.commonMistakes = [
+      "Shrugging shoulders toward ears during raise",
+      "Breathing shallowly into chest only",
+      "Moving arms too quickly without coordinating breath",
+      "Arching lower back excessively",
+      "Holding breath instead of continuous flow",
+    ];
+    details.equipment = "None";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Diaphragm", "Shoulders", "Respiratory Muscles"];
+    details.warmupExercises = [
+      "Deep Breathing - 5-10 slow breaths",
+      "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
+      "Rib Cage Expansion - 5 deep breaths with hands on ribs",
+    ];
+  } else if (matchesExercise(["chair squat", "chair squats", "sit to stand"])) {
+    details.description = "Chair squats are a safe, controlled way to build lower body strength and practice proper squat mechanics using a chair for guidance and support. Ideal for beginners and rehabilitation.";
+    details.properForm = [
+      "Stand in front of chair with feet shoulder-width apart",
+      "Extend arms forward for balance",
+      "Slowly lower hips back and down toward chair",
+      "Lightly touch chair with glutes, don't sit completely",
+      "Keep chest up and knees behind toes",
+      "Drive through heels to return to standing position",
+    ];
+    details.commonMistakes = [
+      "Plummeting down and bouncing off chair",
+      "Rounding back during descent",
+      "Letting knees travel past toes",
+      "Not using full range of motion",
+      "Using momentum instead of controlled movement",
+    ];
+    details.equipment = "Chair/Stool";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Core"];
+    details.warmupExercises = [
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Bodyweight Squats - 10-15 reps",
+      "Hip Circles - 30 seconds each direction",
+    ];
 
-      // ARM EXERCISES
-    } else if (
-      matchesExercise(["bicep curl", "dumbbell curl", "barbell curl"])
-    ) {
-      details.description =
-        "Bicep curls isolate the biceps brachii, brachialis, and brachioradialis, building arm size and strength. They are essential for balanced arm development.";
-      details.properForm = [
-        "Stand with feet shoulder-width apart",
-        "Hold weights with supinated grip (palms up)",
-        "Keep elbows tucked at sides throughout",
-        "Curl weight toward shoulders",
-        "Squeeze biceps hard at top position",
-        "Lower with control resisting gravity",
-      ];
-      details.commonMistakes = [
-        "Swinging body to generate momentum",
-        "Moving elbows away from body",
-        "Not going through full range of motion",
-        "Using too heavy weight compromising form",
-        "Not controlling eccentric portion",
-      ];
-      details.equipment = "Dumbbells/Barbell/EZ Bar";
-      details.difficulty = "Beginner";
-      details.targetMuscles = [
-        "Biceps Brachii",
-        "Brachialis",
-        "Brachioradialis",
-      ];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Hammer Curls - 10-12 reps with light weight",
-        "Wrist Circles - 30 seconds each direction",
-      ];
-    } else if (
-      matchesExercise([
-        "triceps extension",
-        "overhead extension",
-        "french press",
-      ])
-    ) {
-      details.description =
-        "Triceps extensions target all three heads of the triceps, with emphasis on the long head. They build arm size and definition behind the biceps.";
-      details.properForm = [
-        "Sit or stand with weight overhead",
-        "Keep elbows close to head pointing forward",
-        "Lower weight behind head by bending elbows",
-        "Go until stretch is felt in triceps",
-        "Extend arms back to starting position",
-        "Squeeze triceps at full extension",
-      ];
-      details.commonMistakes = [
-        "Flaring elbows out to sides",
-        "Using too much weight compromising form",
-        "Not going through full range of motion",
-        "Arching back excessively",
-        "Moving shoulders during movement",
-      ];
-      details.equipment = "Dumbbell/EZ Bar/Cable";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = ["Triceps (All Three Heads)"];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Push-downs - 12-15 reps with light weight",
-        "Overhead Triceps Stretch - 30 seconds each arm",
-      ];
-    } else if (matchesExercise(["triceps pushdown", "cable pushdown"])) {
-      details.description =
-        "Triceps pushdowns target the lateral and medial heads of the triceps, building horseshoe-shaped arm development and improving pressing strength.";
-      details.properForm = [
-        "Stand facing cable machine with rope or bar",
-        "Grip attachment with palms down",
-        "Keep elbows tucked at sides throughout",
-        "Push weight down until arms fully extended",
-        "Squeeze triceps hard at bottom",
-        "Return with control to starting position",
-      ];
-      details.commonMistakes = [
-        "Moving elbows away from body",
-        "Using body momentum to move weight",
-        "Not achieving full arm extension",
-        "Leaning forward excessively",
-        "Going too heavy with poor form",
-      ];
-      details.equipment = "Cable Machine";
-      details.difficulty = "Beginner";
-      details.targetMuscles = ["Triceps (Lateral and Medial Heads)"];
-      details.warmupExercises = [
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Light Overhead Extensions - 10-12 reps with light weight",
-        "Wrist Flexor Stretch - 30 seconds each arm",
-      ];
+    // CHEST EXERCISES
+  } else if (matchesExercise(["bench press", "barbell bench", "flat bench"])) {
+    details.description = "The bench press is a fundamental compound exercise that primarily targets the pectoralis major (chest), anterior deltoids (front shoulders), and triceps. It's essential for building upper body strength and muscle mass.";
+    details.properForm = [
+      "Lie flat on bench with feet firmly planted on the floor",
+      "Grip barbell slightly wider than shoulder-width",
+      "Unrack bar and lower to mid-chest with control",
+      "Keep elbows at 45-60 degree angle from body",
+      "Press bar explosively upward while keeping shoulders retracted",
+      "Lock out elbows at top without shrugging shoulders",
+    ];
+    details.commonMistakes = [
+      "Bouncing bar off chest to use momentum",
+      "Flaring elbows out to 90 degrees causing shoulder strain",
+      "Lifting hips off bench excessively",
+      "Not touching chest with the bar each rep",
+      "Using uneven grip or pressing unevenly",
+    ];
+    details.equipment = "Barbell, Bench";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Pectoralis Major", "Anterior Deltoids", "Triceps"];
+    details.warmupExercises = [
+      "Push-ups - 10-15 reps",
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Dumbbell Press - 10-12 reps with light weight",
+    ];
+  } else if (matchesExercise(["incline bench", "incline press", "incline barbell"])) {
+    details.description = "The incline bench press emphasizes the upper pectoral fibers (clavicular head) and front deltoids. The angled position shifts focus to the upper chest for balanced chest development.";
+    details.properForm = [
+      "Set bench to 30-45 degree incline angle",
+      "Lie back with feet flat and arch back slightly",
+      "Grip bar slightly wider than shoulder-width",
+      "Lower bar to upper chest/clavicle area",
+      "Keep elbows at 45-degree angle during descent",
+      "Press bar upward in slight arc back to starting position",
+    ];
+    details.commonMistakes = [
+      "Using too steep an angle (becomes shoulder press)",
+      "Lowering bar too low on chest",
+      "Not maintaining shoulder retraction",
+      "Using excessive arch in lower back",
+      "Bouncing bar off chest",
+    ];
+    details.equipment = "Incline Bench, Barbell/Dumbbells";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Upper Pectorals", "Anterior Deltoids", "Triceps"];
+    details.warmupExercises = [
+      "Incline Push-ups - 10-15 reps",
+      "Band Chest Stretch - 30 seconds each side",
+      "Light Incline Press - 10-12 reps with light weight",
+    ];
+  } else if (matchesExercise(["dumbbell fly", "db fly", "dumbbell flyes"])) {
+    details.description = "Dumbbell flyes isolate the chest muscles through horizontal shoulder abduction, providing an excellent stretch and peak contraction. They build chest width and definition.";
+    details.properForm = [
+      "Lie on flat bench with dumbbells extended above chest",
+      "Maintain slight bend in elbows (20-30 degrees)",
+      "Lower weights in wide arc until chest stretch is felt",
+      "Keep palms facing each other throughout movement",
+      "Return to start using same arc pattern",
+      "Squeeze chest muscles at top position",
+    ];
+    details.commonMistakes = [
+      "Bending elbows too much (turns into press)",
+      "Lowering weights too far causing shoulder strain",
+      "Using momentum to swing weights up",
+      "Not maintaining control during eccentric phase",
+      "Going too heavy compromising form",
+    ];
+    details.equipment = "Dumbbells, Bench";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Pectoralis Major", "Anterior Deltoids"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Dumbbell Press - 10-12 reps with light weight",
+      "Doorway Chest Stretch - 30 seconds",
+    ];
+  } else if (matchesExercise(["cable crossover", "cable fly"])) {
+    details.description = "Cable crossovers provide constant tension throughout the entire range of motion, targeting the pectoral muscles with emphasis on the inner chest and sternal fibers.";
+    details.properForm = [
+      "Set cable pulleys above head height",
+      "Stand centered with one foot slightly forward",
+      "Grab handles with palms facing down",
+      "Bring handles together in wide arc motion",
+      "Cross hands slightly at peak contraction",
+      "Return with control feeling chest stretch",
+    ];
+    details.commonMistakes = [
+      "Using too much weight bending elbows excessively",
+      "Leaning forward too much using body momentum",
+      "Not squeezing chest at peak contraction",
+      "Moving too quickly without control",
+      "Setting pulleys at wrong height",
+    ];
+    details.equipment = "Cable Crossover Machine";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Pectoralis Major", "Anterior Deltoids"];
+    details.warmupExercises = [
+      "Band Chest Stretch - 30 seconds each side",
+      "Light Cable Press - 10-12 reps with light weight",
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+    ];
 
-      // CORE EXERCISES
-    } else if (matchesExercise(["plank", "front plank"])) {
-      details.description =
-        "Planks are an isometric core exercise that builds endurance in the abdominals, obliques, and lower back while improving spinal stability and posture.";
-      details.properForm = [
-        "Place forearms on ground, elbows under shoulders",
-        "Extend legs back, resting on toes",
-        "Keep body in straight line from head to heels",
-        "Engage core, glutes, and quadriceps",
-        "Maintain neutral neck and spine",
-        "Hold position without sagging or hiking hips",
-      ];
-      details.commonMistakes = [
-        "Sagging hips toward floor",
-        "Hiking hips too high",
-        "Looking up instead of keeping neck neutral",
-        "Holding breath instead of breathing normally",
-        "Not engaging all core muscles",
-      ];
-      details.equipment = "Mat/Bodyweight";
-      details.difficulty = "Beginner";
-      details.targetMuscles = [
-        "Rectus Abdominis",
-        "Transverse Abdominis",
-        "Obliques",
-        "Lower Back",
-      ];
-      details.warmupExercises = [
-        "Cat-Cow Stretch - 10-12 reps",
-        "Bird-Dog - 8-10 reps per side",
-        "Dead Bug - 30 seconds",
-      ];
-    } else if (matchesExercise(["russian twist", "russian twists"])) {
-      details.description =
-        "Russian twists target the obliques and deep core muscles, improving rotational strength and stability essential for sports and daily activities.";
-      details.properForm = [
-        "Sit on floor with knees bent, heels on ground",
-        "Lean back until torso is at 45-degree angle",
-        "Keep back straight, chest up, core engaged",
-        "Hold weight with both hands if using",
-        "Rotate torso to touch weight to one side",
-        "Return to center and rotate to opposite side",
-      ];
-      details.commonMistakes = [
-        "Rounding the back during rotation",
-        "Using momentum instead of core control",
-        "Rotating only arms instead of torso",
-        "Going too fast without control",
-        "Not maintaining engaged core throughout",
-      ];
-      details.equipment = "Mat, Weight Plate/Dumbbell (optional)";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = [
-        "Obliques",
-        "Rectus Abdominis",
-        "Transverse Abdominis",
-      ];
-      details.warmupExercises = [
-        "Cat-Cow Stretch - 10-12 reps",
-        "Seated Torso Twists - 30 seconds each side",
-        "Dead Bug - 30 seconds",
-      ];
-    } else if (
-      matchesExercise(["leg raise", "hanging leg raise", "lying leg raise"])
-    ) {
-      details.description =
-        "Leg raises target the lower abdominals and hip flexors, building core strength and definition in the often-hard-to-target lower abdominal region.";
-      details.properForm = [
-        "Lie on back or hang from bar with arms extended",
-        "Keep legs straight or slightly bent",
-        "Raise legs until perpendicular to floor",
-        "Control descent back to starting position",
-        "Avoid swinging or using momentum",
-        "Engage core throughout entire movement",
-      ];
-      details.commonMistakes = [
-        "Using momentum to swing legs up",
-        "Arching back during movement",
-        "Not controlling descent phase",
-        "Bending knees excessively",
-        "Not going through full range of motion",
-      ];
-      details.equipment = "Mat/Pull-up Bar";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = ["Lower Abs", "Hip Flexors", "Rectus Abdominis"];
-      details.warmupExercises = [
-        "Cat-Cow Stretch - 10-12 reps",
-        "Knee Tucks - 10-12 reps",
-        "Hip Circles - 30 seconds each direction",
-      ];
-    } else if (matchesExercise(["dead bug", "dead bugs"])) {
-      details.description =
-        "Dead bugs develop core stability and coordination while training the core to resist extension, which is crucial for spinal health and injury prevention.";
-      details.properForm = [
-        "Lie on back with arms extended toward ceiling",
-        "Lift legs with knees bent at 90 degrees",
-        "Simultaneously extend right arm and left leg",
-        "Keep lower back pressed into floor",
-        "Return to start and alternate sides",
-        "Move slowly with control and coordination",
-      ];
-      details.commonMistakes = [
-        "Arching lower back off floor",
-        "Moving too quickly without control",
-        "Not coordinating opposite arm and leg",
-        "Holding breath during movement",
-        "Not maintaining core engagement",
-      ];
-      details.equipment = "Mat";
-      details.difficulty = "Beginner";
-      details.targetMuscles = [
-        "Rectus Abdominis",
-        "Transverse Abdominis",
-        "Obliques",
-      ];
-      details.warmupExercises = [
-        "Cat-Cow Stretch - 10-12 reps",
-        "Deep Breathing - 5-10 slow breaths",
-        "Knee Hugs - 30 seconds each side",
-      ];
+    // BACK EXERCISES
+  } else if (matchesExercise(["pull-up", "pull up", "chin-up", "chin up"])) {
+    details.description = "Pull-ups are a fundamental bodyweight exercise that develops back width, biceps strength, and grip endurance. They target the latissimus dorsi and create the coveted V-taper physique.";
+    details.properForm = [
+      "Grip bar slightly wider than shoulder-width",
+      "Hang with arms fully extended, shoulders engaged",
+      "Pull chest toward bar by driving elbows down",
+      "Focus on using back muscles rather than arms",
+      "Touch chest to bar or get chin over bar",
+      "Lower with control to full extension",
+    ];
+    details.commonMistakes = [
+      "Using momentum (kipping) instead of strict form",
+      "Not achieving full range of motion",
+      "Shrugging shoulders at the top",
+      "Not fully extending arms at bottom",
+      "Using only arm strength instead of back",
+    ];
+    details.equipment = "Pull-up Bar";
+    details.difficulty = "Intermediate-Advanced";
+    details.targetMuscles = ["Latissimus Dorsi", "Biceps", "Rhomboids", "Rear Delts"];
+    details.warmupExercises = [
+      "Scapular Pull-ups - 10-15 reps",
+      "Band Pull-Aparts - 15-20 reps",
+      "Active Hang - 30 seconds to engage grip",
+    ];
+  } else if (matchesExercise(["bent over row", "barbell row"])) {
+    details.description = "Bent over rows are a compound back exercise that builds thickness in the mid-back, lats, and rear delts. They develop overall back strength and improve posture.";
+    details.properForm = [
+      "Stand with feet shoulder-width apart, knees slightly bent",
+      "Hinge at hips until torso is near parallel to floor",
+      "Grip barbell with hands slightly wider than shoulders",
+      "Pull bar to lower chest/upper abdomen",
+      "Keep back straight and core tight throughout",
+      "Squeeze shoulder blades together at top",
+    ];
+    details.commonMistakes = [
+      "Rounding the back during the movement",
+      "Using momentum to jerk the weight up",
+      "Pulling bar too high (to chest instead of abdomen)",
+      "Not maintaining hip hinge position",
+      "Using too heavy weight compromising form",
+    ];
+    details.equipment = "Barbell";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Latissimus Dorsi", "Rhomboids", "Rear Delts", "Traps"];
+    details.warmupExercises = [
+      "Cat-Cow Stretch - 10-12 reps",
+      "Light Deadlifts - 8-10 reps with light weight",
+      "Band Rows - 12-15 reps to activate back",
+    ];
+  } else if (matchesExercise(["lat pulldown", "lat pull down"])) {
+    details.description = "Lat pulldowns target the latissimus dorsi muscles, building back width and strength. This machine exercise is excellent for developing the mind-muscle connection with the lats.";
+    details.properForm = [
+      "Sit with thighs secured under pads",
+      "Grip bar wide with palms facing forward",
+      "Lean back slightly with chest up",
+      "Pull bar to upper chest while driving elbows down",
+      "Squeeze lats at bottom position",
+      "Return with control to full extension",
+    ];
+    details.commonMistakes = [
+      "Leaning back too far using body weight",
+      "Pulling bar behind neck (risky for shoulders)",
+      "Not achieving full stretch at top",
+      "Using arms instead of back muscles",
+      "Rounding shoulders forward",
+    ];
+    details.equipment = "Lat Pulldown Machine";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Latissimus Dorsi", "Biceps", "Rhomboids"];
+    details.warmupExercises = [
+      "Band Pull-Aparts - 15-20 reps",
+      "Face Pulls - 12-15 reps with light weight",
+      "Scapular Retractions - 10-12 reps",
+    ];
+  } else if (matchesExercise(["face pull", "face pulls"])) {
+    details.description = "Face pulls target the rear deltoids, rotator cuff, and upper back muscles. They are crucial for shoulder health, posture correction, and balancing pushing exercises.";
+    details.properForm = [
+      "Set cable pulley at upper chest height with rope attachment",
+      "Grab rope with neutral grip (palms facing each other)",
+      "Step back to create tension, elbows slightly bent",
+      "Pull rope toward face while externally rotating shoulders",
+      "Squeeze rear delts and upper back at peak contraction",
+      "Return with control maintaining tension",
+    ];
+    details.commonMistakes = [
+      "Using too much weight compromising form",
+      "Pulling toward chest instead of face",
+      "Not externally rotating shoulders",
+      "Using momentum to move weight",
+      "Shrugging shoulders instead of retracting",
+    ];
+    details.equipment = "Cable Machine, Rope Attachment";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Rear Deltoids", "Rotator Cuff", "Rhomboids", "Traps"];
+    details.warmupExercises = [
+      "Band Pull-Aparts - 15-20 reps",
+      "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
+      "Light External Rotations - 12-15 reps",
+    ];
 
-      // CARDIO EXERCISES
-    } else if (matchesExercise(["running", "jogging", "treadmill"])) {
-      details.description =
-        "Running is a fundamental cardiovascular exercise that improves heart health, endurance, and calorie burn. It can be performed outdoors or on a treadmill with varying intensity levels.";
-      details.properForm = [
-        "Maintain upright posture with slight forward lean",
-        "Land mid-foot with each stride, not on heel",
-        "Keep shoulders relaxed and down",
-        "Bend elbows at 90 degrees, swing arms forward and back",
-        "Take quick, light steps rather than long strides",
-        "Breathe rhythmically in through nose, out through mouth",
-      ];
-      details.commonMistakes = [
-        "Overstriding (landing with foot too far forward)",
-        "Hunching shoulders up toward ears",
-        "Looking down instead of forward",
-        "Holding tension in hands and arms",
-        "Breathing shallowly instead of deeply",
-      ];
-      details.equipment = "Running Shoes, Treadmill (optional)";
-      details.difficulty = "Beginner-Advanced";
-      details.targetMuscles = [
-        "Quadriceps",
-        "Hamstrings",
-        "Glutes",
-        "Calves",
-        "Cardiovascular System",
-      ];
-      details.warmupExercises = [
-        "Light Jogging - 5 minutes at slow pace",
-        "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-        "High Knees - 30 seconds to activate hip flexors",
-      ];
-    } else if (matchesExercise(["cycling", "bike", "stationary bike"])) {
-      details.description =
-        "Cycling is a low-impact cardiovascular exercise that builds leg strength and endurance while being gentle on the joints. It can be performed outdoors or on stationary equipment.";
-      details.properForm = [
-        "Adjust seat height so knee has slight bend at bottom of pedal stroke",
-        "Keep shoulders relaxed, elbows slightly bent",
-        "Maintain neutral spine, avoid rounding back",
-        "Push and pull through full pedal revolution",
-        "Keep feet parallel to ground during cycling",
-        "Use gears appropriately for terrain/resistance",
-      ];
-      details.commonMistakes = [
-        "Seat too high or too low causing knee strain",
-        "Hunching over handlebars excessively",
-        "Pedaling in too high or too low gear",
-        "Not using full pedal stroke (only pushing down)",
-        "Holding tension in upper body",
-      ];
-      details.equipment = "Bicycle/Stationary Bike, Helmet";
-      details.difficulty = "Beginner-Advanced";
-      details.targetMuscles = [
-        "Quadriceps",
-        "Hamstrings",
-        "Glutes",
-        "Calves",
-        "Cardiovascular System",
-      ];
-      details.warmupExercises = [
-        "Light Cycling - 5 minutes at easy resistance",
-        "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-        "Ankle Circles - 30 seconds each direction",
-      ];
-    } else if (
-      matchesExercise(["jump rope", "jump ropeing", "skipping rope"])
-    ) {
-      details.description =
-        "Jump rope is an excellent cardiovascular exercise that improves coordination, foot speed, and endurance while burning significant calories in a short time.";
-      details.properForm = [
-        "Stand with feet together, rope behind heels",
-        "Hold handles at hip level, elbows close to body",
-        "Use wrists to swing rope, not whole arms",
-        "Jump just high enough to clear rope (1-2 inches)",
-        "Land softly on balls of feet, knees slightly bent",
-        "Maintain relaxed posture and rhythmic breathing",
-      ];
-      details.commonMistakes = [
-        "Jumping too high causing excessive impact",
-        "Using arms instead of wrists to swing rope",
-        "Hunching forward with shoulders",
-        "Looking down instead of forward",
-        "Holding breath during jumping",
-      ];
-      details.equipment = "Jump Rope";
-      details.difficulty = "Beginner-Intermediate";
-      details.targetMuscles = [
-        "Calves",
-        "Quadriceps",
-        "Glutes",
-        "Shoulders",
-        "Cardiovascular System",
-      ];
-      details.warmupExercises = [
-        "Ankle Circles - 30 seconds each direction",
-        "Calf Raises - 15-20 reps",
-        "Light Jumping - 30 seconds without rope",
-      ];
-    } else if (matchesExercise(["rowing", "rower", "rowing machine"])) {
-      details.description =
-        "Rowing is a full-body cardiovascular exercise that engages both upper and lower body muscles while providing low-impact, high-intensity cardio training.";
-      details.properForm = [
-        "Start with knees bent, arms extended, torso forward",
-        "Drive back with legs while keeping arms straight",
-        "As legs extend, lean torso back to 11 o'clock position",
-        "Pull arms to chest, keeping elbows close to body",
-        "Reverse sequence: arms out, torso forward, then bend knees",
-        "Maintain smooth, continuous motion throughout",
-      ];
-      details.commonMistakes = [
-        "Using arms before legs in drive phase",
-        "Rounding back during the pull",
-        "Pulling handle too high or too low",
-        "Not using full range of motion",
-        "Rushing the recovery phase",
-      ];
-      details.equipment = "Rowing Machine";
-      details.difficulty = "Intermediate";
-      details.targetMuscles = [
-        "Quadriceps",
-        "Hamstrings",
-        "Glutes",
-        "Back",
-        "Arms",
-        "Cardiovascular System",
-      ];
-      details.warmupExercises = [
-        "Light Rowing - 5 minutes at easy pace",
-        "Arm Circles - 30 seconds forward, 30 seconds backward",
-        "Bodyweight Squats - 10-15 reps",
-      ];
+    // SHOULDER EXERCISES
+  } else if (matchesExercise(["overhead press", "shoulder press", "military press"])) {
+    details.description = "The overhead press is a fundamental compound exercise for shoulder development, targeting the anterior and medial deltoids, triceps, and upper chest. It builds strong, well-rounded shoulders.";
+    details.properForm = [
+      "Stand with feet shoulder-width apart, core tight",
+      "Grip barbell slightly wider than shoulder-width",
+      "Press bar overhead in straight line",
+      "Keep head neutral - push head slightly forward as bar passes",
+      "Lock out elbows at top without shrugging",
+      "Lower with control back to starting position",
+    ];
+    details.commonMistakes = [
+      "Arching lower back excessively",
+      "Using leg drive (becomes push press)",
+      "Not going through full range of motion",
+      "Flaring elbows out too wide",
+      "Shrugging shoulders at lockout",
+    ];
+    details.equipment = "Barbell/Dumbbells";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Anterior Deltoids", "Medial Deltoids", "Triceps", "Upper Chest"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Dumbbell Press - 10-12 reps with light weight",
+      "Band Pull-Aparts - 15-20 reps",
+    ];
+  } else if (matchesExercise(["lateral raise", "side lateral raise"])) {
+    details.description = "Lateral raises isolate the medial deltoids (side shoulders), creating shoulder width and the 'capped' shoulder appearance. They are essential for balanced shoulder development.";
+    details.properForm = [
+      "Stand with feet shoulder-width apart, dumbbells at sides",
+      "Maintain slight bend in elbows throughout movement",
+      "Raise arms out to sides until parallel to floor",
+      "Lead with elbows, keep palms facing down",
+      "Pause briefly at top while squeezing shoulders",
+      "Lower with control back to starting position",
+    ];
+    details.commonMistakes = [
+      "Using momentum to swing weights up",
+      "Raising weights above shoulder height",
+      "Shrugging shoulders instead of isolating delts",
+      "Bending elbows too much during movement",
+      "Using too heavy weight with poor form",
+    ];
+    details.equipment = "Dumbbells";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Medial Deltoids", "Supraspinatus"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Front Raises - 10-12 reps with light weight",
+      "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
+    ];
+  } else if (matchesExercise(["front raise", "dumbbell front raise"])) {
+    details.description = "Front raises target the anterior deltoids (front shoulders), helping to develop well-rounded shoulder strength and size. They complement overhead pressing movements.";
+    details.properForm = [
+      "Stand with feet shoulder-width apart",
+      "Hold dumbbells in front of thighs, palms facing down",
+      "Raise one or both arms forward to shoulder height",
+      "Keep arms straight with slight elbow bend",
+      "Pause at top while squeezing front delts",
+      "Lower with control back to start",
+    ];
+    details.commonMistakes = [
+      "Using momentum to swing weights up",
+      "Raising above shoulder height",
+      "Bending elbows excessively",
+      "Leaning backward during movement",
+      "Going too heavy compromising form",
+    ];
+    details.equipment = "Dumbbells/Barbell Plate";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Anterior Deltoids"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Shoulder Rolls - 30 seconds forward, 30 seconds backward",
+      "Light Upright Rows - 10-12 reps with light weight",
+    ];
 
-      // STRETCHING EXERCISES
-  if (matchesExercise(["hamstring stretch", "hamstring stretch"])) {
+    // LEG EXERCISES
+  } else if (matchesExercise(["squat", "barbell squat", "back squat"])) {
+    details.description = "Squats are the king of lower body exercises, targeting the quadriceps, glutes, hamstrings, and core. They build leg strength, power, and functional movement patterns.";
+    details.properForm = [
+      "Stand with feet shoulder-width or slightly wider",
+      "Place barbell across upper back, not neck",
+      "Keep chest up and back straight throughout",
+      "Break at hips and knees simultaneously",
+      "Descend until thighs are parallel or below",
+      "Drive through heels to return to standing",
+    ];
+    details.commonMistakes = [
+      "Letting knees cave inward",
+      "Rounding lower back during descent",
+      "Rising onto toes during ascent",
+      "Not going deep enough in squat",
+      "Looking down instead of forward",
+    ];
+    details.equipment = "Barbell, Squat Rack";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Adductors", "Core"];
+    details.warmupExercises = [
+      "Bodyweight Squats - 15-20 reps",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Hip Circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["deadlift", "conventional deadlift"])) {
+    details.description = "Deadlifts are a fundamental compound exercise that builds total-body strength, targeting the posterior chain (hamstrings, glutes, back) while engaging the core and grip strength.";
+    details.properForm = [
+      "Stand with feet hip-width apart, bar over mid-foot",
+      "Hinge at hips and bend knees to grip bar",
+      "Keep back straight, chest up, shoulders back",
+      "Drive through heels while extending hips and knees",
+      "Stand tall at top without leaning back",
+      "Lower with control following same path",
+    ];
+    details.commonMistakes = [
+      "Rounding the back during lift",
+      "Starting with hips too high or too low",
+      "Pulling with arms instead of legs/hips",
+      "Not keeping bar close to body",
+      "Hyperextending at lockout",
+    ];
+    details.equipment = "Barbell";
+    details.difficulty = "Intermediate-Advanced";
+    details.targetMuscles = ["Hamstrings", "Glutes", "Erector Spinae", "Lats", "Traps"];
+    details.warmupExercises = [
+      "Good Mornings - 10-12 reps with bodyweight",
+      "Romanian Deadlifts - 8-10 reps with light weight",
+      "Cat-Cow Stretch - 10-12 reps",
+    ];
+  } else if (matchesExercise(["romanian deadlift", "rdl"])) {
+    details.description = "Romanian deadlifts focus on the posterior chain with minimal knee bend, emphasizing hamstring and glute development while improving hip hinge mechanics.";
+    details.properForm = [
+      "Stand with feet hip-width apart, knees slightly bent",
+      "Hold barbell or dumbbells in front of thighs",
+      "Hinge at hips while maintaining flat back",
+      "Lower weight along legs until hamstring stretch",
+      "Keep bar close to body throughout movement",
+      "Drive hips forward to return to standing",
+    ];
+    details.commonMistakes = [
+      "Rounding the back during descent",
+      "Bending knees too much (becomes squat)",
+      "Letting weight drift away from body",
+      "Not achieving sufficient depth in hinge",
+      "Going too heavy compromising form",
+    ];
+    details.equipment = "Barbell/Dumbbells";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Hamstrings", "Glutes", "Erector Spinae"];
+    details.warmupExercises = [
+      "Bodyweight Good Mornings - 10-12 reps",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Hip Hinge Practice - 10-12 reps without weight",
+    ];
+  } else if (matchesExercise(["lunges", "walking lunge", "dumbbell lunge"])) {
+    details.description = "Lunges are a unilateral leg exercise that develops quadriceps, glutes, and hamstrings while improving balance, coordination, and addressing muscle imbalances.";
+    details.properForm = [
+      "Stand with feet together, weights at sides if used",
+      "Step forward with one leg, landing on heel",
+      "Lower until both knees are bent at 90 degrees",
+      "Keep front knee behind toes, torso upright",
+      "Drive through front heel to return to start",
+      "Maintain control and balance throughout",
+    ];
+    details.commonMistakes = [
+      "Stepping too short or too long",
+      "Letting front knee travel past toes",
+      "Leaning forward excessively",
+      "Not going deep enough in lunge",
+      "Losing balance during movement",
+    ];
+    details.equipment = "Dumbbells/Barbell/Bodyweight";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Core"];
+    details.warmupExercises = [
+      "Bodyweight Lunges - 10-12 reps per side",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Hip Circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["leg press", "leg press machine"])) {
+    details.description = "The leg press targets the quadriceps, glutes, and hamstrings with minimal spinal loading, allowing for heavy lower body training without technical demands of squats.";
+    details.properForm = [
+      "Sit with back and hips firmly against pads",
+      "Place feet shoulder-width on platform",
+      "Lower weight until knees are at 90 degrees",
+      "Keep knees in line with feet during movement",
+      "Press through heels to extend legs",
+      "Don't lock knees completely at top",
+    ];
+    details.commonMistakes = [
+      "Going too deep causing lower back rounding",
+      "Placing feet too high or too low",
+      "Letting knees cave inward",
+      "Locking knees at top of movement",
+      "Bouncing at bottom of movement",
+    ];
+    details.equipment = "Leg Press Machine";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings"];
+    details.warmupExercises = [
+      "Bodyweight Squats - 15-20 reps",
+      "Leg Extensions - 12-15 reps with light weight",
+      "Hip Circles - 30 seconds each direction",
+    ];
+
+    // ARM EXERCISES
+  } else if (matchesExercise(["bicep curl", "dumbbell curl", "barbell curl"])) {
+    details.description = "Bicep curls isolate the biceps brachii, brachialis, and brachioradialis, building arm size and strength. They are essential for balanced arm development.";
+    details.properForm = [
+      "Stand with feet shoulder-width apart",
+      "Hold weights with supinated grip (palms up)",
+      "Keep elbows tucked at sides throughout",
+      "Curl weight toward shoulders",
+      "Squeeze biceps hard at top position",
+      "Lower with control resisting gravity",
+    ];
+    details.commonMistakes = [
+      "Swinging body to generate momentum",
+      "Moving elbows away from body",
+      "Not going through full range of motion",
+      "Using too heavy weight compromising form",
+      "Not controlling eccentric portion",
+    ];
+    details.equipment = "Dumbbells/Barbell/EZ Bar";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Biceps Brachii", "Brachialis", "Brachioradialis"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Hammer Curls - 10-12 reps with light weight",
+      "Wrist Circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["triceps extension", "overhead extension", "french press"])) {
+    details.description = "Triceps extensions target all three heads of the triceps, with emphasis on the long head. They build arm size and definition behind the biceps.";
+    details.properForm = [
+      "Sit or stand with weight overhead",
+      "Keep elbows close to head pointing forward",
+      "Lower weight behind head by bending elbows",
+      "Go until stretch is felt in triceps",
+      "Extend arms back to starting position",
+      "Squeeze triceps at full extension",
+    ];
+    details.commonMistakes = [
+      "Flaring elbows out to sides",
+      "Using too much weight compromising form",
+      "Not going through full range of motion",
+      "Arching back excessively",
+      "Moving shoulders during movement",
+    ];
+    details.equipment = "Dumbbell/EZ Bar/Cable";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Triceps (All Three Heads)"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Push-downs - 12-15 reps with light weight",
+      "Overhead Triceps Stretch - 30 seconds each arm",
+    ];
+  } else if (matchesExercise(["triceps pushdown", "cable pushdown"])) {
+    details.description = "Triceps pushdowns target the lateral and medial heads of the triceps, building horseshoe-shaped arm development and improving pressing strength.";
+    details.properForm = [
+      "Stand facing cable machine with rope or bar",
+      "Grip attachment with palms down",
+      "Keep elbows tucked at sides throughout",
+      "Push weight down until arms fully extended",
+      "Squeeze triceps hard at bottom",
+      "Return with control to starting position",
+    ];
+    details.commonMistakes = [
+      "Moving elbows away from body",
+      "Using body momentum to move weight",
+      "Not achieving full arm extension",
+      "Leaning forward excessively",
+      "Going too heavy with poor form",
+    ];
+    details.equipment = "Cable Machine";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Triceps (Lateral and Medial Heads)"];
+    details.warmupExercises = [
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Light Overhead Extensions - 10-12 reps with light weight",
+      "Wrist Flexor Stretch - 30 seconds each arm",
+    ];
+
+    // CORE EXERCISES
+  } else if (matchesExercise(["plank", "front plank"])) {
+    details.description = "Planks are an isometric core exercise that builds endurance in the abdominals, obliques, and lower back while improving spinal stability and posture.";
+    details.properForm = [
+      "Place forearms on ground, elbows under shoulders",
+      "Extend legs back, resting on toes",
+      "Keep body in straight line from head to heels",
+      "Engage core, glutes, and quadriceps",
+      "Maintain neutral neck and spine",
+      "Hold position without sagging or hiking hips",
+    ];
+    details.commonMistakes = [
+      "Sagging hips toward floor",
+      "Hiking hips too high",
+      "Looking up instead of keeping neck neutral",
+      "Holding breath instead of breathing normally",
+      "Not engaging all core muscles",
+    ];
+    details.equipment = "Mat/Bodyweight";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Rectus Abdominis", "Transverse Abdominis", "Obliques", "Lower Back"];
+    details.warmupExercises = [
+      "Cat-Cow Stretch - 10-12 reps",
+      "Bird-Dog - 8-10 reps per side",
+      "Dead Bug - 30 seconds",
+    ];
+  } else if (matchesExercise(["russian twist", "russian twists"])) {
+    details.description = "Russian twists target the obliques and deep core muscles, improving rotational strength and stability essential for sports and daily activities.";
+    details.properForm = [
+      "Sit on floor with knees bent, heels on ground",
+      "Lean back until torso is at 45-degree angle",
+      "Keep back straight, chest up, core engaged",
+      "Hold weight with both hands if using",
+      "Rotate torso to touch weight to one side",
+      "Return to center and rotate to opposite side",
+    ];
+    details.commonMistakes = [
+      "Rounding the back during rotation",
+      "Using momentum instead of core control",
+      "Rotating only arms instead of torso",
+      "Going too fast without control",
+      "Not maintaining engaged core throughout",
+    ];
+    details.equipment = "Mat, Weight Plate/Dumbbell (optional)";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Obliques", "Rectus Abdominis", "Transverse Abdominis"];
+    details.warmupExercises = [
+      "Cat-Cow Stretch - 10-12 reps",
+      "Seated Torso Twists - 30 seconds each side",
+      "Dead Bug - 30 seconds",
+    ];
+  } else if (matchesExercise(["leg raise", "hanging leg raise", "lying leg raise"])) {
+    details.description = "Leg raises target the lower abdominals and hip flexors, building core strength and definition in the often-hard-to-target lower abdominal region.";
+    details.properForm = [
+      "Lie on back or hang from bar with arms extended",
+      "Keep legs straight or slightly bent",
+      "Raise legs until perpendicular to floor",
+      "Control descent back to starting position",
+      "Avoid swinging or using momentum",
+      "Engage core throughout entire movement",
+    ];
+    details.commonMistakes = [
+      "Using momentum to swing legs up",
+      "Arching back during movement",
+      "Not controlling descent phase",
+      "Bending knees excessively",
+      "Not going through full range of motion",
+    ];
+    details.equipment = "Mat/Pull-up Bar";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Lower Abs", "Hip Flexors", "Rectus Abdominis"];
+    details.warmupExercises = [
+      "Cat-Cow Stretch - 10-12 reps",
+      "Knee Tucks - 10-12 reps",
+      "Hip Circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["dead bug", "dead bugs"])) {
+    details.description = "Dead bugs develop core stability and coordination while training the core to resist extension, which is crucial for spinal health and injury prevention.";
+    details.properForm = [
+      "Lie on back with arms extended toward ceiling",
+      "Lift legs with knees bent at 90 degrees",
+      "Simultaneously extend right arm and left leg",
+      "Keep lower back pressed into floor",
+      "Return to start and alternate sides",
+      "Move slowly with control and coordination",
+    ];
+    details.commonMistakes = [
+      "Arching lower back off floor",
+      "Moving too quickly without control",
+      "Not coordinating opposite arm and leg",
+      "Holding breath during movement",
+      "Not maintaining core engagement",
+    ];
+    details.equipment = "Mat";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Rectus Abdominis", "Transverse Abdominis", "Obliques"];
+    details.warmupExercises = [
+      "Cat-Cow Stretch - 10-12 reps",
+      "Deep Breathing - 5-10 slow breaths",
+      "Knee Hugs - 30 seconds each side",
+    ];
+
+    // CARDIO EXERCISES
+  } else if (matchesExercise(["running", "jogging", "treadmill"])) {
+    details.description = "Running is a fundamental cardiovascular exercise that improves heart health, endurance, and calorie burn. It can be performed outdoors or on a treadmill with varying intensity levels.";
+    details.properForm = [
+      "Maintain upright posture with slight forward lean",
+      "Land mid-foot with each stride, not on heel",
+      "Keep shoulders relaxed and down",
+      "Bend elbows at 90 degrees, swing arms forward and back",
+      "Take quick, light steps rather than long strides",
+      "Breathe rhythmically in through nose, out through mouth",
+    ];
+    details.commonMistakes = [
+      "Overstriding (landing with foot too far forward)",
+      "Hunching shoulders up toward ears",
+      "Looking down instead of forward",
+      "Holding tension in hands and arms",
+      "Breathing shallowly instead of deeply",
+    ];
+    details.equipment = "Running Shoes, Treadmill (optional)";
+    details.difficulty = "Beginner-Advanced";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Jogging - 5 minutes at slow pace",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "High Knees - 30 seconds to activate hip flexors",
+    ];
+  } else if (matchesExercise(["cycling", "bike", "stationary bike"])) {
+    details.description = "Cycling is a low-impact cardiovascular exercise that builds leg strength and endurance while being gentle on the joints. It can be performed outdoors or on stationary equipment.";
+    details.properForm = [
+      "Adjust seat height so knee has slight bend at bottom of pedal stroke",
+      "Keep shoulders relaxed, elbows slightly bent",
+      "Maintain neutral spine, avoid rounding back",
+      "Push and pull through full pedal revolution",
+      "Keep feet parallel to ground during cycling",
+      "Use gears appropriately for terrain/resistance",
+    ];
+    details.commonMistakes = [
+      "Seat too high or too low causing knee strain",
+      "Hunching over handlebars excessively",
+      "Pedaling in too high or too low gear",
+      "Not using full pedal stroke (only pushing down)",
+      "Holding tension in upper body",
+    ];
+    details.equipment = "Bicycle/Stationary Bike, Helmet";
+    details.difficulty = "Beginner-Advanced";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Cycling - 5 minutes at easy resistance",
+      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
+      "Ankle Circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["jump rope", "jump ropeing", "skipping rope"])) {
+    details.description = "Jump rope is an excellent cardiovascular exercise that improves coordination, foot speed, and endurance while burning significant calories in a short time.";
+    details.properForm = [
+      "Stand with feet together, rope behind heels",
+      "Hold handles at hip level, elbows close to body",
+      "Use wrists to swing rope, not whole arms",
+      "Jump just high enough to clear rope (1-2 inches)",
+      "Land softly on balls of feet, knees slightly bent",
+      "Maintain relaxed posture and rhythmic breathing",
+    ];
+    details.commonMistakes = [
+      "Jumping too high causing excessive impact",
+      "Using arms instead of wrists to swing rope",
+      "Hunching forward with shoulders",
+      "Looking down instead of forward",
+      "Holding breath during jumping",
+    ];
+    details.equipment = "Jump Rope";
+    details.difficulty = "Beginner-Intermediate";
+    details.targetMuscles = ["Calves", "Quadriceps", "Glutes", "Shoulders", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Ankle Circles - 30 seconds each direction",
+      "Calf Raises - 15-20 reps",
+      "Light Jumping - 30 seconds without rope",
+    ];
+  } else if (matchesExercise(["rowing", "rower", "rowing machine"])) {
+    details.description = "Rowing is a full-body cardiovascular exercise that engages both upper and lower body muscles while providing low-impact, high-intensity cardio training.";
+    details.properForm = [
+      "Start with knees bent, arms extended, torso forward",
+      "Drive back with legs while keeping arms straight",
+      "As legs extend, lean torso back to 11 o'clock position",
+      "Pull arms to chest, keeping elbows close to body",
+      "Reverse sequence: arms out, torso forward, then bend knees",
+      "Maintain smooth, continuous motion throughout",
+    ];
+    details.commonMistakes = [
+      "Using arms before legs in drive phase",
+      "Rounding back during the pull",
+      "Pulling handle too high or too low",
+      "Not using full range of motion",
+      "Rushing the recovery phase",
+    ];
+    details.equipment = "Rowing Machine";
+    details.difficulty = "Intermediate";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Back", "Arms", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Light Rowing - 5 minutes at easy pace",
+      "Arm Circles - 30 seconds forward, 30 seconds backward",
+      "Bodyweight Squats - 10-15 reps",
+    ];
+
+    // STRETCHING EXERCISES
+  } else if (matchesExercise(["hamstring stretch", "hamstring stretch"])) {
     details.description = "Hamstring stretches improve flexibility in the back of your thighs, reduce lower back tension, and enhance overall leg mobility. Essential for preventing injuries and improving posture.";
     details.properForm = [
       "Sit on floor with one leg extended, other bent with foot against inner thigh",
@@ -1940,165 +1953,465 @@ const WorkoutPlan = ({
     ];
   }
 
-  // CARDIO EXERCISES
-  else if (matchesExercise(["running", "jogging", "treadmill"])) {
-    details.description = "Running is a fundamental cardiovascular exercise that improves heart health, endurance, and calorie burn. It can be performed outdoors or on a treadmill with varying intensity levels.";
+  // CARDIO EQUIPMENT
+  else if (matchesExercise(["treadmill", "running", "walking"])) {
+    details.description = "The treadmill provides controlled cardiovascular exercise for improving endurance, burning calories, and enhancing cardiovascular health. It allows adjustable speed and incline for customized workouts.";
     details.properForm = [
-      "Maintain upright posture with slight forward lean",
-      "Land mid-foot with each stride, not on heel",
-      "Keep shoulders relaxed and down",
-      "Bend elbows at 90 degrees, swing arms forward and back",
-      "Take quick, light steps rather than long strides",
-      "Breathe rhythmically in through nose, out through mouth"
+      "Maintain upright posture with shoulders back and down",
+      "Keep head up looking forward, not down at feet",
+      "Land mid-foot with each step, not on heels or toes",
+      "Use natural arm swing with 90-degree elbow bend",
+      "Avoid holding handrails unless for balance",
+      "Start with slower pace and gradually increase",
     ];
     details.commonMistakes = [
-      "Overstriding (landing with foot too far forward)",
-      "Hunching shoulders up toward ears",
-      "Looking down instead of forward",
-      "Holding tension in hands and arms",
-      "Breathing shallowly instead of deeply"
+      "Holding handrails and leaning forward",
+      "Overstriding with feet landing too far in front",
+      "Looking down at feet or console constantly",
+      "Starting with speed/incline too high",
+      "Wearing improper footwear",
     ];
-    details.equipment = "Running Shoes, Treadmill (optional)";
-    details.difficulty = "Beginner-Advanced";
-    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Cardiovascular System"];
+    details.equipment = "Treadmill, Proper Athletic Shoes";
+    details.difficulty = "Beginner to Advanced";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Core"];
     details.warmupExercises = [
-      "Light Jogging - 5 minutes at slow pace",
-      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-      "High Knees - 30 seconds to activate hip flexors"
+      "5-minute walk at easy pace (2-3 mph)",
+      "Leg swings - 30 seconds forward/side",
+      "Ankle circles - 30 seconds each direction",
     ];
-  } else if (matchesExercise(["cycling", "bike", "stationary bike"])) {
-    details.description = "Cycling is a low-impact cardiovascular exercise that builds leg strength and endurance while being gentle on the joints. It can be performed outdoors or on stationary equipment.";
+  } else if (matchesExercise(["elliptical", "cross trainer"])) {
+    details.description = "The elliptical trainer provides low-impact cardiovascular exercise that mimics running motion without joint stress. It engages both upper and lower body simultaneously for full-body conditioning.";
     details.properForm = [
-      "Adjust seat height so knee has slight bend at bottom of pedal stroke",
-      "Keep shoulders relaxed, elbows slightly bent",
-      "Maintain neutral spine, avoid rounding back",
-      "Push and pull through full pedal revolution",
-      "Keep feet parallel to ground during cycling",
-      "Use gears appropriately for terrain/resistance"
-    ];
-    details.commonMistakes = [
-      "Seat too high or too low causing knee strain",
-      "Hunching over handlebars excessively",
-      "Pedaling in too high or too low gear",
-      "Not using full pedal stroke (only pushing down)",
-      "Holding tension in upper body"
-    ];
-    details.equipment = "Bicycle/Stationary Bike, Helmet";
-    details.difficulty = "Beginner-Advanced";
-    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Cardiovascular System"];
-    details.warmupExercises = [
-      "Light Cycling - 5 minutes at easy resistance",
-      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-      "Ankle Circles - 30 seconds each direction"
-    ];
-  } else if (matchesExercise(["jump rope", "jump ropeing", "skipping rope"])) {
-    details.description = "Jump rope is an excellent cardiovascular exercise that improves coordination, foot speed, and endurance while burning significant calories in a short time.";
-    details.properForm = [
-      "Stand with feet together, rope behind heels",
-      "Hold handles at hip level, elbows close to body",
-      "Use wrists to swing rope, not whole arms",
-      "Jump just high enough to clear rope (1-2 inches)",
-      "Land softly on balls of feet, knees slightly bent",
-      "Keep jumps small and efficient"
-    ];
-    details.commonMistakes = [
-      "Jumping too high off ground",
-      "Using arms instead of wrists to swing rope",
-      "Looking down at feet instead of forward",
-      "Holding tension in shoulders",
-      "Landing flat-footed or with straight legs"
-    ];
-    details.equipment = "Jump Rope";
-    details.difficulty = "Intermediate";
-    details.targetMuscles = ["Calves", "Quadriceps", "Shoulders", "Cardiovascular System"];
-    details.warmupExercises = [
-      "Light Jogging - 2-3 minutes",
-      "Ankle Circles - 30 seconds each direction",
-      "Calf Raises - 15-20 reps",
-      "Wrist Circles - 30 seconds each direction"
-    ];
-  } else if (matchesExercise(["rowing", "rower", "rowing machine"])) {
-    details.description = "Rowing is a full-body cardiovascular exercise that engages both upper and lower body muscles while providing excellent cardiovascular benefits with low joint impact.";
-    details.properForm = [
-      "Start with knees bent, arms straight (catch position)",
-      "Drive back with legs while keeping back straight",
-      "When legs are nearly extended, lean back slightly",
-      "Pull handle to lower chest, elbows going back",
-      "Extend arms, hinge forward from hips, then bend knees",
-      "Maintain smooth, continuous motion throughout"
-    ];
-    details.commonMistakes = [
-      "Using arms before legs in the drive phase",
-      "Rounding back during the pull",
-      "Pulling handle too high (to neck level)",
-      "Rushing the recovery phase",
-      "Not using full leg drive"
-    ];
-    details.equipment = "Rowing Machine";
-    details.difficulty = "Intermediate";
-    details.targetMuscles = ["Quadriceps", "Hamstrings", "Back", "Shoulders", "Arms", "Cardiovascular System"];
-    details.warmupExercises = [
-      "Light Rowing - 5 minutes at easy pace",
-      "Arm Circles - 30 seconds forward, 30 seconds backward",
-      "Bodyweight Squats - 10-15 reps",
-      "Shoulder Rolls - 30 seconds each direction"
-    ];
-  } else if (matchesExercise(["elliptical", "elliptical trainer"])) {
-    details.description = "The elliptical trainer provides a low-impact cardiovascular workout that mimics running motion without joint stress, making it ideal for all fitness levels and rehabilitation.";
-    details.properForm = [
-      "Stand tall with shoulders back and down",
-      "Grab moving handles to engage upper body",
-      "Push through heels, not toes",
-      "Keep knees aligned with feet during motion",
-      "Maintain upright posture throughout",
-      "Use full range of motion in legs and arms"
+      "Stand tall with neutral spine throughout movement",
+      "Keep feet flat on pedals with weight distributed evenly",
+      "Use handles to engage upper body without leaning",
+      "Push through heels while maintaining controlled motion",
+      "Keep knees aligned with toes during movement",
+      "Use full range of motion without locking joints",
     ];
     details.commonMistakes = [
       "Leaning too heavily on handrails",
-      "Rising up on toes during push phase",
-      "Hunching forward over console",
-      "Not using full stride length",
-      "Letting knees collapse inward"
+      "Rising onto toes instead of pushing through heels",
+      "Hunching shoulders forward",
+      "Using momentum instead of controlled movement",
+      "Setting resistance too high causing poor form",
     ];
     details.equipment = "Elliptical Machine";
-    details.difficulty = "Beginner";
-    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Chest", "Back", "Cardiovascular System"];
+    details.difficulty = "Beginner to Intermediate";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Chest", "Back", "Shoulders"];
     details.warmupExercises = [
-      "Light Elliptical - 5 minutes at easy resistance",
-      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-      "Arm Circles - 30 seconds forward, 30 seconds backward"
+      "5 minutes at low resistance and pace",
+      "Arm circles - 30 seconds forward/backward",
+      "Bodyweight squats - 10-15 reps",
     ];
-  } else if (matchesExercise(["stair climber", "stair machine", "step mill"])) {
-    details.description = "The stair climber simulates stair climbing to provide an intense lower body and cardiovascular workout that builds leg strength and endurance while burning significant calories.";
+  } else if (matchesExercise(["stationary bike", "exercise bike", "cycling"])) {
+    details.description = "Stationary bikes provide excellent cardiovascular exercise with minimal joint impact. They build leg endurance and cardiovascular fitness while being accessible for all fitness levels.";
     details.properForm = [
-      "Stand tall with slight forward lean from ankles",
-      "Place entire foot on each step, not just toes",
-      "Use handrails for balance only, not for support",
-      "Push through heels to engage glutes and hamstrings",
-      "Keep core engaged throughout movement",
-      "Maintain steady, controlled pace"
+      "Adjust seat height so knee has slight bend at bottom of pedal stroke",
+      "Keep back straight with slight forward lean",
+      "Maintain relaxed shoulders away from ears",
+      "Pedal with balls of feet, not arches or heels",
+      "Use controlled, circular pedaling motion",
+      "Engage core muscles to maintain stability",
     ];
     details.commonMistakes = [
-      "Leaning too heavily on handrails",
-      "Stepping only on balls of feet",
-      "Hunching forward excessively",
-      "Taking steps that are too high",
-      "Letting knees extend past toes excessively"
+      "Seat too high or low causing knee strain",
+      "Hunching over handlebars excessively",
+      "Pedaling with toes pointing down",
+      "Using too much resistance too quickly",
+      "Bouncing in seat due to high resistance",
     ];
-    details.equipment = "Stair Climber Machine";
-    details.difficulty = "Intermediate";
-    details.targetMuscles = ["Quadriceps", "Glutes", "Hamstrings", "Calves", "Cardiovascular System"];
+    details.equipment = "Stationary Bike, Proper Footwear";
+    details.difficulty = "Beginner to Advanced";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Calves"];
     details.warmupExercises = [
-      "Light Stair Climbing - 5 minutes at slow pace",
-      "Leg Swings - 30 seconds forward, 30 seconds side-to-side",
-      "Bodyweight Squats - 10-15 reps",
-      "Calf Raises - 15-20 reps"
+      "5 minutes easy cycling at low resistance",
+      "Leg swings - 30 seconds forward/side",
+      "Hip circles - 30 seconds each direction",
+    ];
+  } else if (matchesExercise(["rowing machine", "machine rowing", "rower"])) {
+    details.description = "The rowing machine provides full-body cardiovascular exercise that engages over 80% of muscle groups. It combines strength and endurance training with low joint impact.";
+    details.properForm = [
+      "Start with knees bent, arms extended, torso forward",
+      "Drive back with legs while keeping arms straight",
+      "Lean torso back to about 11 o'clock position",
+      "Pull handle to lower chest while squeezing shoulder blades",
+      "Return to start position in reverse order: arms, torso, legs",
+      "Maintain smooth, continuous motion throughout",
+    ];
+    details.commonMistakes = [
+      "Using arms before legs in drive phase",
+      "Rounding back during the pull",
+      "Pulling handle too high or too low",
+      "Rushing the recovery phase",
+      "Not using full leg drive power",
+    ];
+    details.equipment = "Rowing Machine";
+    details.difficulty = "Intermediate to Advanced";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Back", "Shoulders", "Arms"];
+    details.warmupExercises = [
+      "5 minutes light rowing at easy pace",
+      "Arm circles - 30 seconds forward/backward",
+      "Bodyweight squats - 10-15 reps",
+    ];
+
+  // WARM-UP ROUTINES
+  } else if (matchesExercise(["dynamic stretching", "dynamic warmup"])) {
+    details.description = "Dynamic stretching involves controlled movements that prepare muscles for exercise by increasing blood flow, flexibility, and range of motion. It's superior to static stretching for pre-workout preparation.";
+    details.properForm = [
+      "Perform movements in controlled, deliberate manner",
+      "Gradually increase range of motion with each repetition",
+      "Maintain proper posture and alignment throughout",
+      "Focus on muscle groups you'll use in your workout",
+      "Keep movements smooth and continuous",
+      "Breathe naturally throughout the movements",
+    ];
+    details.commonMistakes = [
+      "Bouncing or using jerky movements",
+      "Stretching to the point of pain",
+      "Rushing through the movements",
+      "Skipping important muscle groups",
+      "Not matching warm-up to workout type",
+    ];
+    details.equipment = "None or Yoga Mat";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Full Body Mobility"];
+    details.warmupExercises = [
+      "Leg swings - 30 seconds forward/side",
+      "Arm circles - 30 seconds forward/backward",
+      "Torso twists - 30 seconds each side",
+      "Walking lunges - 10 reps per side",
+      "High knees - 30 seconds",
+    ];
+  } else if (matchesExercise(["light cardio machine", "cardio warmup"])) {
+    details.description = "Light cardio on machines prepares your cardiovascular system for exercise by gradually increasing heart rate and blood flow to muscles. It's essential for preventing injury and improving performance.";
+    details.properForm = [
+      "Start at very low intensity (40-50% max effort)",
+      "Gradually increase intensity over 5-10 minutes",
+      "Maintain proper machine-specific form",
+      "Focus on deep, rhythmic breathing",
+      "Monitor perceived exertion - should be light",
+      "Include multiple movement patterns if possible",
+    ];
+    details.commonMistakes = [
+      "Starting too intensely too quickly",
+      "Poor posture on machines",
+      "Not warming up long enough",
+      "Skipping warm-up altogether",
+      "Not hydrating during warm-up",
+    ];
+    details.equipment = "Stationary Bike or Treadmill";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Cardiovascular System", "Major Muscle Groups"];
+    details.warmupExercises = [
+      "5-10 minutes light cycling or walking",
+      "Dynamic stretches specific to workout",
+      "Gradual intensity increase",
+    ];
+  } else if (matchesExercise(["light rowing machine", "rowing warmup"])) {
+    details.description = "Light rowing warm-up activates the entire body with minimal impact, preparing cardiovascular system and major muscle groups for more intense exercise while practicing proper rowing technique.";
+    details.properForm = [
+      "Focus on technique over speed or power",
+      "Use light resistance setting",
+      "Emphasize full range of motion with control",
+      "Practice proper sequencing: legs, body, arms",
+      "Maintain smooth transitions between phases",
+      "Concentrate on breathing pattern",
+    ];
+    details.commonMistakes = [
+      "Using too much resistance",
+      "Rushing the stroke rate",
+      "Poor technique that carries to main workout",
+      "Not using full leg drive",
+      "Over-gripping the handle",
+    ];
+    details.equipment = "Rowing Machine";
+    details.difficulty = "Beginner to Intermediate";
+    details.targetMuscles = ["Legs", "Back", "Shoulders", "Core"];
+    details.warmupExercises = [
+      "5 minutes light rowing at 18-22 strokes/minute",
+      "Technique drills at very light pressure",
+      "Gradual increase in stroke rate",
+    ];
+  } else if (matchesExercise(["chest activation", "chest warmup"])) {
+    details.description = "Chest activation warm-up prepares pectoral muscles, shoulders, and stabilizing muscles for pressing movements. It improves mind-muscle connection and reduces injury risk during chest exercises.";
+    details.properForm = [
+      "Perform band chest stretches with controlled tension",
+      "Maintain push-up position planks with neutral spine",
+      "Focus on scapular protractions with shoulder stability",
+      "Use light resistance bands for activation exercises",
+      "Perform machine chest warm-up with very light weight",
+      "Focus on muscle contraction rather than weight moved",
+    ];
+    details.commonMistakes = [
+      "Using too much resistance too early",
+      "Rushing through activation exercises",
+      "Poor plank form causing back strain",
+      "Not fully engaging target muscles",
+      "Skipping stabilization exercises",
+    ];
+    details.equipment = "Resistance Bands, Light Dumbbells, Chest Machine";
+    details.difficulty = "Beginner to Intermediate";
+    details.targetMuscles = ["Pectorals", "Anterior Deltoids", "Triceps", "Core Stabilizers"];
+    details.warmupExercises = [
+      "Band chest stretches - 30 seconds hold",
+      "Push-up position planks - 30-60 seconds",
+      "Scapular protractions - 15-20 reps",
+      "Machine chest press - 1-2 light sets of 15-20 reps",
+    ];
+  } else if (matchesExercise(["back activation", "back warmup"])) {
+    details.description = "Back activation warm-up prepares the posterior chain muscles including lats, rhomboids, and rear deltoids for pulling movements. It improves posture and shoulder health while enhancing pulling performance.";
+    details.properForm = [
+      "Perform band pull-aparts with controlled shoulder retraction",
+      "Focus on scapular retractions with proper shoulder positioning",
+      "Use light cable rows with full range of motion",
+      "Perform lat pulldown warm-up with light weight and focus on form",
+      "Maintain neutral spine throughout all movements",
+      "Engage core muscles to stabilize torso",
+    ];
+    details.commonMistakes = [
+      "Using momentum instead of muscle control",
+      "Shrugging shoulders during exercises",
+      "Not achieving full scapular retraction",
+      "Using too heavy weight for warm-up",
+      "Rushing through the movement patterns",
+    ];
+    details.equipment = "Resistance Bands, Light Cable Machine, Lat Pulldown Machine";
+    details.difficulty = "Beginner to Intermediate";
+    details.targetMuscles = ["Latissimus Dorsi", "Rhomboids", "Rear Deltoids", "Trapezius"];
+    details.warmupExercises = [
+      "Band pull-aparts - 15-20 reps",
+      "Scapular retractions - 15-20 reps",
+      "Light cable rows - 1-2 sets of 15 reps",
+      "Lat pulldown warm-up - 1-2 light sets of 15 reps",
+    ];
+  } else if (matchesExercise(["lower body dynamic", "leg warmup"])) {
+    details.description = "Lower body dynamic warm-up prepares hips, knees, and ankles for lower body exercises. It improves mobility, activates key muscle groups, and reduces injury risk during leg training.";
+    details.properForm = [
+      "Perform leg swings with controlled momentum",
+      "Execute hip circles with full range of motion",
+      "Maintain proper form during bodyweight squats",
+      "Perform lunges with stable knee alignment",
+      "Gradually increase range of motion with each rep",
+      "Focus on joint mobility and muscle activation",
+    ];
+    details.commonMistakes = [
+      "Using excessive momentum in dynamic movements",
+      "Not achieving full range of motion",
+      "Poor alignment during squats and lunges",
+      "Rushing through the warm-up routine",
+      "Skipping important movement patterns",
+    ];
+    details.equipment = "None or Light Resistance Bands";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes", "Hip Flexors", "Calves"];
+    details.warmupExercises = [
+      "Leg swings - 30 seconds forward/side",
+      "Hip circles - 30 seconds each direction",
+      "Bodyweight squats - 15-20 reps",
+      "Lunges - 10 reps per side",
+    ];
+  } else if (matchesExercise(["machine leg activation", "leg machine warmup"])) {
+    details.description = "Machine-based leg activation warm-up prepares specific leg muscles for targeted exercises using controlled machine movements. It's ideal for bodybuilding and strength training preparation.";
+    details.properForm = [
+      "Use light weight focusing on perfect form",
+      "Perform light leg extensions with controlled tempo",
+      "Execute leg curls with full range of motion",
+      "Perform hip thrusts with light weight and proper hip extension",
+      "Focus on muscle mind-connection",
+      "Gradually increase weight over warm-up sets",
+    ];
+    details.commonMistakes = [
+      "Using too heavy weight for warm-up",
+      "Rushing through the movements",
+      "Not using full range of motion",
+      "Poor machine setup and alignment",
+      "Not focusing on target muscle activation",
+    ];
+    details.equipment = "Leg Extension Machine, Leg Curl Machine, Hip Thrust Machine";
+    details.difficulty = "Beginner to Intermediate";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes"];
+    details.warmupExercises = [
+      "Light leg extensions - 1-2 sets of 15-20 reps",
+      "Light leg curls - 1-2 sets of 15-20 reps",
+      "Hip thrusts with light weight - 1-2 sets of 15 reps",
+    ];
+  } else if (matchesExercise(["shoulder mobility", "shoulder warmup"])) {
+    details.description = "Shoulder mobility warm-up prepares the complex shoulder joint for upper body exercises. It improves range of motion, activates stabilizers, and reduces risk of shoulder injuries.";
+    details.properForm = [
+      "Perform band dislocations with controlled, smooth motion",
+      "Execute light lateral raises with proper scapular positioning",
+      "Perform shoulder circles through full pain-free range",
+      "Use light resistance bands for mobility exercises",
+      "Focus on scapular movement and control",
+      "Maintain core stability during all movements",
+    ];
+    details.commonMistakes = [
+      "Forcing range of motion beyond comfort",
+      "Using too much resistance for mobility work",
+      "Shrugging shoulders during exercises",
+      "Not warming up all shoulder movement patterns",
+      "Rushing through mobility exercises",
+    ];
+    details.equipment = "Resistance Bands, Light Dumbbells";
+    details.difficulty = "Beginner to Intermediate";
+    details.targetMuscles = ["Deltoids", "Rotator Cuff", "Scapular Stabilizers"];
+    details.warmupExercises = [
+      "Band dislocations - 10-15 reps",
+      "Light lateral raises - 15-20 reps",
+      "Shoulder circles - 30 seconds forward/backward",
+    ];
+  } else if (matchesExercise(["arm activation", "arm warmup"])) {
+    details.description = "Arm activation warm-up prepares biceps and triceps for isolation exercises. It increases blood flow to the arms and improves mind-muscle connection for better training performance.";
+    details.properForm = [
+      "Use light cable curls with controlled eccentric phase",
+      "Perform triceps pushdowns with light weight and full extension",
+      "Focus on muscle contraction rather than weight moved",
+      "Maintain proper elbow positioning throughout",
+      "Use full range of motion with control",
+      "Avoid swinging or using momentum",
+    ];
+    details.commonMistakes = [
+      "Using too heavy weight for activation",
+      "Poor elbow positioning during movements",
+      "Not achieving full range of motion",
+      "Rushing through the warm-up sets",
+      "Not focusing on target muscle sensation",
+    ];
+    details.equipment = "Cable Machine, Light Dumbbells";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Biceps", "Triceps", "Forearms"];
+    details.warmupExercises = [
+      "Light cable curls - 1-2 sets of 15-20 reps",
+      "Triceps pushdowns with light weight - 1-2 sets of 15-20 reps",
+    ];
+  } else if (matchesExercise(["gentle back mobility", "back mobility"])) {
+    details.description = "Gentle back mobility warm-up prepares the spine and surrounding muscles for exercise. It improves spinal mobility, activates core stabilizers, and reduces back injury risk.";
+    details.properForm = [
+      "Perform cat-cow stretches with controlled, fluid motion",
+      "Execute pelvic tilts with proper core engagement",
+      "Perform gentle spinal twists within comfortable range",
+      "Focus on breathing coordination with movement",
+      "Maintain smooth, controlled transitions",
+      "Listen to body feedback and avoid pain",
+    ];
+    details.commonMistakes = [
+      "Moving too quickly or forcefully",
+      "Pushing beyond comfortable range",
+      "Holding breath during movements",
+      "Not engaging core properly",
+      "Skipping important spinal movements",
+    ];
+    details.equipment = "Yoga Mat";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Spinal Erectors", "Core Muscles", "Hip Flexors"];
+    details.warmupExercises = [
+      "Cat-cow stretches - 10-12 reps",
+      "Pelvic tilts - 15-20 reps",
+      "Gentle spinal twists - 30 seconds each side",
+    ];
+  } else if (matchesExercise(["knee-friendly", "knee warmup"])) {
+    details.description = "Knee-friendly machine warm-up prepares the lower body while minimizing stress on knee joints. It's ideal for individuals with knee concerns or those seeking joint-conscious training.";
+    details.properForm = [
+      "Perform seated leg extensions with very light weight",
+      "Use stationary bike at low resistance for joint lubrication",
+      "Focus on controlled, pain-free range of motion",
+      "Avoid positions that cause knee discomfort",
+      "Gradually increase range and intensity",
+      "Monitor knee response throughout warm-up",
+    ];
+    details.commonMistakes = [
+      "Using too much weight on machines",
+      "Pushing through knee pain",
+      "Not adjusting machines to proper settings",
+      "Rushing through warm-up exercises",
+      "Skipping important movement patterns",
+    ];
+    details.equipment = "Seated Leg Extension Machine, Stationary Bike";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Quadriceps", "Hamstrings", "Glutes"];
+    details.warmupExercises = [
+      "Seated leg extensions with light weight - 1-2 sets of 15-20 reps",
+      "Stationary bike - 5-10 minutes at low intensity",
+    ];
+  } else if (matchesExercise(["blood sugar friendly", "diabetes warmup"])) {
+    details.description = "Blood sugar friendly warm-up uses low-intensity cardiovascular exercise to gradually increase glucose uptake by muscles. It's ideal for individuals managing blood sugar levels during exercise.";
+    details.properForm = [
+      "Start with very low intensity treadmill walking",
+      "Use light stationary cycling with minimal resistance",
+      "Focus on gradual intensity increase",
+      "Monitor perceived exertion closely",
+      "Maintain consistent, moderate pace",
+      "Include full body movement patterns",
+    ];
+    details.commonMistakes = [
+      "Starting too intensely too quickly",
+      "Not warming up long enough",
+      "Ignoring body signals and symptoms",
+      "Skipping hydration during warm-up",
+      "Not monitoring blood sugar if required",
+    ];
+    details.equipment = "Treadmill, Stationary Bike";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Major Muscle Groups", "Cardiovascular System"];
+    details.warmupExercises = [
+      "Treadmill walking - 10-15 minutes at easy pace",
+      "Light stationary cycling - 5-10 minutes low resistance",
+    ];
+  } else if (matchesExercise(["cardiac-safe", "heart warmup"])) {
+    details.description = "Cardiac-safe machine warm-up uses very light intensity to gradually prepare the cardiovascular system for exercise. It's essential for individuals with heart concerns or those beginning exercise programs.";
+    details.properForm = [
+      "Use very light treadmill walking pace",
+      "Stationary bike at minimal resistance",
+      "Focus on gradual heart rate increase",
+      "Monitor breathing and perceived exertion",
+      "Maintain conversation pace intensity",
+      "Include longer warm-up duration",
+    ];
+    details.commonMistakes = [
+      "Intensity too high for cardiac safety",
+      "Not monitoring heart rate response",
+      "Rushing through warm-up phase",
+      "Ignoring warning signs or symptoms",
+      "Not consulting healthcare provider when needed",
+    ];
+    details.equipment = "Treadmill, Stationary Bike, Heart Rate Monitor";
+    details.difficulty = "Beginner";
+    details.targetMuscles = ["Cardiovascular System", "Major Muscle Groups"];
+    details.warmupExercises = [
+      "Very light treadmill walking - 10-15 minutes",
+      "Stationary bike at minimal resistance - 10 minutes",
+    ];
+  } else if (matchesExercise(["bodybuilding full body", "bodybuilding warmup"])) {
+    details.description = "Bodybuilding full body warm-up combines dynamic stretching, light cardio, and muscle activation to prepare the entire body for intense weight training. It enhances performance and reduces injury risk.";
+    details.properForm = [
+      "Begin with dynamic stretching for mobility",
+      "Progress to light cardio machine for cardiovascular preparation",
+      "Use cables and bands for specific muscle activation",
+      "Focus on mind-muscle connection during activation",
+      "Gradually increase intensity through warm-up",
+      "Include all major muscle groups used in workout",
+    ];
+    details.commonMistakes = [
+      "Skipping parts of the warm-up routine",
+      "Using too much weight in activation sets",
+      "Not warming up muscles specific to workout",
+      "Rushing through the warm-up process",
+      "Poor form during activation exercises",
+    ];
+    details.equipment = "Cardio Machine, Resistance Bands, Cable Machine, Light Dumbbells";
+    details.difficulty = "Intermediate to Advanced";
+    details.targetMuscles = ["Full Body Preparation"];
+    details.warmupExercises = [
+      "Dynamic stretching - 5-10 minutes",
+      "Light cardio machine - 5-10 minutes",
+      "Muscle activation with cables and bands - 5-10 minutes",
     ];
   }
-    }
 
-    return details;
-  };
+  return details;
+};
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans p-4">
       <header className="text-center mb-6">
@@ -2272,6 +2585,8 @@ const WorkoutPlan = ({
               const isExpanded = expandedExercise === index;
               const completedSets = completedSetsCount[index] || 0;
               const totalSets = currentExercise.sets;
+              const isCardioWarmup = isCardioOrWarmup(currentExercise);
+              const cardioInfo = getCardioDisplayInfo(currentExercise);
 
               // Check if this exercise has been modified
               const dayKey = `${currentDay}-${index}`;
@@ -2315,21 +2630,28 @@ const WorkoutPlan = ({
                                   Modified
                                 </span>
                               )}
+                              {isCardioWarmup && (
+                                <span className="ml-2 text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-full font-medium">
+                                  Cardio/Warmup
+                                </span>
+                              )}
                             </h3>
                             <p className="text-green-400 text-xs font-medium mt-1">
-                              {currentExercise.sets} sets ×{" "}
-                              {currentExercise.reps} reps
-                              {currentExercise.rest &&
-                                ` • ${currentExercise.rest} rest`}
+                              {isCardioWarmup 
+                                ? `Duration: ${cardioInfo.duration}`
+                                : `${currentExercise.sets} sets × ${currentExercise.reps} reps${currentExercise.rest ? ` • ${currentExercise.rest} rest` : ''}`
+                              }
                             </p>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-right">
-                          <div className="text-xs text-gray-400">Progress</div>
+                          <div className="text-xs text-gray-400">
+                            {isCardioWarmup ? "Time" : "Progress"}
+                          </div>
                           <div className="text-sm font-black text-green-400">
-                            {completedSets}/{totalSets} sets
+                            {isCardioWarmup ? cardioInfo.currentTime : `${completedSets}/${totalSets} sets`}
                           </div>
                         </div>
                         <div
@@ -2366,42 +2688,98 @@ const WorkoutPlan = ({
                         />
                       </div>
 
-                      {/* Sets Progress */}
-                      <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/50">
-                        <div className="flex items-center justify-between mb-3">
-                          <h4 className="text-sm font-black text-white">
-                            SETS PROGRESS
-                          </h4>
-                          <span className="text-xs font-black text-green-400">
-                            {completedSets}/{totalSets} completed
-                          </span>
-                        </div>
-                        <div className="flex gap-1 mb-3">
-                          {Array.from({ length: totalSets }).map(
-                            (_, setIndex) => (
-                              <div
-                                key={setIndex}
-                                className={`flex-1 h-2 rounded-full ${
-                                  setIndex < completedSets
-                                    ? "bg-green-500"
-                                    : "bg-gray-700"
-                                }`}
-                              />
-                            )
+                      {/* Cardio Timer - Only for cardio/warmup exercises */}
+                      {isCardioWarmup && (
+                        <div className="bg-blue-900/50 rounded-lg p-3 border border-blue-700/50">
+                          <div className="text-center mb-4">
+                            <h4 className="text-sm font-black text-blue-400 mb-1">
+                              CARDIO/WARMUP TIMER
+                            </h4>
+                            <div className="text-3xl font-black text-blue-400 mb-2">
+                              {cardioInfo.currentTime}
+                            </div>
+                            {initialCardioTime > 0 && (
+                              <div className="w-full bg-blue-800/30 rounded-full h-2 mb-2">
+                                <div 
+                                  className="bg-blue-500 h-2 rounded-full transition-all duration-1000 ease-out"
+                                  style={{ width: `${cardioInfo.progress}%` }}
+                                />
+                              </div>
+                            )}
+                            <p className="text-blue-300 text-xs">
+                              Target: {cardioInfo.duration}
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap gap-2 justify-center">
+                            <button
+                              onClick={() => handleStartCardioTimer(currentExercise)}
+                              disabled={isCardioRunning || cardioInfo.isCompleted}
+                              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 border border-blue-500/30"
+                            >
+                              Start
+                            </button>
+                            <button
+                              onClick={handleStopCardioTimer}
+                              disabled={!isCardioRunning}
+                              className="bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 border border-yellow-500/30"
+                            >
+                              Pause
+                            </button>
+                            <button
+                              onClick={() => handleResetCardioTimer(currentExercise)}
+                              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 border border-red-500/30"
+                            >
+                              Reset
+                            </button>
+                          </div>
+                          {cardioInfo.isCompleted && (
+                            <div className="text-center mt-3">
+                              <p className="text-green-400 text-sm font-medium">
+                                ✅ Cardio session completed!
+                              </p>
+                            </div>
                           )}
                         </div>
-                        {!isCompleted && (
-                          <button
-                            onClick={() =>
-                              handleCompleteSet(index, currentExercise.rest)
-                            }
-                            disabled={isCountdownRunning}
-                            className="w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 disabled:from-green-800 disabled:to-green-900 disabled:cursor-not-allowed text-white py-2.5 rounded-lg font-black text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100 shadow-lg border border-green-600/30"
-                          >
-                            Complete Set
-                          </button>
-                        )}
-                      </div>
+                      )}
+
+                      {/* Sets Progress - Only for non-cardio exercises */}
+                      {!isCardioWarmup && (
+                        <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-700/50">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-black text-white">
+                              SETS PROGRESS
+                            </h4>
+                            <span className="text-xs font-black text-green-400">
+                              {completedSets}/{totalSets} completed
+                            </span>
+                          </div>
+                          <div className="flex gap-1 mb-3">
+                            {Array.from({ length: totalSets }).map(
+                              (_, setIndex) => (
+                                <div
+                                  key={setIndex}
+                                  className={`flex-1 h-2 rounded-full ${
+                                    setIndex < completedSets
+                                      ? "bg-green-500"
+                                      : "bg-gray-700"
+                                  }`}
+                                />
+                              )
+                            )}
+                          </div>
+                          {!isCompleted && (
+                            <button
+                              onClick={() =>
+                                handleCompleteSet(index, currentExercise.rest)
+                              }
+                              disabled={isCountdownRunning}
+                              className="w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 disabled:from-green-800 disabled:to-green-900 disabled:cursor-not-allowed text-white py-2.5 rounded-lg font-black text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100 shadow-lg border border-green-600/30"
+                            >
+                              Complete Set
+                            </button>
+                          )}
+                        </div>
+                      )}
 
                       {/* Countdown Timer */}
                       {isCountdownRunning && (
@@ -2626,10 +3004,17 @@ const WorkoutPlan = ({
                       <div className="flex-1">
                         <h3 className="text-base font-black text-white mb-1">
                           {exercise.name}
+                          {isCardioOrWarmup(exercise) && (
+                            <span className="ml-2 text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-full font-medium">
+                              Cardio/Warmup
+                            </span>
+                          )}
                         </h3>
                         <p className="text-green-400 text-xs font-medium">
-                          {exercise.sets} sets × {exercise.reps} reps
-                          {exercise.rest && ` • ${exercise.rest} rest`}
+                          {isCardioOrWarmup(exercise) 
+                            ? `Duration: ${formatTime(getCardioDuration(exercise))}`
+                            : `${exercise.sets} sets × ${exercise.reps} reps${exercise.rest ? ` • ${exercise.rest} rest` : ''}`
+                          }
                         </p>
                         {exercise.description && (
                           <p className="text-gray-400 text-xs mt-2 line-clamp-2">

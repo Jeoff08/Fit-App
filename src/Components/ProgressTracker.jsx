@@ -57,6 +57,9 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
   // New state for regeneration notification
   const [showRegenerateNotification, setShowRegenerateNotification] = useState(false);
   const [lastProgressDate, setLastProgressDate] = useState(null);
+  
+  // New state for workout plan regeneration reminder
+  const [showWorkoutPlanReminder, setShowWorkoutPlanReminder] = useState(false);
 
   // Enhanced responsive design with media queries
   useEffect(() => {
@@ -114,8 +117,28 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       if (doc.exists()) {
         const userData = doc.data();
         const userProgress = {
+          // Personal Information
+          age: userData.age,
+          weight: userData.weight,
+          height: userData.height,
+          gender: userData.gender,
+          
+          // Fitness Stats
+          fitnessGoal: userData.fitnessGoal,
+          activityLevel: userData.activityLevel,
+          workoutPreference: userData.workoutPreference,
+          fitnessLevel: userData.fitnessLevel,
+          
+          // Medical Information
+          hasMedicalConditions: userData.hasMedicalConditions,
+          medicalConditions: userData.medicalConditions,
+          
+          // Workout Schedule
+          preferredWorkoutDays: userData.preferredWorkoutDays,
+          selectedDays: userData.selectedDays,
+          
+          // Progress Tracking
           workoutHistory: userData.workoutHistory || [],
-          fitnessLevel: userData.fitnessLevel || 'beginner',
           goals: userData.goals || [],
           achievements: userData.achievements || [],
           lastCompletedWorkout: userData.lastCompletedWorkout || null,
@@ -124,7 +147,9 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           goalWeight: userData.goalWeight || null,
           weightHistory: userData.weightHistory || [],
           weightGoalSetDate: userData.weightGoalSetDate || null,
-          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null
+          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null,
+          generatedWorkoutPlan: userData.generatedWorkoutPlan || null,
+          lastWorkoutPlanUpdate: userData.lastWorkoutPlanUpdate || null
         };
         
         setProgress(userProgress);
@@ -132,20 +157,22 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         generateChartData(userProgress.workoutHistory);
         
         checkAndAdjustWorkouts(userProgress);
-        checkForRegenerationNotification(userProgress); // Check for regeneration notification
+        checkForRegenerationNotification(userProgress);
+        checkForWorkoutPlanReminder(userProgress);
+
+        // Update localStorage for UserProfile component
+        localStorage.setItem('userFitnessProfile', JSON.stringify(userProgress));
       }
     });
 
     return () => unsubscribe();
   }, [userId]);
 
-  // New function to check if user needs regeneration notification
   const checkForRegenerationNotification = (userProgress) => {
     if (!userProgress.workoutHistory || userProgress.workoutHistory.length === 0) {
-      return; // No workouts yet, no notification needed
+      return;
     }
 
-    // Get the most recent workout date
     const sortedWorkouts = [...userProgress.workoutHistory].sort((a, b) => 
       new Date(b.completionDate) - new Date(a.completionDate)
     );
@@ -154,12 +181,31 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     const currentDate = new Date();
     const daysSinceLastWorkout = Math.floor((currentDate - lastWorkoutDate) / (1000 * 60 * 60 * 24));
     
-    // Check if it's been 14-21 days (2-3 weeks) since last progress
     if (daysSinceLastWorkout >= 14 && daysSinceLastWorkout <= 21) {
       setShowRegenerateNotification(true);
       setLastProgressDate(lastWorkoutDate.toLocaleDateString());
     } else {
       setShowRegenerateNotification(false);
+    }
+  };
+
+  const checkForWorkoutPlanReminder = (userProgress) => {
+    if (!userProgress.weightGoalSetDate || !userProgress.weightHistory || userProgress.weightHistory.length === 0) {
+      return;
+    }
+
+    const sortedWeightHistory = [...userProgress.weightHistory].sort((a, b) => 
+      new Date(b.date) - new Date(a.date)
+    );
+    
+    const lastWeightUpdateDate = new Date(sortedWeightHistory[0].date);
+    const currentDate = new Date();
+    const daysSinceLastWeightUpdate = Math.floor((currentDate - lastWeightUpdateDate) / (1000 * 60 * 60 * 24));
+    
+    if (daysSinceLastWeightUpdate >= 14 && daysSinceLastWeightUpdate <= 21) {
+      setShowWorkoutPlanReminder(true);
+    } else {
+      setShowWorkoutPlanReminder(false);
     }
   };
 
@@ -184,40 +230,9 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         const expectedWeightLoss = totalWeightToLose * (weeksSinceGoalSet / 8);
         
         if (weightLostSoFar < expectedWeightLoss * 0.5) {
-          await adjustWorkoutIntensity(userProgress);
+          setShowWorkoutPlanReminder(true);
         }
       }
-    }
-  };
-
-  const adjustWorkoutIntensity = async (userProgress) => {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      const currentFitnessLevel = userProgress.fitnessLevel;
-      let newFitnessLevel = currentFitnessLevel;
-      let adjustmentMessage = '';
-      
-      if (currentFitnessLevel === 'beginner') {
-        newFitnessLevel = 'intermediate';
-        adjustmentMessage = 'Workout intensity increased to intermediate level to help reach your weight goal faster.';
-      } else if (currentFitnessLevel === 'intermediate') {
-        newFitnessLevel = 'advanced';
-        adjustmentMessage = 'Workout intensity increased to advanced level to boost your weight loss progress.';
-      } else if (currentFitnessLevel === 'advanced') {
-        adjustmentMessage = 'Workout frequency and duration optimized for maximum weight loss results.';
-      }
-      
-      await updateDoc(userDocRef, {
-        fitnessLevel: newFitnessLevel,
-        lastWorkoutAdjustment: new Date().toISOString()
-      });
-      
-      if (adjustmentMessage) {
-        alert(`🏋️ Workout Plan Adjusted!\n\n${adjustmentMessage}\n\nYour workouts have been automatically optimized to help you reach your weight goal.`);
-      }
-      
-    } catch (error) {
-      console.error('Error adjusting workout intensity:', error);
     }
   };
 
@@ -229,8 +244,28 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         const userProgress = {
+          // Personal Information
+          age: userData.age,
+          weight: userData.weight,
+          height: userData.height,
+          gender: userData.gender,
+          
+          // Fitness Stats
+          fitnessGoal: userData.fitnessGoal,
+          activityLevel: userData.activityLevel,
+          workoutPreference: userData.workoutPreference,
+          fitnessLevel: userData.fitnessLevel,
+          
+          // Medical Information
+          hasMedicalConditions: userData.hasMedicalConditions,
+          medicalConditions: userData.medicalConditions,
+          
+          // Workout Schedule
+          preferredWorkoutDays: userData.preferredWorkoutDays,
+          selectedDays: userData.selectedDays,
+          
+          // Progress Tracking
           workoutHistory: userData.workoutHistory || [],
-          fitnessLevel: userData.fitnessLevel || 'beginner',
           goals: userData.goals || [],
           achievements: userData.achievements || [],
           lastCompletedWorkout: userData.lastCompletedWorkout || null,
@@ -239,13 +274,19 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           goalWeight: userData.goalWeight || null,
           weightHistory: userData.weightHistory || [],
           weightGoalSetDate: userData.weightGoalSetDate || null,
-          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null
+          lastWorkoutAdjustment: userData.lastWorkoutAdjustment || null,
+          generatedWorkoutPlan: userData.generatedWorkoutPlan || null,
+          lastWorkoutPlanUpdate: userData.lastWorkoutPlanUpdate || null
         };
         
         setProgress(userProgress);
         calculateWorkoutStats(userProgress.workoutHistory);
         generateChartData(userProgress.workoutHistory);
-        checkForRegenerationNotification(userProgress); // Check on initialization
+        checkForRegenerationNotification(userProgress);
+        checkForWorkoutPlanReminder(userProgress);
+
+        // Update localStorage for UserProfile component
+        localStorage.setItem('userFitnessProfile', JSON.stringify(userProgress));
       } else {
         const emptyProgress = {
           workoutHistory: [],
@@ -271,7 +312,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     }
   };
 
-  // New function to clear only workout history
   const clearWorkoutHistory = async () => {
     const confirmed = window.confirm('Are you sure you want to clear all your workout history? This will remove all your completed workouts but keep your weight data and settings. This action cannot be undone.');
     
@@ -286,7 +326,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           lastCompletedWorkout: null
         });
         
-        // Update local state
         setProgress(prev => ({
           ...prev,
           workoutHistory: [],
@@ -407,51 +446,17 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     }
   };
 
-  const calculateWeightProgress = () => {
-    if (!progress.initialWeight || !progress.currentWeight || !progress.goalWeight) {
-      return { percentage: 0, weightLost: 0, weightToGo: 0 };
-    }
-    
-    const totalWeightToLose = progress.initialWeight - progress.goalWeight;
-    const weightLost = progress.initialWeight - progress.currentWeight;
-    const percentage = Math.min(Math.max((weightLost / totalWeightToLose) * 100, 0), 100);
-    const weightToGo = Math.max(progress.currentWeight - progress.goalWeight, 0);
-    
-    return { percentage, weightLost: Math.max(weightLost, 0), weightToGo };
-  };
-
   const handleUserFormSubmit = async (userData) => {
-    console.log('User data submitted:', userData);
+    console.log('User data submitted from ProgressTracker:', userData);
     
-    if (userId) {
-      try {
-        const userDocRef = doc(db, 'users', userId);
-        
-        await updateDoc(userDocRef, {
-          age: userData.age,
-          weight: userData.weight,
-          height: userData.height,
-          gender: userData.gender,
-          fitnessGoal: userData.fitnessGoal,
-          activityLevel: userData.activityLevel,
-          workoutPreference: userData.workoutPreference,
-          fitnessLevel: userData.fitnessLevel,
-          hasMedicalConditions: userData.hasMedicalConditions,
-          medicalConditions: userData.medicalConditions,
-          preferredWorkoutDays: userData.preferredWorkoutDays,
-          selectedDays: userData.selectedDays,
-          ...(userData.generatedWorkoutPlan && { generatedWorkoutPlan: userData.generatedWorkoutPlan }),
-          ...(userData.generatedNutritionPlan && { generatedNutritionPlan: userData.generatedNutritionPlan })
-        });
-
-        console.log('User data saved to Firestore');
-        
-        // window.location.href = '/workout-plan';
-        setShowUserForm(false);
-      } catch (error) {
-        console.error('Error saving user data to Firestore:', error);
-      }
-    }
+    // Close the form
+    setShowUserForm(false);
+    
+    // Show success message
+    alert('✅ Your fitness profile has been updated successfully! The UserProfile will now show your new information and workout plan.');
+    
+    // The data is already saved to Firestore and localStorage by UserForm
+    // ProgressTracker will automatically update via the real-time listener
   };
 
   const calculateWorkoutStats = (workoutHistory) => {
@@ -486,7 +491,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       return date.toLocaleDateString();
     }).reverse();
 
-    // Only show days with actual workouts
     const weeklyProgress = last7Days.map(date => {
       const workoutsOnDate = workoutHistory.filter(workout => workout.completionDate === date);
       const totalSets = workoutsOnDate.reduce((sum, workout) => sum + (workout.totalSets || 0), 0);
@@ -506,11 +510,10 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
         exercises: totalExercises,
         duration: totalDuration,
         workoutDetails: workoutsOnDate,
-        hasWorkouts: workoutsOnDate.length > 0 // Flag to check if there are workouts
+        hasWorkouts: workoutsOnDate.length > 0
       };
     });
 
-    // Filter out days with no workouts for display
     const weeklyProgressWithWorkouts = weeklyProgress.filter(day => day.hasWorkouts);
 
     const monthlyProgress = Array.from({ length: 4 }, (_, i) => {
@@ -532,7 +535,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       };
     });
 
-    // Filter out weeks with no workouts
     const monthlyProgressWithWorkouts = monthlyProgress.filter(week => week.hasWorkouts);
 
     const exerciseCount = {};
@@ -645,9 +647,25 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     setShowUserForm(true);
   };
 
-  // New function to handle regeneration notification
   const handleRegenerateNotificationClose = () => {
     setShowRegenerateNotification(false);
+  };
+
+  const handleWorkoutPlanReminderClose = () => {
+    setShowWorkoutPlanReminder(false);
+  };
+
+  const calculateWeightProgress = () => {
+    if (!progress.initialWeight || !progress.currentWeight || !progress.goalWeight) {
+      return { percentage: 0, weightLost: 0, weightToGo: 0 };
+    }
+    
+    const totalWeightToLose = progress.initialWeight - progress.goalWeight;
+    const weightLost = progress.initialWeight - progress.currentWeight;
+    const percentage = Math.min(Math.max((weightLost / totalWeightToLose) * 100, 0), 100);
+    const weightToGo = Math.max(progress.currentWeight - progress.goalWeight, 0);
+    
+    return { percentage, weightLost: Math.max(weightLost, 0), weightToGo };
   };
 
   const WeeklyProgressModal = () => {
@@ -655,11 +673,11 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
-        <div className="bg-black rounded-2xl md:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500 gym-border">
+        <div className="bg-black rounded-2xl md:rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500 gym-border">
           <div className="p-4 md:p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
-                Daily Progress Details
+                Daily Progress Details - {selectedWeekData.date}
               </h2>
               <button
                 onClick={() => setShowWeeklyModal(false)}
@@ -670,10 +688,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
             </div>
 
             <div className="bg-gray-900 rounded-lg p-4 mb-4 border border-green-500 gym-border">
-              <h3 className="text-lg font-bold text-white mb-3 text-center gym-text">
-                {selectedWeekData.date}
-              </h3>
-              
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                 <div className="bg-black rounded-lg p-3 text-center border border-orange-500 gym-stat-card">
                   <div className="text-white font-bold text-base md:text-lg">{selectedWeekData.workouts}</div>
@@ -695,31 +709,36 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
 
               {selectedWeekData.workoutDetails && selectedWeekData.workoutDetails.length > 0 ? (
                 <div>
-                  <h4 className="text-base font-bold text-white mb-2 gym-text">Workout Details:</h4>
-                  <div className="space-y-2">
+                  <h4 className="text-base font-bold text-white mb-3 gym-text">Workout Details:</h4>
+                  <div className="space-y-4">
                     {selectedWeekData.workoutDetails.map((workout, index) => (
-                      <div key={index} className="bg-black rounded-lg p-3 border border-green-500 gym-workout-card">
-                        <div className="flex justify-between items-start mb-1">
-                          <h5 className="text-white font-medium text-sm gym-text">{workout.dayName}</h5>
-                          <div className="text-orange-400 text-xs">
+                      <div key={index} className="bg-black rounded-lg p-4 border border-green-500 gym-workout-card">
+                        <div className="flex justify-between items-start mb-3">
+                          <h5 className="text-white font-bold text-lg gym-text">{workout.dayName}</h5>
+                          <div className="text-orange-400 text-sm">
                             {workout.completionTime} • {workout.duration}
                           </div>
                         </div>
-                        <div className="text-green-300 text-xs">
+                        <div className="text-green-300 text-sm mb-3">
                           {workout.exercises?.length || 0} exercises • {workout.totalSets} sets
                         </div>
-                        <div className="mt-1 space-y-1">
-                          {workout.exercises?.slice(0, 3).map((exercise, exIndex) => (
-                            <div key={exIndex} className="flex justify-between text-orange-400 text-xs">
-                              <span>{exercise.name}</span>
-                              <span>{exercise.sets}×{exercise.reps}</span>
+                        
+                        <div className="mt-3 space-y-3">
+                          <h6 className="text-white font-medium text-sm gym-text">All Exercises:</h6>
+                          {workout.exercises?.map((exercise, exIndex) => (
+                            <div key={exIndex} className="flex justify-between items-center bg-gray-800 rounded-lg p-3 border border-orange-500">
+                              <div className="flex-1">
+                                <span className="text-white font-medium text-sm">{exercise.name}</span>
+                                {exercise.category && (
+                                  <span className="text-green-400 text-xs ml-2">({exercise.category})</span>
+                                )}
+                              </div>
+                              <div className="text-orange-400 text-sm font-medium">
+                                {exercise.sets} sets × {exercise.reps} reps
+                                {exercise.weight && ` × ${exercise.weight}kg`}
+                              </div>
                             </div>
                           ))}
-                          {workout.exercises?.length > 3 && (
-                            <div className="text-green-500 text-xs text-center">
-                              +{workout.exercises.length - 3} more exercises
-                            </div>
-                          )}
                         </div>
                       </div>
                     ))}
@@ -816,7 +835,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     );
   };
 
-  // New Regeneration Notification Component
   const RegenerationNotification = () => {
     if (!showRegenerateNotification) return null;
 
@@ -826,7 +844,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
           <div className="p-4 md:p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
-                Time for a Refresh! 🔄
+                Time for a New Plan! 🔄
               </h2>
               <button
                 onClick={handleRegenerateNotificationClose}
@@ -841,20 +859,24 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
                 <div className="text-center mb-3">
                   <div className="text-4xl mb-2">💡</div>
                   <h3 className="text-lg font-bold text-white gym-text mb-2">
-                    Boost Your Progress!
+                    Optimize Your Workouts!
                   </h3>
                 </div>
                 
                 <div className="space-y-2 text-sm text-green-300">
-                  <p>It's been <span className="text-orange-400 font-bold">2-3 weeks</span> since your last workout on <span className="text-orange-400">{lastProgressDate}</span>.</p>
-                  <p>Your body may have adapted to your current routine. Regenerating your workout plan can help:</p>
+                  <p>It's been <span className="text-orange-400 font-bold">2-3 weeks</span> since your last workout.</p>
+                  <p><strong>Generating a new workout plan will:</strong></p>
                   
                   <ul className="list-disc list-inside space-y-1 text-green-400">
-                    <li>Break through plateaus</li>
-                    <li>Prevent workout boredom</li>
-                    <li>Challenge new muscle groups</li>
-                    <li>Accelerate your results</li>
+                    <li>Create fresh exercises and routines</li>
+                    <li>Reset your progress tracking for the new plan</li>
+                    <li>Adjust intensity based on current fitness level</li>
+                    <li>Keep your workouts challenging and effective</li>
                   </ul>
+                  
+                  <p className="text-orange-400 text-xs mt-2">
+                    Note: Your workout history will be cleared to track progress with the new plan.
+                  </p>
                 </div>
               </div>
 
@@ -882,77 +904,77 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     );
   };
 
-  const clearProgress = async () => {
-    const confirmed = window.confirm('Are you sure you want to clear all your progress? This action cannot be undone.');
-    if (confirmed && userId) {
-      try {
-        const userDocRef = doc(db, 'users', userId);
-        const emptyProgress = {
-          workoutHistory: [],
-          fitnessLevel: 'beginner',
-          goals: [],
-          achievements: [],
-          lastCompletedWorkout: null,
-          initialWeight: null,
-          currentWeight: null,
-          goalWeight: null,
-          weightHistory: [],
-          weightGoalSetDate: null,
-          lastWorkoutAdjustment: null
-        };
-        
-        await updateDoc(userDocRef, emptyProgress);
-        
-        setProgress(emptyProgress);
-        calculateWorkoutStats([]);
-        generateChartData([]);
-      } catch (error) {
-        console.error('Error clearing progress:', error);
-        alert('Error clearing progress. Please try again.');
-      }
-    }
-  };
+  const WorkoutPlanReminder = () => {
+    if (!showWorkoutPlanReminder) return null;
 
-  const exportProgress = () => {
-    const dataStr = JSON.stringify(progress, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'fitness-progress.json';
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+        <div className="bg-black rounded-2xl md:rounded-3xl shadow-2xl max-w-md w-full border-2 border-orange-500 gym-border">
+          <div className="p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white gym-text">
+                Time to Refresh Your Plan! 🔄
+              </h2>
+              <button
+                onClick={handleWorkoutPlanReminderClose}
+                className="text-orange-500 hover:text-green-400 text-xl font-bold transition-colors gym-button"
+              >
+                ×
+              </button>
+            </div>
 
-  const importProgress = async (event) => {
-    const file = event.target.files[0];
-    if (file && userId) {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const importedProgress = JSON.parse(e.target.result);
-          
-          const userDocRef = doc(db, 'users', userId);
-          await updateDoc(userDocRef, importedProgress);
-          
-          setProgress(importedProgress);
-          calculateWorkoutStats(importedProgress.workoutHistory || []);
-          generateChartData(importedProgress.workoutHistory || []);
-          alert('Progress imported successfully!');
-        } catch (error) {
-          console.error('Error importing progress:', error);
-          alert('Error importing progress file. Please make sure it is a valid JSON file.');
-        }
-      };
-      reader.readAsText(file);
-    }
+            <div className="space-y-4">
+              <div className="bg-gray-900 rounded-lg p-4 border border-green-500">
+                <div className="text-center mb-3">
+                  <div className="text-4xl mb-2">⚡</div>
+                  <h3 className="text-lg font-bold text-white gym-text mb-2">
+                    Boost Your Weight Loss!
+                  </h3>
+                </div>
+                
+                <div className="space-y-2 text-sm text-green-300">
+                  <p>It's been <span className="text-orange-400 font-bold">2-3 weeks</span> since your last weight progress update.</p>
+                  <p>Your body may have adapted to your current workout routine. A new personalized plan can help:</p>
+                  
+                  <ul className="list-disc list-inside space-y-1 text-green-400">
+                    <li>Break through weight loss plateaus</li>
+                    <li>Introduce new exercises for better results</li>
+                    <li>Adjust intensity based on your progress</li>
+                    <li>Keep your metabolism active</li>
+                  </ul>
+                  
+                  <p className="text-orange-400 font-medium mt-2">Consider generating a new workout plan to accelerate your weight loss journey!</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={handleWorkoutPlanReminderClose}
+                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm gym-button"
+                >
+                  Maybe Later
+                </button>
+                <button
+                  onClick={() => {
+                    handleWorkoutPlanReminderClose();
+                    handleGenerateNewPlanClick();
+                  }}
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button"
+                >
+                  Generate New Plan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const streak = calculateStreak();
   const achievements = getAchievements();
   const weightProgress = calculateWeightProgress();
 
-  // Enhanced responsive classes with better mobile optimization
   const statsGridClass = isMobile 
     ? "grid grid-cols-2 gap-2" 
     : isTablet 
@@ -989,7 +1011,6 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
     ? "flex flex-wrap gap-2 mt-2" 
     : "flex items-center gap-3 mt-0";
 
-  // Animation classes
   const setGoalButtonClass = `bg-gradient-to-r from-orange-600 to-green-600 hover:from-orange-700 hover:to-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all text-sm transform hover:scale-105 gym-button ${
     buttonAnimations.setGoal ? 'animate-pulse scale-105' : ''
   }`;
@@ -1003,7 +1024,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
   }`;
 
   if (showUserForm) {
-    return <UserForm onSubmit={handleUserFormSubmit} />;
+    return <UserForm onSubmit={handleUserFormSubmit} isRegenerating={true} />;
   }
 
   return (
@@ -1389,6 +1410,7 @@ const ProgressTracker = ({ userData, onProgressUpdate }) => {
       <WeeklyProgressModal />
       <WeightInputModal />
       <RegenerationNotification />
+      <WorkoutPlanReminder />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+// Influencers.jsx
 import React, { useState, useMemo, useEffect } from 'react';
 import { bodybuilders } from '../data2.0/bodybuilders';
 import { modernInfluencers } from '../data2.0/modernInfluencers';
@@ -31,6 +32,40 @@ const Influencers = () => {
     ...coaches
   ], []);
 
+  // Load user profile from localStorage
+  useEffect(() => {
+    const loadUserProfile = () => {
+      try {
+        const savedProfile = localStorage.getItem('userFitnessProfile');
+        if (savedProfile) {
+          const profileData = JSON.parse(savedProfile);
+          setUserProfile(profileData);
+          
+          // Set workout days from profile
+          if (profileData.selectedDays && profileData.selectedDays.length > 0) {
+            setUserWorkoutDays(profileData.selectedDays);
+          } else {
+            setUserWorkoutDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
+    };
+
+    loadUserProfile();
+
+    // Listen for storage changes (when user updates profile)
+    const handleStorageChange = (e) => {
+      if (e.key === 'userFitnessProfile') {
+        loadUserProfile();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   // Initialize user and listen for changes
   useEffect(() => {
     const auth = getAuth();
@@ -41,8 +76,7 @@ const Influencers = () => {
       } else {
         // Handle case when user is not logged in
         setUserId(null);
-        setUserProfile({});
-        setUserWorkoutDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+        // Keep the profile from localStorage
       }
     });
 
@@ -56,16 +90,17 @@ const Influencers = () => {
       
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUserProfile(userData.profile || {});
-        
-        // Set workout days from applied workouts or profile
-        if (userData.appliedWorkouts && userData.appliedWorkouts.length > 0 && userData.appliedWorkouts[0].days) {
-          const days = userData.appliedWorkouts[0].days.map(day => day.day);
-          setUserWorkoutDays(days);
-        } else if (userData.profile?.trainingDays && userData.profile.trainingDays.length > 0) {
-          setUserWorkoutDays(userData.profile.trainingDays);
-        } else {
-          setUserWorkoutDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+        // Use localStorage profile as primary, fallback to Firestore
+        const localStorageProfile = localStorage.getItem('userFitnessProfile');
+        if (localStorageProfile) {
+          const profileData = JSON.parse(localStorageProfile);
+          setUserProfile(profileData);
+          
+          if (profileData.selectedDays && profileData.selectedDays.length > 0) {
+            setUserWorkoutDays(profileData.selectedDays);
+          }
+        } else if (userData.profile) {
+          setUserProfile(userData.profile);
         }
         
         setAppliedWorkouts(userData.appliedWorkouts || []);
@@ -77,7 +112,6 @@ const Influencers = () => {
           workoutHistory: [],
           createdAt: new Date()
         });
-        setUserWorkoutDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
       }
     } catch (error) {
       console.error('Error initializing user data:', error);
@@ -99,42 +133,82 @@ const Influencers = () => {
     return () => unsubscribe();
   }, [userId]);
 
-  // Heuristic algorithm to adjust workout based on user data
+  // Enhanced heuristic algorithm to adjust workout based on user fitness level
   const adjustWorkoutForUser = (exercises, userData) => {
     if (!userData || !userData.fitnessLevel) return exercises;
 
     const adjustedExercises = exercises.map(exercise => {
       let adjustedExercise = { ...exercise };
       
-      // Adjust based on fitness level
-      switch (userData.fitnessLevel.toLowerCase()) {
+      // Get fitness level mapping
+      const fitnessLevel = userData.fitnessLevel.toLowerCase();
+      const fitnessLevelMapping = {
+        'beginner': 'new starter',
+        'intermediate': 'regular trainee', 
+        'advanced': 'advanced lifter',
+        'elite': 'elite athlete'
+      };
+      
+      const userLevel = Object.keys(fitnessLevelMapping).find(
+        key => fitnessLevelMapping[key] === fitnessLevel
+      ) || fitnessLevel;
+
+      // Adjust based on fitness level with specific sets and reps
+      switch (userLevel) {
         case 'beginner':
-          if (adjustedExercise.sets > 3) {
-            adjustedExercise.sets = 3;
-          }
-          
-          if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
-            const [min, max] = adjustedExercise.reps.split('-').map(Number);
-            adjustedExercise.reps = `${Math.max(8, min - 2)}-${Math.max(12, max - 2)}`;
-          } else if (typeof adjustedExercise.reps === 'number') {
-            adjustedExercise.reps = Math.min(12, Math.max(8, adjustedExercise.reps));
-          }
+          // New Starter: Reduce intensity, increase rest, focus on form
+          adjustedExercise.sets = 2;
+          adjustedExercise.reps = '10-12';
           
           if (adjustedExercise.rest) {
             adjustedExercise.rest = `90-120s`;
           }
+          
+          // Add beginner notes
+          if (!adjustedExercise.notes) {
+            adjustedExercise.notes = 'Focus on proper form. Use lighter weights to master technique.';
+          }
           break;
           
         case 'intermediate':
-          if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
-            const [min, max] = adjustedExercise.reps.split('-').map(Number);
-            adjustedExercise.reps = `${Math.max(6, min - 1)}-${Math.max(10, max - 1)}`;
+          // Regular Trainee: 3 sets, 8-10 reps
+          adjustedExercise.sets = 3;
+          adjustedExercise.reps = '8-10';
+          
+          if (adjustedExercise.rest) {
+            adjustedExercise.rest = `60-90s`;
+          }
+          
+          if (!adjustedExercise.notes) {
+            adjustedExercise.notes = 'Focus on progressive overload. Increase weight gradually.';
           }
           break;
           
         case 'advanced':
-          if (adjustedExercise.sets < 4) {
-            adjustedExercise.sets += 1;
+          // Advanced Lifter: 4 sets, 10-12 reps
+          adjustedExercise.sets = 4;
+          adjustedExercise.reps = '10-12';
+          
+          if (adjustedExercise.rest) {
+            adjustedExercise.rest = `45-75s`;
+          }
+          
+          if (!adjustedExercise.notes) {
+            adjustedExercise.notes = 'Push intensity. Focus on mind-muscle connection.';
+          }
+          break;
+          
+        case 'elite':
+          // Elite Athlete: 5 sets, 12-15 reps
+          adjustedExercise.sets = 5;
+          adjustedExercise.reps = '12-15';
+          
+          if (adjustedExercise.rest) {
+            adjustedExercise.rest = `30-60s`;
+          }
+          
+          if (!adjustedExercise.notes) {
+            adjustedExercise.notes = 'Elite level intensity. Focus on failure and intensity techniques.';
           }
           break;
           
@@ -142,7 +216,7 @@ const Influencers = () => {
           break;
       }
       
-      // Adjust for age if available
+      // Additional adjustments for age if available
       if (userData.age && userData.age > 40) {
         if (adjustedExercise.sets > 3) {
           adjustedExercise.sets = 3;
@@ -156,6 +230,10 @@ const Influencers = () => {
         if (adjustedExercise.rest) {
           adjustedExercise.rest = `90-120s`;
         }
+        
+        if (adjustedExercise.notes) {
+          adjustedExercise.notes += ' Prioritize joint health and recovery.';
+        }
       }
       
       // Adjust for weight goals
@@ -166,10 +244,18 @@ const Influencers = () => {
         } else if (typeof adjustedExercise.reps === 'number') {
           adjustedExercise.reps = adjustedExercise.reps + 4;
         }
+        
+        if (adjustedExercise.notes) {
+          adjustedExercise.notes += ' Higher reps for fat burning.';
+        }
       } else if (userData.fitnessGoal === 'muscleGain') {
         if (typeof adjustedExercise.reps === 'string' && adjustedExercise.reps.includes('-')) {
           const [min, max] = adjustedExercise.reps.split('-').map(Number);
           adjustedExercise.reps = `${Math.max(6, min)}-${Math.max(10, max)}`;
+        }
+        
+        if (adjustedExercise.notes) {
+          adjustedExercise.notes += ' Focus on hypertrophy range.';
         }
       }
       
@@ -340,7 +426,8 @@ const Influencers = () => {
         description: `From ${influencerName}'s ${split.name} program - Adjusted for ${userProfile.fitnessLevel || 'your'} level`,
         influencer: influencerName,
         splitName: split.name,
-        appliedTimestamp: new Date().toISOString()
+        appliedTimestamp: new Date().toISOString(),
+        notes: ex.notes || ''
       }))
     });
     
@@ -486,7 +573,7 @@ const Influencers = () => {
           <div className="p-3">
             <div className="bg-black rounded-lg overflow-hidden border-2 border-green-600 shadow-2xl mb-4">
               <div className="bg-green-600 text-white font-black text-xs uppercase tracking-wider p-3 text-center">
-                Exercise Details
+                Exercise Details {userProfile.fitnessLevel && `- Adjusted for ${userProfile.fitnessLevel}`}
               </div>
               
               {split.exercises.map((exercise, index) => (
@@ -732,6 +819,7 @@ const Influencers = () => {
           </h1>
           <p className="text-sm text-gray-300 mb-4">
             Discover training programs from world-class athletes and coaches
+            {userProfile.fitnessLevel && ` - Adjusted for ${userProfile.fitnessLevel}`}
           </p>
         </div>
 

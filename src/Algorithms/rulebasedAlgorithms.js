@@ -1,13 +1,114 @@
 // RulebaseAlgorithm.js - Enhanced Non-Redundant Workout Generator with Warm-ups & Cardio
+// With Age-Appropriate Modifications for Users Above 40
+// MODIFIED: Bodybuilding workouts now exclude calisthenics and powerlifting exercises
+// MODIFIED: 2-day workouts now provide full body workouts with one exercise per major muscle group
+// MODIFIED: Arthritis and knee problems limited to 5 main exercises (not including warm-up and cardio)
 
-import { 
-  bodybuildingWorkouts, 
-  powerliftingWorkouts, 
-  calisthenicsWorkouts,
-  medicalConditionWorkouts 
-} from '../Data/workouts';
+// Mock data for the imported modules
+const bodybuildingWorkouts = {
+  chest: ['Bench Press', 'Incline Dumbbell Press', 'Cable Flyes', 'Decline Bench Press', 'Pec Deck'],
+  back: ['Pull-ups', 'Bent Over Rows', 'Lat Pulldowns', 'T-Bar Rows', 'Seated Cable Rows'],
+  legs: ['Squats', 'Leg Press', 'Leg Extensions', 'Leg Curls', 'Calf Raises'],
+  shoulders: ['Overhead Press', 'Lateral Raises', 'Front Raises', 'Rear Delt Flyes', 'Shrugs'],
+  arms: ['Bicep Curls', 'Tricep Extensions', 'Hammer Curls', 'Preacher Curls', 'Skull Crushers'],
+  core: ['Crunches', 'Leg Raises', 'Russian Twists', 'Plank', 'Cable Crunches']
+};
 
-// Enhanced warm-up exercises database with muscle group specificity
+const powerliftingWorkouts = {
+  mainLifts: ['Squat', 'Bench Press', 'Deadlift'],
+  variations: ['Pause Squat', 'Close Grip Bench', 'Deficit Deadlift', 'Box Squat', 'Floor Press'],
+  accessories: ['Barbell Rows', 'Face Pulls', 'Tricep Extensions', 'Pull-ups', 'Good Mornings']
+};
+
+const calisthenicsWorkouts = {
+  push: ['Push-ups', 'Dips', 'Handstand Push-ups', 'Pike Push-ups', 'Planche Progressions'],
+  pull: ['Pull-ups', 'Chin-ups', 'Muscle-ups', 'Front Lever Progressions', 'Back Lever Progressions'],
+  legs: ['Pistol Squats', 'Lunges', 'Jump Squats', 'Shrimp Squats', 'Sissy Squats'],
+  core: ['L-sit', 'Dragon Flags', 'Hanging Leg Raises', 'Windshield Wipers', 'Hollow Body Hold']
+};
+
+const medicalConditionWorkouts = {
+  backPain: ['Bird Dog', 'Cat-Cow', 'Glute Bridges', 'Dead Bug', 'Wall Angels'],
+  kneeProblems: ['Straight Leg Raises', 'Seated Leg Extensions', 'Wall Sits', 'Hamstring Curls', 'Stationary Bike'],
+  hypertension: ['Walking', 'Light Cycling', 'Breathing Exercises', 'Light Resistance Training', 'Rowing Machine'],
+  diabetes: ['Moderate Cardio', 'Resistance Training', 'Circuit Training', 'Bodyweight Exercises', 'Stationary Bike Intervals'],
+  arthritis: ['Range of Motion Exercises', 'Water Exercises', 'Light Resistance Bands', 'Chair Exercises', 'Gentle Stretching'],
+  heartDisease: ['Supervised Walking', 'Breathing Exercises', 'Light Resistance Training', 'Stationary Bike', 'Stretching']
+};
+
+// Age-specific exercise pools for users above 40
+const seniorFriendlyExercisePools = {
+  chest: [
+    'Dumbbell Bench Press', 'Machine Chest Press', 'Incline Dumbbell Press', 
+    'Cable Crossover', 'Push Ups (Knees)', 'Pec Deck', 'Band Chest Press'
+  ],
+  back: [
+    'Seated Cable Row', 'Lat Pulldown (Machine)', 'Dumbbell Row', 
+    'Face Pulls', 'Band Pull Aparts', 'Machine Row', 'Rowing Machine (Light)'
+  ],
+  shoulders: [
+    'Dumbbell Shoulder Press', 'Lateral Raises (Light)', 'Front Raises (Light)',
+    'Rear Delt Flyes', 'Face Pulls', 'Band Pull Aparts'
+  ],
+  biceps: [
+    'Dumbbell Curl', 'Hammer Curl', 'Cable Curl', 'Band Curls',
+    'Concentration Curl (Light)'
+  ],
+  triceps: [
+    'Triceps Pushdown (Light)', 'Bench Dips', 'Overhead Triceps Extension (Light)',
+    'Cable Kickbacks', 'Band Triceps Extensions'
+  ],
+  quads: [
+    'Bodyweight Squats', 'Goblet Squats (Light)', 'Leg Press (Light)',
+    'Step Ups', 'Wall Sits', 'Stationary Bike', 'Rowing Machine'
+  ],
+  hamstrings: [
+    'Romanian Deadlift (Light)', 'Leg Curl (Machine)', 'Glute Bridges',
+    'Stability Ball Leg Curl', 'Bodyweight Good Mornings'
+  ],
+  glutes: [
+    'Glute Bridges', 'Hip Thrusts (Bodyweight)', 'Donkey Kicks',
+    'Fire Hydrants', 'Bird Dog', 'Band Glute Bridges'
+  ],
+  calves: [
+    'Seated Calf Raises', 'Standing Calf Raises (Light)', 
+    'Leg Press Calf Raises (Light)'
+  ],
+  core: [
+    'Plank', 'Bird Dog', 'Dead Bug', 'Glute Bridge', 'Pelvic Tilts',
+    'Heel Slides', 'Marching in Place', 'Seated Knee Lifts'
+  ]
+};
+
+// Age-specific warm-up exercises for users above 40
+const seniorWarmUpExercises = {
+  general: [
+    {
+      name: 'Gentle Joint Mobility',
+      description: 'Slow neck rotations, shoulder rolls, wrist circles, ankle rotations - 30 seconds each',
+      duration: '4-6 minutes',
+      purpose: 'Improve joint mobility and circulation with low impact',
+      equipment: 'bodyweight',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      location: 'gym',
+      ageGroup: 'senior'
+    },
+    {
+      name: 'Very Light Cardio Machine',
+      description: 'Stationary bike or treadmill walking at very light pace',
+      duration: '5-7 minutes',
+      purpose: 'Gradual heart rate elevation for senior users',
+      equipment: 'treadmill/stationary bike',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      location: 'gym',
+      ageGroup: 'senior'
+    }
+  ],
+};
+
+// Enhanced warm-up exercises database with muscle group specificity - MODIFIED FOR GYM-ONLY
 const warmUpExercises = {
   general: [
     {
@@ -17,207 +118,382 @@ const warmUpExercises = {
       purpose: 'Increase blood flow and full body mobility',
       equipment: 'bodyweight',
       difficulty: 'beginner',
-      muscleGroups: ['full body']
+      muscleGroups: ['full body'],
+      location: 'gym'
     },
     {
-      name: 'Light Cardio',
-      description: 'Jogging in place, jumping jacks, or stationary bike',
+      name: 'Light Cardio Machine',
+      description: 'Stationary bike or treadmill walking at light pace',
       duration: '3-5 minutes',
       purpose: 'Elevate heart rate and warm up muscles',
-      equipment: 'bodyweight',
+      equipment: 'treadmill/stationary bike',
       difficulty: 'beginner',
-      muscleGroups: ['full body']
+      muscleGroups: ['full body'],
+      location: 'gym'
+    },
+    {
+      name: 'Light Rowing Machine',
+      description: 'Gentle rowing at light pace for full body warm-up',
+      duration: '3-5 minutes',
+      purpose: 'Full body activation and cardiovascular warm-up',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      location: 'gym'
     }
   ],
 
-  // Muscle group specific warm-ups
+  // Muscle group specific warm-ups - GYM FOCUSED
   chest: [
     {
-      name: 'Chest Activation',
+      name: 'Chest Activation with Bands',
       description: 'Band chest stretches, push-up position planks, scapular protractions',
       duration: '3-4 minutes',
       purpose: 'Activate chest muscles and improve shoulder mobility',
-      equipment: 'bands/bodyweight',
+      equipment: 'resistance bands',
       difficulty: 'beginner',
-      muscleGroups: ['chest', 'shoulders']
+      muscleGroups: ['chest', 'shoulders'],
+      location: 'gym'
     },
     {
-      name: 'Push-Up Prep',
-      description: 'Incline push-ups, wall push-ups, chest flyes with light bands',
+      name: 'Machine Chest Warm-up',
+      description: 'Light chest press machine, pec deck with light weight',
       duration: '3-5 minutes',
       purpose: 'Prepare chest and triceps for pressing movements',
-      equipment: 'bands/bodyweight',
+      equipment: 'chest machine',
       difficulty: 'beginner',
-      muscleGroups: ['chest', 'triceps']
+      muscleGroups: ['chest', 'triceps'],
+      location: 'gym'
     }
   ],
 
   back: [
     {
-      name: 'Back Activation',
-      description: 'Band pull-aparts, scapular retractions, cat-cow stretches',
+      name: 'Back Activation with Bands',
+      description: 'Band pull-aparts, scapular retractions, light cable rows',
       duration: '3-4 minutes',
       purpose: 'Activate back muscles and improve posture',
-      equipment: 'bands/bodyweight',
+      equipment: 'resistance bands/cable machine',
       difficulty: 'beginner',
-      muscleGroups: ['back', 'rear delts']
+      muscleGroups: ['back', 'rear delts'],
+      location: 'gym'
     },
     {
-      name: 'Pull-Up Prep',
-      description: 'Scapular pull-ups, active hangs, band lat activations',
+      name: 'Lat Pulldown Warm-up',
+      description: 'Light lat pulldowns, scapular pull-ups, band lat activations',
       duration: '3-5 minutes',
       purpose: 'Prepare back and biceps for pulling movements',
-      equipment: 'bands/bar',
+      equipment: 'lat pulldown machine/bands',
       difficulty: 'beginner',
-      muscleGroups: ['back', 'biceps']
+      muscleGroups: ['back', 'biceps'],
+      location: 'gym'
+    },
+    {
+      name: 'Gentle Rowing Warm-up',
+      description: 'Light rowing with focus on proper posture and back support',
+      duration: '4-5 minutes',
+      purpose: 'Low-impact back warm-up with controlled movement',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['back', 'core'],
+      location: 'gym'
     }
   ],
 
   legs: [
     {
       name: 'Lower Body Dynamic',
-      description: 'Leg swings, hip circles, walking lunges, bodyweight squats',
+      description: 'Leg swings, hip circles, bodyweight squats, lunges',
       duration: '4-5 minutes',
       purpose: 'Activate legs and improve hip mobility',
       equipment: 'bodyweight',
       difficulty: 'beginner',
-      muscleGroups: ['quads', 'hamstrings', 'glutes']
+      muscleGroups: ['quads', 'hamstrings', 'glutes'],
+      location: 'gym'
     },
     {
-      name: 'Glute Activation',
-      description: 'Glute bridges, fire hydrants, donkey kicks, band walks',
+      name: 'Machine Leg Activation',
+      description: 'Light leg extensions, leg curls, hip thrusts with light weight',
       duration: '3-4 minutes',
-      purpose: 'Activate glutes for squats and deadlifts',
-      equipment: 'bands/bodyweight',
+      purpose: 'Activate legs for squats and deadlifts',
+      equipment: 'leg machines',
       difficulty: 'beginner',
-      muscleGroups: ['glutes', 'hamstrings']
+      muscleGroups: ['glutes', 'hamstrings', 'quads'],
+      location: 'gym'
+    },
+    {
+      name: 'Seated Rowing Warm-up',
+      description: 'Rowing machine with focus on leg extension without impact',
+      duration: '4-5 minutes',
+      purpose: 'Knee-friendly cardiovascular warm-up',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['legs', 'back'],
+      location: 'gym'
     }
   ],
 
   shoulders: [
     {
-      name: 'Shoulder Mobility',
-      description: 'Arm circles, shoulder dislocations with band, wall slides',
+      name: 'Shoulder Mobility with Bands',
+      description: 'Band dislocations, light lateral raises, shoulder circles',
       duration: '3-4 minutes',
       purpose: 'Improve shoulder range of motion and stability',
-      equipment: 'bands/bodyweight',
+      equipment: 'resistance bands/dumbbells',
       difficulty: 'beginner',
-      muscleGroups: ['shoulders', 'traps']
+      muscleGroups: ['shoulders', 'traps'],
+      location: 'gym'
     }
   ],
 
   arms: [
     {
       name: 'Arm Activation',
-      description: 'Light band curls, triceps extensions, wrist mobility',
+      description: 'Light cable curls, triceps pushdowns with light weight',
       duration: '3-4 minutes',
       purpose: 'Activate biceps and triceps for arm isolation work',
-      equipment: 'bands/bodyweight',
+      equipment: 'cable machine',
       difficulty: 'beginner',
-      muscleGroups: ['biceps', 'triceps']
+      muscleGroups: ['biceps', 'triceps'],
+      location: 'gym'
     }
   ],
 
-  // Medical condition specific warm-ups
+  // Medical condition specific warm-ups - GYM FOCUSED ONLY
   backPain: [
     {
       name: 'Gentle Back Mobility',
       description: 'Cat-cow stretches, pelvic tilts, gentle spinal twists',
       duration: '4-5 minutes',
       purpose: 'Safe mobility for back conditions, focus on core activation',
-      equipment: 'bodyweight/mat',
+      equipment: 'mat/bodyweight',
       difficulty: 'beginner',
       muscleGroups: ['core', 'back'],
-      medicalCondition: 'backPain'
+      medicalCondition: 'backPain',
+      location: 'gym'
+    },
+    {
+      name: 'Gentle Rowing Warm-up',
+      description: 'Light rowing with focus on proper posture and back support',
+      duration: '4-5 minutes',
+      purpose: 'Low-impact back warm-up with controlled movement',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['back', 'core'],
+      medicalCondition: 'backPain',
+      location: 'gym'
     }
   ],
 
   kneeProblems: [
     {
-      name: 'Knee-Friendly Warm-up',
-      description: 'Seated leg extensions, ankle circles, gentle quad activation',
+      name: 'Knee-Friendly Machine Warm-up',
+      description: 'Seated leg extensions with light weight, stationary bike',
       duration: '4-5 minutes',
       purpose: 'Low-impact warm-up for knee conditions',
-      equipment: 'chair/bodyweight',
+      equipment: 'leg extension machine/stationary bike',
       difficulty: 'beginner',
       muscleGroups: ['quads', 'hamstrings'],
-      medicalCondition: 'kneeProblems'
+      medicalCondition: 'kneeProblems',
+      location: 'gym'
+    },
+    {
+      name: 'Seated Rowing Warm-up',
+      description: 'Rowing machine with focus on leg extension without impact',
+      duration: '4-5 minutes',
+      purpose: 'Knee-friendly cardiovascular warm-up',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['legs', 'back'],
+      medicalCondition: 'kneeProblems',
+      location: 'gym'
     }
   ],
 
   hypertension: [
     {
       name: 'Gentle Cardiovascular Warm-up',
-      description: 'Slow marching, seated cycling, deep breathing exercises',
+      description: 'Slow treadmill walking, stationary bike at low intensity',
       duration: '5-6 minutes',
       purpose: 'Gradual heart rate elevation for hypertension',
-      equipment: 'chair/bodyweight',
+      equipment: 'treadmill/stationary bike',
       difficulty: 'beginner',
       muscleGroups: ['cardiovascular'],
-      medicalCondition: 'hypertension'
+      medicalCondition: 'hypertension',
+      location: 'gym'
+    },
+    {
+      name: 'Rowing Machine Warm-up',
+      description: 'Light rowing with controlled breathing',
+      duration: '5-6 minutes',
+      purpose: 'Gentle full body warm-up for blood pressure management',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['cardiovascular'],
+      medicalCondition: 'hypertension',
+      location: 'gym'
     }
   ],
 
   diabetes: [
     {
       name: 'Blood Sugar Friendly Warm-up',
-      description: 'Light walking, joint mobility, gradual intensity increase',
+      description: 'Treadmill walking, light stationary cycling',
       duration: '5-6 minutes',
       purpose: 'Stable blood sugar maintenance during warm-up',
-      equipment: 'bodyweight',
+      equipment: 'treadmill/stationary bike',
       difficulty: 'beginner',
       muscleGroups: ['full body'],
-      medicalCondition: 'diabetes'
+      medicalCondition: 'diabetes',
+      location: 'gym'
+    },
+    {
+      name: 'Rowing Machine Warm-up',
+      description: 'Light rowing for glucose metabolism activation',
+      duration: '5-6 minutes',
+      purpose: 'Full body warm-up for insulin sensitivity',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      medicalCondition: 'diabetes',
+      location: 'gym'
     }
   ],
 
   arthritis: [
     {
-      name: 'Joint-Friendly Mobility',
-      description: 'Gentle range of motion, heat application, supported stretches',
+      name: 'Joint-Friendly Machine Warm-up',
+      description: 'Gentle range of motion on machines, stationary bike',
       duration: '6-8 minutes',
       purpose: 'Reduce joint stiffness and improve mobility',
-      equipment: 'chair/bodyweight',
+      equipment: 'stationary bike/light machines',
       difficulty: 'beginner',
       muscleGroups: ['full body'],
-      medicalCondition: 'arthritis'
+      medicalCondition: 'arthritis',
+      location: 'gym'
+    },
+    {
+      name: 'Rowing Machine Warm-up',
+      description: 'Very light rowing with full range motion',
+      duration: '6-8 minutes',
+      purpose: 'Full body movement with joint support',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['full body'],
+      medicalCondition: 'arthritis',
+      location: 'gym'
     }
   ],
 
   heartDisease: [
     {
-      name: 'Cardiac-Safe Warm-up',
-      description: 'Very light movement, breathing focus, gradual progression',
+      name: 'Cardiac-Safe Machine Warm-up',
+      description: 'Very light treadmill walking, stationary bike',
       duration: '6-8 minutes',
       purpose: 'Safe warm-up for heart conditions with medical supervision',
-      equipment: 'chair/bodyweight',
+      equipment: 'treadmill/stationary bike',
       difficulty: 'beginner',
       muscleGroups: ['cardiovascular'],
-      medicalCondition: 'heartDisease'
+      medicalCondition: 'heartDisease',
+      location: 'gym'
+    },
+    {
+      name: 'Rowing Machine (Very Light)',
+      description: 'Minimal resistance rowing with monitoring',
+      duration: '6-8 minutes',
+      purpose: 'Gentle full body movement for cardiac patients',
+      equipment: 'rowing machine',
+      difficulty: 'beginner',
+      muscleGroups: ['cardiovascular'],
+      medicalCondition: 'heartDisease',
+      location: 'gym'
     }
   ],
 
+  // GYM-ONLY warm-ups for bodybuilding and powerlifting
   bodybuilding: [
     {
       name: 'Bodybuilding Full Body Warm-up',
-      description: 'Dynamic stretching, light cardio, muscle activation',
+      description: 'Dynamic stretching, light cardio machine, muscle activation with cables and bands',
       duration: '5-6 minutes',
-      purpose: 'Comprehensive warm-up for hypertrophy training',
-      equipment: 'bodyweight/bands',
+      purpose: 'Comprehensive warm-up for hypertrophy training with gym equipment',
+      equipment: 'treadmill/stationary bike/rowing machine/cable machine/resistance bands',
       difficulty: 'beginner',
-      muscleGroups: ['full body']
+      muscleGroups: ['full body'],
+      location: 'gym'
+    },
+    {
+      name: 'Machine-Based Activation',
+      description: 'Light sets on chest press machine, lat pulldown, and leg extension with minimal weight',
+      duration: '4-5 minutes',
+      purpose: 'Activate target muscles with controlled machine movements',
+      equipment: 'chest machine/lat pulldown machine/leg extension machine',
+      difficulty: 'beginner',
+      muscleGroups: ['chest', 'back', 'legs'],
+      location: 'gym'
+    },
+    {
+      name: 'Cable Activation Circuit',
+      description: 'Light cable exercises: face pulls, cable curls, triceps pushdowns with minimal weight',
+      duration: '5-6 minutes',
+      purpose: 'Joint preparation and muscle activation using cable machines',
+      equipment: 'cable machine',
+      difficulty: 'beginner',
+      muscleGroups: ['shoulders', 'biceps', 'triceps'],
+      location: 'gym'
+    },
+    {
+      name: 'Dumbbell Warm-up Flow',
+      description: 'Light dumbbell exercises: shoulder presses, curls, lateral raises with very light weight',
+      duration: '4-5 minutes',
+      purpose: 'Prepare joints and muscles with light dumbbell movements',
+      equipment: 'dumbbells',
+      difficulty: 'beginner',
+      muscleGroups: ['shoulders', 'arms'],
+      location: 'gym'
     }
   ],
 
   powerlifting: [
     {
-      name: 'Powerlifting Specific Warm-up',
-      description: 'Barbell warm-up sets, dynamic mobility, core activation',
+      name: 'Powerlifting Barbell Warm-up',
+      description: 'Empty barbell movements: squats, presses, deadlifts with focus on form',
       duration: '6-8 minutes',
-      purpose: 'Prepare for heavy compound lifts',
-      equipment: 'barbell/bodyweight',
+      purpose: 'Prepare for heavy compound lifts with barbell technique work',
+      equipment: 'barbell/weight plates',
       difficulty: 'beginner',
-      muscleGroups: ['full body']
+      muscleGroups: ['full body'],
+      location: 'gym'
+    },
+    {
+      name: 'SBD Warm-up Protocol',
+      description: 'Progressive warm-up sets with barbell: start empty, add light plates gradually',
+      duration: '8-10 minutes',
+      purpose: 'Specific preparation for squat, bench, and deadlift movements',
+      equipment: 'barbell/weight plates/power rack',
+      difficulty: 'beginner',
+      muscleGroups: ['quads', 'chest', 'back'],
+      location: 'gym'
+    },
+    {
+      name: 'Powerlifting Accessory Warm-up',
+      description: 'Light machine work: leg press, chest machine, row machine with minimal weight',
+      duration: '5-6 minutes',
+      purpose: 'Activate supporting muscles for main lifts',
+      equipment: 'leg press machine/chest machine/row machine',
+      difficulty: 'beginner',
+      muscleGroups: ['legs', 'chest', 'back'],
+      location: 'gym'
+    },
+    {
+      name: 'Powerlifting Mobility Circuit',
+      description: 'Band work for shoulders, hips, and dynamic stretches using gym equipment',
+      duration: '6-7 minutes',
+      purpose: 'Improve mobility for powerlifting positions',
+      equipment: 'resistance bands/foam roller/barbell',
+      difficulty: 'beginner',
+      muscleGroups: ['shoulders', 'hips', 'back'],
+      location: 'gym'
     }
   ],
 
@@ -229,7 +505,8 @@ const warmUpExercises = {
       purpose: 'Prepare for bodyweight skills and movements',
       equipment: 'bodyweight',
       difficulty: 'beginner',
-      muscleGroups: ['full body']
+      muscleGroups: ['full body'],
+      location: 'gym'
     }
   ],
 
@@ -241,7 +518,8 @@ const warmUpExercises = {
       purpose: 'Focus on lower body and back activation',
       equipment: 'bands/bodyweight',
       difficulty: 'beginner',
-      muscleGroups: ['full body']
+      muscleGroups: ['full body'],
+      location: 'gym'
     }
   ],
 
@@ -253,8 +531,66 @@ const warmUpExercises = {
       purpose: 'Safe warm-up for general medical conditions',
       equipment: 'chair/bodyweight',
       difficulty: 'beginner',
-      muscleGroups: ['full body']
+      muscleGroups: ['full body'],
+      location: 'gym'
     }
+  ]
+};
+
+// Warm-up alternatives database
+const warmUpAlternatives = {
+  'dynamic stretching': [
+    { name: 'Light Cardio Machine', description: 'Treadmill or bike at light pace', duration: '3-5 minutes', equipment: 'treadmill/stationary bike', purpose: 'Elevate heart rate' },
+    { name: 'Foam Rolling', description: 'Full body foam rolling', duration: '4-5 minutes', equipment: 'foam roller', purpose: 'Muscle preparation' },
+    { name: 'Light Rowing Machine', description: 'Gentle rowing for full body warm-up', duration: '3-5 minutes', equipment: 'rowing machine', purpose: 'Full body activation' }
+  ],
+  'light cardio machine': [
+    { name: 'Dynamic Stretching', description: 'Arm circles, leg swings, torso twists', duration: '3-5 minutes', equipment: 'bodyweight', purpose: 'Mobility preparation' },
+    { name: 'Rowing Machine Warm-up', description: 'Light rowing at slow pace', duration: '3-4 minutes', equipment: 'rowing machine', purpose: 'Full body warm-up' },
+    { name: 'Elliptical Trainer', description: 'Low-impact elliptical machine', duration: '3-5 minutes', equipment: 'elliptical machine', purpose: 'Cardiovascular warm-up' }
+  ],
+  'light rowing machine': [
+    { name: 'Light Cardio Machine', description: 'Treadmill or bike at light pace', duration: '3-5 minutes', equipment: 'treadmill/stationary bike', purpose: 'Elevate heart rate' },
+    { name: 'Dynamic Stretching', description: 'Arm circles, leg swings, torso twists', duration: '3-5 minutes', equipment: 'bodyweight', purpose: 'Mobility preparation' }
+  ],
+  'chest activation with bands': [
+    { name: 'Machine Chest Warm-up', description: 'Light chest press machine', duration: '3-4 minutes', equipment: 'chest machine', purpose: 'Chest activation' },
+    { name: 'Light Dumbbell Press', description: 'Very light dumbbell bench press', duration: '3-4 minutes', equipment: 'dumbbells', purpose: 'Chest preparation' }
+  ],
+  'machine chest warm-up': [
+    { name: 'Chest Activation with Bands', description: 'Band chest stretches and activation', duration: '3-4 minutes', equipment: 'resistance bands', purpose: 'Chest activation' },
+    { name: 'Push-up Preparation', description: 'Incline push-ups, wall push-ups', duration: '3-4 minutes', equipment: 'bodyweight/bench', purpose: 'Chest preparation' }
+  ],
+  'back activation with bands': [
+    { name: 'Lat Pulldown Warm-up', description: 'Light lat pulldowns', duration: '3-4 minutes', equipment: 'lat pulldown machine', purpose: 'Back activation' },
+    { name: 'Light Cable Rows', description: 'Very light seated cable rows', duration: '3-4 minutes', equipment: 'cable machine', purpose: 'Back preparation' },
+    { name: 'Gentle Rowing Warm-up', description: 'Light rowing for back activation', duration: '3-4 minutes', equipment: 'rowing machine', purpose: 'Back preparation' }
+  ],
+  'lat pulldown warm-up': [
+    { name: 'Back Activation with Bands', description: 'Band pull-aparts and activations', duration: '3-4 minutes', equipment: 'resistance bands', purpose: 'Back activation' },
+    { name: 'Machine Row Warm-up', description: 'Light machine rows', duration: '3-4 minutes', equipment: 'row machine', purpose: 'Back preparation' },
+    { name: 'Rowing Machine Warm-up', description: 'Light rowing for back muscles', duration: '3-4 minutes', equipment: 'rowing machine', purpose: 'Back activation' }
+  ],
+  'gentle rowing warm-up': [
+    { name: 'Back Activation with Bands', description: 'Band exercises for back activation', duration: '3-4 minutes', equipment: 'resistance bands', purpose: 'Back preparation' },
+    { name: 'Lat Pulldown Warm-up', description: 'Light lat pulldowns', duration: '3-4 minutes', equipment: 'lat pulldown machine', purpose: 'Back activation' }
+  ],
+  'bodybuilding full body warm-up': [
+    { name: 'Machine-Based Activation', description: 'Light sets on chest press, lat pulldown, leg extension machines', duration: '4-5 minutes', equipment: 'various machines', purpose: 'Machine-based muscle activation' },
+    { name: 'Cable Activation Circuit', description: 'Light cable exercises for upper body activation', duration: '5-6 minutes', equipment: 'cable machine', purpose: 'Cable-based warm-up' },
+    { name: 'Dumbbell Warm-up Flow', description: 'Light dumbbell exercises for joint preparation', duration: '4-5 minutes', equipment: 'dumbbells', purpose: 'Dumbbell warm-up sequence' }
+  ],
+  'machine-based activation': [
+    { name: 'Bodybuilding Full Body Warm-up', description: 'Dynamic stretching and light cardio machine', duration: '5-6 minutes', equipment: 'treadmill/stationary bike/bands', purpose: 'Comprehensive bodybuilding warm-up' },
+    { name: 'Cable Activation Circuit', description: 'Light cable exercises for muscle activation', duration: '5-6 minutes', equipment: 'cable machine', purpose: 'Cable machine warm-up' }
+  ],
+  'powerlifting barbell warm-up': [
+    { name: 'SBD Warm-up Protocol', description: 'Progressive warm-up sets for main lifts', duration: '8-10 minutes', equipment: 'barbell/weight plates', purpose: 'Specific SBD preparation' },
+    { name: 'Powerlifting Accessory Warm-up', description: 'Light machine work for supporting muscles', duration: '5-6 minutes', equipment: 'various machines', purpose: 'Accessory muscle activation' }
+  ],
+  'sbd warm-up protocol': [
+    { name: 'Powerlifting Barbell Warm-up', description: 'Empty barbell movements for technique', duration: '6-8 minutes', equipment: 'barbell', purpose: 'Barbell technique warm-up' },
+    { name: 'Powerlifting Mobility Circuit', description: 'Band work and dynamic stretches', duration: '6-7 minutes', equipment: 'bands/foam roller', purpose: 'Mobility preparation' }
   ]
 };
 
@@ -281,22 +617,71 @@ const cardioExercises = {
       duration: '8-12 minutes',
       intensity: 'low-moderate',
       equipment: 'stationary bike'
+    },
+    {
+      name: 'Rowing Machine',
+      description: 'Full body rowing at moderate pace',
+      duration: '8-12 minutes',
+      intensity: 'moderate',
+      equipment: 'rowing machine'
+    },
+    {
+      name: 'Treadmill',
+      description: 'Walking or light jogging on treadmill',
+      duration: '10-15 minutes',
+      intensity: 'low-moderate',
+      equipment: 'treadmill'
+    },
+    {
+      name: 'Elliptical Trainer',
+      description: 'Low-impact elliptical machine',
+      duration: '10-15 minutes',
+      intensity: 'moderate',
+      equipment: 'elliptical machine'
+    },
+    {
+      name: 'Stair Climber',
+      description: 'Steady pace stair climbing',
+      duration: '10-12 minutes',
+      intensity: 'moderate',
+      equipment: 'stair climber machine'
     }
   ],
   medical: [
     {
-      name: 'Gentle Walking',
-      description: 'Slow to moderate pace walking',
-      duration: '8-12 minutes',
-      intensity: 'very low',
-      equipment: 'bodyweight'
-    },
-    {
-      name: 'Seated Cycling',
-      description: 'Very light cycling while seated',
+      name: 'Treadmill Walking',
+      description: 'Gentle walking on treadmill at comfortable pace',
       duration: '10-15 minutes',
       intensity: 'very low',
+      equipment: 'treadmill'
+    },
+    {
+      name: 'Elliptical Trainer',
+      description: 'Low-impact elliptical machine at moderate pace',
+      duration: '10-15 minutes',
+      intensity: 'low',
+      equipment: 'elliptical machine'
+    },
+    {
+      name: 'Stationary Bike',
+      description: 'Seated cycling at comfortable resistance',
+      duration: '10-15 minutes',
+      intensity: 'low',
       equipment: 'stationary bike'
+    },
+    {
+      name: 'Rowing Machine',
+      description: 'Light rowing at comfortable pace',
+      duration: '10-15 minutes',
+      intensity: 'low',
+      equipment: 'rowing machine'
+    },
+    {
+      name: 'Recumbent Bike',
+      description: 'Seated cycling with back support',
+      duration: '10-15 minutes',
+      intensity: 'very low',
+      equipment: 'recumbent bike'
     }
   ],
   hiit: [
@@ -313,6 +698,13 @@ const cardioExercises = {
       duration: '4 minutes',
       intensity: 'very high',
       equipment: 'bodyweight'
+    },
+    {
+      name: 'Rowing Machine HIIT',
+      description: '30s sprint rowing, 60s light rowing x 6 rounds',
+      duration: '9 minutes',
+      intensity: 'high',
+      equipment: 'rowing machine'
     }
   ],
   steady_state: [
@@ -322,6 +714,13 @@ const cardioExercises = {
       duration: '15-20 minutes',
       intensity: 'moderate',
       equipment: 'various'
+    },
+    {
+      name: 'Rowing Machine Steady State',
+      description: 'Consistent moderate pace rowing',
+      duration: '15-20 minutes',
+      intensity: 'moderate',
+      equipment: 'rowing machine'
     }
   ],
   cool_down: [
@@ -331,65 +730,490 @@ const cardioExercises = {
       duration: '5-8 minutes',
       intensity: 'very low',
       equipment: 'bodyweight'
+    },
+    {
+      name: 'Light Rowing',
+      description: 'Very gentle rowing for active recovery',
+      duration: '5-8 minutes',
+      intensity: 'very low',
+      equipment: 'rowing machine'
     }
   ]
 };
 
-// Cardio alternatives database
+// Cardio alternatives database - UPDATED WITH ROWING MACHINE
 const cardioAlternatives = {
+  'treadmill walking': [
+    { name: 'Elliptical Trainer', description: 'Low-impact elliptical machine', duration: '10-15 minutes', intensity: 'low', equipment: 'elliptical machine' },
+    { name: 'Stationary Bike', description: 'Seated cycling', duration: '10-15 minutes', intensity: 'low', equipment: 'stationary bike' },
+    { name: 'Rowing Machine', description: 'Light rowing at comfortable pace', duration: '10-15 minutes', intensity: 'low', equipment: 'rowing machine' },
+    { name: 'Recumbent Bike', description: 'Seated cycling with back support', duration: '10-15 minutes', intensity: 'very low', equipment: 'recumbent bike' }
+  ],
+  'elliptical trainer': [
+    { name: 'Treadmill Walking', description: 'Gentle walking on treadmill', duration: '10-15 minutes', intensity: 'very low', equipment: 'treadmill' },
+    { name: 'Stationary Bike', description: 'Seated cycling', duration: '10-15 minutes', intensity: 'low', equipment: 'stationary bike' },
+    { name: 'Rowing Machine', description: 'Light rowing at comfortable pace', duration: '10-15 minutes', intensity: 'low', equipment: 'rowing machine' },
+    { name: 'Recumbent Bike', description: 'Seated cycling with back support', duration: '10-15 minutes', intensity: 'very low', equipment: 'recumbent bike' }
+  ],
+  'stationary bike': [
+    { name: 'Treadmill Walking', description: 'Gentle walking on treadmill', duration: '10-15 minutes', intensity: 'very low', equipment: 'treadmill' },
+    { name: 'Elliptical Trainer', description: 'Low-impact elliptical machine', duration: '10-15 minutes', intensity: 'low', equipment: 'elliptical machine' },
+    { name: 'Rowing Machine', description: 'Light rowing at comfortable pace', duration: '10-15 minutes', intensity: 'low', equipment: 'rowing machine' },
+    { name: 'Recumbent Bike', description: 'Seated cycling with back support', duration: '10-15 minutes', intensity: 'very low', equipment: 'recumbent bike' }
+  ],
+  'rowing machine': [
+    { name: 'Treadmill Walking', description: 'Gentle walking on treadmill', duration: '10-15 minutes', intensity: 'very low', equipment: 'treadmill' },
+    { name: 'Elliptical Trainer', description: 'Low-impact elliptical machine', duration: '10-15 minutes', intensity: 'low', equipment: 'elliptical machine' },
+    { name: 'Stationary Bike', description: 'Seated cycling', duration: '10-15 minutes', intensity: 'low', equipment: 'stationary bike' },
+    { name: 'Recumbent Bike', description: 'Seated cycling with back support', duration: '10-15 minutes', intensity: 'very low', equipment: 'recumbent bike' }
+  ],
   'light jogging': [
     { name: 'Brisk Walking', description: 'Fast-paced walking', duration: '8-12 minutes', intensity: 'low', equipment: 'bodyweight' },
     { name: 'Elliptical Trainer', description: 'Low-impact elliptical machine', duration: '8-12 minutes', intensity: 'low', equipment: 'elliptical machine' },
-    { name: 'Stationary Bike', description: 'Moderate pace cycling', duration: '8-12 minutes', intensity: 'low-moderate', equipment: 'stationary bike' }
+    { name: 'Stationary Bike', description: 'Moderate pace cycling', duration: '8-12 minutes', intensity: 'low-moderate', equipment: 'stationary bike' },
+    { name: 'Rowing Machine', description: 'Moderate pace rowing', duration: '8-12 minutes', intensity: 'moderate', equipment: 'rowing machine' }
   ],
   'jump rope': [
     { name: 'High Knees', description: 'Running in place with high knees', duration: '5-8 minutes', intensity: 'moderate', equipment: 'bodyweight' },
     { name: 'Mountain Climbers', description: 'Alternating knee to chest in plank position', duration: '5-8 minutes', intensity: 'moderate', equipment: 'bodyweight' },
-    { name: 'Burpees', description: 'Full body explosive movement', duration: '4-6 minutes', intensity: 'high', equipment: 'bodyweight' }
-  ],
-  'stationary bike': [
-    { name: 'Outdoor Cycling', description: 'Cycling outdoors', duration: '10-15 minutes', intensity: 'low-moderate', equipment: 'bicycle' },
-    { name: 'Spin Bike', description: 'Indoor cycling class style', duration: '10-15 minutes', intensity: 'moderate', equipment: 'spin bike' },
-    { name: 'Recumbent Bike', description: 'Seated cycling with back support', duration: '10-15 minutes', intensity: 'low', equipment: 'recumbent bike' }
+    { name: 'Burpees', description: 'Full body explosive movement', duration: '4-6 minutes', intensity: 'high', equipment: 'bodyweight' },
+    { name: 'Rowing Machine Sprints', description: 'Short intense rowing intervals', duration: '6-8 minutes', intensity: 'high', equipment: 'rowing machine' }
   ],
   'gentle walking': [
     { name: 'Seated Marching', description: 'Marching while seated', duration: '8-12 minutes', intensity: 'very low', equipment: 'chair' },
     { name: 'Slow Cycling', description: 'Very light cycling', duration: '10-15 minutes', intensity: 'very low', equipment: 'stationary bike' },
+    { name: 'Rowing Machine', description: 'Very light rowing', duration: '8-12 minutes', intensity: 'very low', equipment: 'rowing machine' },
     { name: 'Arm Ergometer', description: 'Upper body cycling machine', duration: '8-12 minutes', intensity: 'very low', equipment: 'arm bike' }
   ],
   'seated cycling': [
     { name: 'Gentle Walking', description: 'Slow pace walking', duration: '8-12 minutes', intensity: 'very low', equipment: 'bodyweight' },
     { name: 'Water Walking', description: 'Walking in chest-deep water', duration: '10-15 minutes', intensity: 'very low', equipment: 'pool' },
+    { name: 'Rowing Machine', description: 'Light seated rowing', duration: '8-12 minutes', intensity: 'very low', equipment: 'rowing machine' },
     { name: 'Chair Aerobics', description: 'Seated aerobic movements', duration: '10-15 minutes', intensity: 'very low', equipment: 'chair' }
   ],
   'hiit circuit': [
     { name: 'Tabata Intervals', description: '20s max effort, 10s rest x 8 rounds', duration: '4 minutes', intensity: 'very high', equipment: 'bodyweight' },
     { name: 'Sprint Intervals', description: '30s sprint, 60s walk x 6 rounds', duration: '9 minutes', intensity: 'high', equipment: 'treadmill/track' },
-    { name: 'Battle Ropes', description: '30s on, 30s rest intervals', duration: '8-10 minutes', intensity: 'high', equipment: 'battle ropes' }
+    { name: 'Battle Ropes', description: '30s on, 30s rest intervals', duration: '8-10 minutes', intensity: 'high', equipment: 'battle ropes' },
+    { name: 'Rowing Machine HIIT', description: '30s sprint rowing, 60s light rowing', duration: '9 minutes', intensity: 'high', equipment: 'rowing machine' }
   ],
   'tabata intervals': [
     { name: 'HIIT Circuit', description: '30s high intensity, 30s rest circuit', duration: '8-10 minutes', intensity: 'high', equipment: 'bodyweight' },
     { name: 'EMOM (Every Minute On the Minute)', description: 'Work at start of each minute for 8 minutes', duration: '8 minutes', intensity: 'very high', equipment: 'bodyweight' },
-    { name: 'Assault Bike Sprints', description: '20s max effort on assault bike', duration: '4-6 minutes', intensity: 'very high', equipment: 'assault bike' }
+    { name: 'Assault Bike Sprints', description: '20s max effort on assault bike', duration: '4-6 minutes', intensity: 'very high', equipment: 'assault bike' },
+    { name: 'Rowing Machine Tabata', description: '20s max rowing, 10s rest x 8 rounds', duration: '4 minutes', intensity: 'very high', equipment: 'rowing machine' }
   ],
   'steady state cardio': [
     { name: 'Moderate Jogging', description: 'Consistent pace jogging', duration: '15-20 minutes', intensity: 'moderate', equipment: 'bodyweight' },
-    { name: 'Rowing Machine', description: 'Steady pace rowing', duration: '15-20 minutes', intensity: 'moderate', equipment: 'rower' },
-    { name: 'Swimming Laps', description: 'Continuous swimming', duration: '15-20 minutes', intensity: 'moderate', equipment: 'pool' }
+    { name: 'Rowing Machine', description: 'Steady pace rowing', duration: '15-20 minutes', intensity: 'moderate', equipment: 'rowing machine' },
+    { name: 'Swimming Laps', description: 'Continuous swimming', duration: '15-20 minutes', intensity: 'moderate', equipment: 'pool' },
+    { name: 'Stationary Bike', description: 'Moderate pace cycling', duration: '15-20 minutes', intensity: 'moderate', equipment: 'stationary bike' }
   ],
   'active recovery': [
     { name: 'Slow Walking', description: 'Leisurely pace walking', duration: '5-8 minutes', intensity: 'very low', equipment: 'bodyweight' },
     { name: 'Gentle Cycling', description: 'Very light cycling', duration: '5-8 minutes', intensity: 'very low', equipment: 'stationary bike' },
+    { name: 'Light Rowing', description: 'Very gentle rowing', duration: '5-8 minutes', intensity: 'very low', equipment: 'rowing machine' },
     { name: 'Yoga Flow', description: 'Gentle yoga sequence', duration: '5-8 minutes', intensity: 'very low', equipment: 'yoga mat' }
+  ],
+  'rowing machine hiit': [
+    { name: 'HIIT Circuit', description: 'Bodyweight HIIT circuit', duration: '8-10 minutes', intensity: 'high', equipment: 'bodyweight' },
+    { name: 'Treadmill Sprints', description: 'Treadmill sprint intervals', duration: '9 minutes', intensity: 'high', equipment: 'treadmill' },
+    { name: 'Bike Intervals', description: 'Stationary bike sprints', duration: '9 minutes', intensity: 'high', equipment: 'stationary bike' }
+  ],
+  'rowing machine steady state': [
+    { name: 'Treadmill Running', description: 'Steady pace running', duration: '15-20 minutes', intensity: 'moderate', equipment: 'treadmill' },
+    { name: 'Elliptical Trainer', description: 'Steady elliptical workout', duration: '15-20 minutes', intensity: 'moderate', equipment: 'elliptical machine' },
+    { name: 'Stationary Bike', description: 'Steady cycling', duration: '15-20 minutes', intensity: 'moderate', equipment: 'stationary bike' }
   ]
 };
 
-// Enhanced workout distribution patterns to avoid redundancy
+// Enhanced medical condition workouts
+const enhancedMedicalWorkouts = {
+  backPain: [
+    {
+      name: 'Bird Dog',
+      description: 'Kneeling alternate arm and leg extension for core stability',
+      muscleGroup: 'core',
+      equipment: 'bodyweight',
+      intensity: 'low',
+      sets: 3,
+      reps: '10-12 per side',
+      purpose: 'Core stabilization without spinal compression'
+    },
+    {
+      name: 'Glute Bridge',
+      description: 'Hip elevation while lying on back to activate glutes',
+      muscleGroup: 'glutes',
+      equipment: 'bodyweight',
+      intensity: 'low',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Glute activation to support lower back'
+    },
+    {
+      name: 'Dead Bug',
+      description: 'Alternating arm and leg movements while lying on back',
+      muscleGroup: 'core',
+      equipment: 'bodyweight',
+      intensity: 'low',
+      sets: 3,
+      reps: '10-12 per side',
+      purpose: 'Core stability with spinal protection'
+    },
+    {
+      name: 'Wall Angels',
+      description: 'Sliding arms up and down wall while maintaining contact',
+      muscleGroup: 'back',
+      equipment: 'bodyweight',
+      intensity: 'very low',
+      sets: 3,
+      reps: '8-10',
+      purpose: 'Improve thoracic mobility and posture'
+    },
+    {
+      name: 'Cat-Cow Stretch',
+      description: 'Alternating spinal flexion and extension on hands and knees',
+      muscleGroup: 'back',
+      equipment: 'bodyweight',
+      intensity: 'very low',
+      sets: 2,
+      reps: '8-10',
+      purpose: 'Gentle spinal mobility'
+    },
+    {
+      name: 'Seated Rowing Machine',
+      description: 'Light resistance rowing with focus on posture',
+      muscleGroup: 'back',
+      equipment: 'rowing machine',
+      intensity: 'low',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Back strengthening with supported position'
+    }
+  ],
+
+  kneeProblems: [
+    {
+      name: 'Straight Leg Raises',
+      description: 'Lying leg lifts with straight knee',
+      muscleGroup: 'quads',
+      equipment: 'bodyweight',
+      intensity: 'low',
+      sets: 3,
+      reps: '12-15 per leg',
+      purpose: 'Quad strengthening without knee bend'
+    },
+    {
+      name: 'Seated Leg Extensions',
+      description: 'Machine leg extensions with light weight',
+      muscleGroup: 'quads',
+      equipment: 'leg extension machine',
+      intensity: 'low',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Controlled quad strengthening'
+    },
+    {
+      name: 'Hamstring Curls',
+      description: 'Machine hamstring curls with light resistance',
+      muscleGroup: 'hamstrings',
+      equipment: 'leg curl machine',
+      intensity: 'low',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Balanced leg strengthening'
+    },
+    {
+      name: 'Seated Calf Raises',
+      description: 'Calf raises while seated to reduce knee strain',
+      muscleGroup: 'calves',
+      equipment: 'bodyweight/dumbbells',
+      intensity: 'low',
+      sets: 3,
+      reps: '15-20',
+      purpose: 'Calf strengthening with knee protection'
+    },
+    {
+      name: 'Stationary Bike',
+      description: 'Low resistance cycling',
+      muscleGroup: 'legs',
+      equipment: 'stationary bike',
+      intensity: 'low',
+      sets: 1,
+      reps: '10-15 minutes',
+      purpose: 'Low-impact cardiovascular exercise'
+    },
+    {
+      name: 'Rowing Machine',
+      description: 'Light rowing with controlled leg extension',
+      muscleGroup: 'full body',
+      equipment: 'rowing machine',
+      intensity: 'low',
+      sets: 3,
+      reps: '10-12',
+      purpose: 'Full body workout with knee-friendly movement'
+    }
+  ],
+
+  hypertension: [
+    {
+      name: 'Walking',
+      description: 'Brisk walking on treadmill',
+      muscleGroup: 'cardiovascular',
+      equipment: 'treadmill',
+      intensity: 'moderate',
+      sets: 1,
+      reps: '20-30 minutes',
+      purpose: 'Steady-state cardiovascular exercise'
+    },
+    {
+      name: 'Light Resistance Training',
+      description: 'Machine exercises with light weight',
+      muscleGroup: 'full body',
+      equipment: 'various machines',
+      intensity: 'low',
+      sets: 2,
+      reps: '12-15',
+      purpose: 'Strength training without blood pressure spikes'
+    },
+    {
+      name: 'Stationary Bike',
+      description: 'Moderate pace cycling',
+      muscleGroup: 'cardiovascular',
+      equipment: 'stationary bike',
+      intensity: 'moderate',
+      sets: 1,
+      reps: '20-25 minutes',
+      purpose: 'Low-impact cardiovascular health'
+    },
+    {
+      name: 'Rowing Machine',
+      description: 'Steady pace rowing',
+      muscleGroup: 'cardiovascular',
+      equipment: 'rowing machine',
+      intensity: 'moderate',
+      sets: 1,
+      reps: '15-20 minutes',
+      purpose: 'Full body cardiovascular exercise'
+    },
+    {
+      name: 'Bodyweight Squats',
+      description: 'Controlled bodyweight squats',
+      muscleGroup: 'legs',
+      equipment: 'bodyweight',
+      intensity: 'low',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Leg strengthening with controlled breathing'
+    },
+    {
+      name: 'Seated Shoulder Press',
+      description: 'Light dumbbell press while seated',
+      muscleGroup: 'shoulders',
+      equipment: 'dumbbells',
+      intensity: 'low',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Upper body strength without straining'
+    }
+  ],
+
+  diabetes: [
+    {
+      name: 'Moderate Intensity Cardio',
+      description: 'Brisk walking or light jogging',
+      muscleGroup: 'cardiovascular',
+      equipment: 'treadmill',
+      intensity: 'moderate',
+      sets: 1,
+      reps: '25-30 minutes',
+      purpose: 'Blood sugar regulation through cardiovascular exercise'
+    },
+    {
+      name: 'Resistance Training',
+      description: 'Full body machine exercises',
+      muscleGroup: 'full body',
+      equipment: 'various machines',
+      intensity: 'moderate',
+      sets: 3,
+      reps: '10-12',
+      purpose: 'Improve insulin sensitivity'
+    },
+    {
+      name: 'Rowing Machine',
+      description: 'Moderate intensity rowing',
+      muscleGroup: 'full body',
+      equipment: 'rowing machine',
+      intensity: 'moderate',
+      sets: 1,
+      reps: '20-25 minutes',
+      purpose: 'Full body workout for glucose metabolism'
+    },
+    {
+      name: 'Circuit Training',
+      description: 'Light weight circuit with minimal rest',
+      muscleGroup: 'full body',
+      equipment: 'various',
+      intensity: 'moderate',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Combined cardio and strength benefits'
+    },
+    {
+      name: 'Stationary Bike Intervals',
+      description: 'Alternating moderate and light intensity',
+      muscleGroup: 'cardiovascular',
+      equipment: 'stationary bike',
+      intensity: 'moderate',
+      sets: 1,
+      reps: '25-30 minutes',
+      purpose: 'Interval training for metabolic health'
+    },
+    {
+      name: 'Bodyweight Exercises',
+      description: 'Squats, push-ups, lunges with modifications',
+      muscleGroup: 'full body',
+      equipment: 'bodyweight',
+      intensity: 'moderate',
+      sets: 3,
+      reps: '12-15',
+      purpose: 'Functional strength training'
+    }
+  ],
+
+  arthritis: [
+    {
+      name: 'Range of Motion Exercises',
+      description: 'Gentle joint movements through full range',
+      muscleGroup: 'full body',
+      equipment: 'bodyweight',
+      intensity: 'very low',
+      sets: 2,
+      reps: '10-12 per joint',
+      purpose: 'Maintain joint mobility and reduce stiffness'
+    },
+    {
+      name: 'Water Exercises',
+      description: 'Walking or light movements in pool',
+      muscleGroup: 'full body',
+      equipment: 'pool',
+      intensity: 'very low',
+      sets: 1,
+      reps: '20-30 minutes',
+      purpose: 'Low-impact joint-friendly exercise'
+    },
+    {
+      name: 'Stationary Bike',
+      description: 'Light resistance cycling',
+      muscleGroup: 'legs',
+      equipment: 'stationary bike',
+      intensity: 'low',
+      sets: 1,
+      reps: '15-20 minutes',
+      purpose: 'Cardiovascular exercise with minimal joint impact'
+    },
+    {
+      name: 'Light Resistance Bands',
+      description: 'Band exercises for major muscle groups',
+      muscleGroup: 'full body',
+      equipment: 'resistance bands',
+      intensity: 'low',
+      sets: 2,
+      reps: '12-15',
+      purpose: 'Strength training with adjustable resistance'
+    },
+    {
+      name: 'Chair Exercises',
+      description: 'Seated strength and mobility exercises',
+      muscleGroup: 'full body',
+      equipment: 'chair',
+      intensity: 'very low',
+      sets: 2,
+      reps: '10-12',
+      purpose: 'Supported exercise for joint protection'
+    },
+    {
+      name: 'Rowing Machine',
+      description: 'Very light rowing with full range motion',
+      muscleGroup: 'full body',
+      equipment: 'rowing machine',
+      intensity: 'low',
+      sets: 2,
+      reps: '8-10',
+      purpose: 'Full body movement with joint support'
+    }
+  ],
+
+  heartDisease: [
+    {
+      name: 'Supervised Walking',
+      description: 'Slow to moderate pace walking',
+      muscleGroup: 'cardiovascular',
+      equipment: 'treadmill',
+      intensity: 'low',
+      sets: 1,
+      reps: '15-20 minutes',
+      purpose: 'Gradual cardiovascular conditioning'
+    },
+    {
+      name: 'Breathing Exercises',
+      description: 'Diaphragmatic breathing and relaxation',
+      muscleGroup: 'core',
+      equipment: 'bodyweight',
+      intensity: 'very low',
+      sets: 2,
+      reps: '5-10 minutes',
+      purpose: 'Stress reduction and oxygen optimization'
+    },
+    {
+      name: 'Light Resistance Training',
+      description: 'Very light weights with high repetitions',
+      muscleGroup: 'full body',
+      equipment: 'light dumbbells',
+      intensity: 'very low',
+      sets: 2,
+      reps: '15-20',
+      purpose: 'Muscle maintenance without cardiovascular strain'
+    },
+    {
+      name: 'Stationary Bike',
+      description: 'Very light resistance cycling',
+      muscleGroup: 'cardiovascular',
+      equipment: 'stationary bike',
+      intensity: 'very low',
+      sets: 1,
+      reps: '10-15 minutes',
+      purpose: 'Controlled cardiovascular exercise'
+    },
+    {
+      name: 'Stretching',
+      description: 'Gentle static stretching',
+      muscleGroup: 'full body',
+      equipment: 'bodyweight',
+      intensity: 'very low',
+      sets: 1,
+      reps: '10-15 minutes',
+      purpose: 'Flexibility and relaxation'
+    },
+    {
+      name: 'Rowing Machine (Very Light)',
+      description: 'Minimal resistance rowing',
+      muscleGroup: 'full body',
+      equipment: 'rowing machine',
+      intensity: 'very low',
+      sets: 2,
+      reps: '5-8',
+      purpose: 'Gentle full body movement with monitoring'
+    }
+  ]
+};
+
+// MODIFIED: Enhanced workout distribution patterns to ensure 2-day splits are full body
 const workoutDistributionPatterns = {
   // 2-day split: Full Body + Full Body (different exercises)
   '2': {
     pattern: ['Full Body A', 'Full Body B'],
-    description: 'Two full body workouts with different exercise selection'
+    description: 'Two full body workouts with different exercise selection, each targeting all major muscle groups'
   },
   
   // 3-day split: Push/Pull/Legs or Upper/Lower/Full Body
@@ -425,8 +1249,8 @@ const workoutDistributionPatterns = {
 const femaleWorkoutPatterns = {
   // 2-day female split: Lower focus + Upper Back Focus
   '2': {
-    pattern: ['Lower Body & Core Focus', 'Upper Body & Back Emphasis'],
-    description: 'Female-focused split with lower body and back emphasis'
+    pattern: ['Full Body A', 'Full Body B'],
+    description: 'Two full body workouts with emphasis on lower body and back development'
   },
   
   // 3-day female split: Lower/Upper Back & Shoulders/Lower & Glutes
@@ -462,8 +1286,8 @@ const femaleWorkoutPatterns = {
 const powerliftingWorkoutPatterns = {
   // 2-day powerlifting split
   '2': {
-    pattern: ['Squat & Bench Focus', 'Deadlift & Accessory'],
-    description: 'Powerlifting focus on main lifts with accessory work'
+    pattern: ['Full Body A', 'Full Body B'],
+    description: 'Two full body workouts focusing on compound lifts with accessory work'
   },
   
   // 3-day powerlifting split
@@ -499,8 +1323,8 @@ const powerliftingWorkoutPatterns = {
 const calisthenicsWorkoutPatterns = {
   // 2-day calisthenics split
   '2': {
-    pattern: ['Upper Body Skills', 'Lower Body & Core'],
-    description: 'Fundamental calisthenics split focusing on basic movements'
+    pattern: ['Full Body A', 'Full Body B'],
+    description: 'Two full body calisthenics workouts focusing on fundamental movements'
   },
   
   // 3-day calisthenics split
@@ -532,8 +1356,14 @@ const calisthenicsWorkoutPatterns = {
   }
 };
 
-// Muscle group mapping for each workout type
+// MODIFIED: Enhanced muscle group mapping for full body workouts
 const muscleGroupFocus = {
+  // Full body days - MODIFIED: Include all major muscle groups
+  'Full Body': ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'quads', 'hamstrings', 'glutes', 'calves', 'core'],
+  'Full Body A': ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'quads', 'hamstrings', 'glutes', 'calves', 'core'],
+  'Full Body B': ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'quads', 'hamstrings', 'glutes', 'calves', 'core'],
+  'Full Body & Core': ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'quads', 'hamstrings', 'glutes', 'calves', 'core'],
+  
   // Push days
   'Push': ['chest', 'shoulders', 'triceps'],
   'Push A': ['chest', 'shoulders', 'triceps'],
@@ -559,12 +1389,6 @@ const muscleGroupFocus = {
   'Lower': ['quads', 'hamstrings', 'glutes', 'calves'],
   'Lower A': ['quads', 'hamstrings', 'glutes', 'calves'],
   'Lower B': ['quads', 'hamstrings', 'glutes', 'calves'],
-  
-  // Full body days
-  'Full Body': ['chest', 'back', 'shoulders', 'legs', 'arms', 'core'],
-  'Full Body A': ['chest', 'back', 'shoulders', 'legs', 'arms', 'core'],
-  'Full Body B': ['chest', 'back', 'shoulders', 'legs', 'arms', 'core'],
-  'Full Body & Core': ['chest', 'back', 'shoulders', 'legs', 'arms', 'core'],
   
   // Bro splits
   'Chest & Triceps': ['chest', 'triceps'],
@@ -678,7 +1502,7 @@ const exercisePools = {
   back: [
     'Pull Ups', 'Lat Pulldown', 'Barbell Row', 'Dumbbell Row', 'T-Bar Row',
     'Seated Cable Row', 'Deadlift', 'Machine Row', 'Inverted Row', 'Face Pulls',
-    'Rack Pulls', 'Sumo Deadlift', 'Conventional Deadlift'
+    'Rack Pulls', 'Sumo Deadlift', 'Conventional Deadlift', 'Rowing Machine'
   ],
   shoulders: [
     'Overhead Press', 'Dumbbell Shoulder Press', 'Lateral Raises', 'Front Raises',
@@ -726,7 +1550,8 @@ const femaleExercisePools = {
     'Lat Pulldown', 'Seated Cable Row', 'Dumbbell Row', 'Machine Row', 'Face Pulls',
     'Inverted Row', 'Assisted Pull-ups', 'Reverse Flyes', 'Straight Arm Pulldown',
     'Single Arm Dumbbell Row', 'Cable Row', 'Band Pull Aparts', 'Superman Holds',
-    'Back Extensions', 'T-Bar Row', 'Wide Grip Lat Pulldown', 'Close Grip Lat Pulldown'
+    'Back Extensions', 'T-Bar Row', 'Wide Grip Lat Pulldown', 'Close Grip Lat Pulldown',
+    'Rowing Machine'
   ],
   shoulders: [
     'Dumbbell Shoulder Press', 'Lateral Raises', 'Front Raises', 'Rear Delt Flyes',
@@ -809,7 +1634,7 @@ const powerliftingExercisePools = {
   ],
   deadlift_accessories: [
     'Barbell Rows', 'Dumbbell Rows', 'Pull Ups', 'Lat Pulldowns',
-    'Hyperextensions', 'Glute Ham Raises', 'Kettlebell Swings'
+    'Hyperextensions', 'Glute Ham Raises', 'Kettlebell Swings', 'Rowing Machine'
   ]
 };
 
@@ -894,8 +1719,128 @@ const exerciseAlternatives = {
     { name: 'Push Ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
     { name: 'Cable Chest Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' }
   ],
-  
-  // Back exercises alternatives
+
+  'pec deck': [
+    { name: 'Machine Chest Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Push Ups', equipment: 'bodyweight', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Cable Chest Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' }
+  ],
+
+  'Goblet Squat': [
+    { name: 'Barbell Back Squat', equipment: 'barbell', muscleGroup: 'quadriceps, glutes', difficulty: 'intermediate' },
+    { name: 'Dumbbell Front Squat', equipment: 'dumbbells', muscleGroup: 'quadriceps, glutes', difficulty: 'intermediate' },
+    { name: 'Landmine Squat', equipment: 'barbell', muscleGroup: 'quadriceps, glutes', difficulty: 'intermediate' },
+    { name: 'Bulgarian Split Squat', equipment: 'dumbbells', muscleGroup: 'quadriceps, glutes', difficulty: 'intermediate' },
+    { name: 'Bodyweight Squat', equipment: 'bodyweight', muscleGroup: 'quadriceps, glutes', difficulty: 'beginner' }
+  ],
+'Donkey Calf Raise': [
+    { name: 'Seated Calf Raise', equipment: 'machine', muscleGroup: 'calves', difficulty: 'beginner' },
+    { name: 'Standing Barbell Calf Raise', equipment: 'barbell', muscleGroup: 'calves', difficulty: 'intermediate' },
+    { name: 'Leg Press Calf Raise', equipment: 'machine', muscleGroup: 'calves', difficulty: 'beginner' },
+    { name: 'Smith Machine Donkey Calf Raise', equipment: 'machine', muscleGroup: 'calves', difficulty: 'intermediate' },
+    { name: 'Single-Leg Dumbbell Calf Raise', equipment: 'dumbbells', muscleGroup: 'calves', difficulty: 'intermediate' }
+  ],
+
+  'push ups': [
+    { name: 'Machine Chest Press', equipment: 'machine', muscleGroup: 'chest', difficulty: 'beginner' },
+    { name: 'Cable Chest Press', equipment: 'cable', muscleGroup: 'chest', difficulty: 'intermediate' },
+    { name: 'Dumbbell Bench Press', equipment: 'dumbbells', muscleGroup: 'chest', difficulty: 'beginner' },
+  ],
+
+  'Incline Dumbbell Press': [
+    { name: 'Incline Barbell Bench Press', equipment: 'barbell', muscleGroup: 'upper chest', difficulty: 'intermediate' },
+    { name: 'Incline Machine Press', equipment: 'machine', muscleGroup: 'upper chest', difficulty: 'beginner' },
+    { name: 'Low-to-High Cable Flyes', equipment: 'cable', muscleGroup: 'upper chest', difficulty: 'intermediate' },
+    { name: 'Incline Push-Ups', equipment: 'bodyweight', muscleGroup: 'upper chest', difficulty: 'beginner' },
+    { name: 'Landmine Press', equipment: 'barbell', muscleGroup: 'upper chest', difficulty: 'intermediate' }
+  ],
+'Dumbbell Shoulder Press': [
+    { name: 'Barbell Overhead Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Arnold Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Seated Smith Machine Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Push Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Kettlebell Strict Press', equipment: 'kettlebell', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+  ],
+'Nordic Curls': [
+    { name: 'Lying Leg Curls', equipment: 'machine', muscleGroup: 'hamstrings', difficulty: 'beginner' },
+    { name: 'Sliding Leg Curls', equipment: 'sliders', muscleGroup: 'hamstrings', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift (RDL)', equipment: 'barbell', muscleGroup: 'hamstrings', difficulty: 'intermediate' },
+    { name: 'Stability Ball Hamstring Curl', equipment: 'stability ball', muscleGroup: 'hamstrings', difficulty: 'intermediate' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'hamstrings', difficulty: 'intermediate' }
+  ],
+'Rear Delt Flyes': [
+    { name: 'Face Pulls', equipment: 'cable', muscleGroup: 'rear delts', difficulty: 'intermediate' },
+    { name: 'Bent-Over Barbell Row (wide grip)', equipment: 'barbell', muscleGroup: 'rear delts, back', difficulty: 'intermediate' },
+    { name: 'Reverse Pec-Deck Fly', equipment: 'machine', muscleGroup: 'rear delts', difficulty: 'beginner' },
+    { name: 'Incline Prone Dumbbell Y-Raise', equipment: 'dumbbells', muscleGroup: 'rear delts', difficulty: 'intermediate' },
+    { name: 'Band Pull-Aparts', equipment: 'bands', muscleGroup: 'rear delts', difficulty: 'beginner' }
+  ],
+'Dumbbell Triceps Extension': [
+    { name: 'Cable Triceps Pushdown', equipment: 'cable', muscleGroup: 'triceps', difficulty: 'beginner' },
+    { name: 'Skull Crushers', equipment: 'barbell', muscleGroup: 'triceps', difficulty: 'intermediate' },
+    { name: 'Bench Dips', equipment: 'bodyweight', muscleGroup: 'triceps', difficulty: 'beginner' },
+    { name: 'Close-Grip Bench Press', equipment: 'barbell', muscleGroup: 'triceps', difficulty: 'intermediate' },
+    { name: 'Overhead Cable Extension', equipment: 'cable', muscleGroup: 'triceps', difficulty: 'intermediate' }
+  ],
+'Reverse Curl': [
+    { name: 'Hammer Curls', equipment: 'dumbbells', muscleGroup: 'brachialis, forearms', difficulty: 'beginner' },
+    { name: 'Zottman Curls', equipment: 'dumbbells', muscleGroup: 'biceps, forearms', difficulty: 'intermediate' },
+    { name: 'Barbell Wrist Curls (palms-down)', equipment: 'barbell', muscleGroup: 'forearms', difficulty: 'beginner' },
+    { name: 'Behind-the-Back Barbell Wrist Curl', equipment: 'barbell', muscleGroup: 'forearms', difficulty: 'intermediate' },
+    { name: 'Plate Pinch Curls', equipment: 'weight plates', muscleGroup: 'forearms, biceps', difficulty: 'intermediate' }
+  ],
+'Zottman Curl': [
+    { name: 'Reverse Curls', equipment: 'dumbbells', muscleGroup: 'biceps, forearms', difficulty: 'intermediate' },
+    { name: 'Hammer Curls', equipment: 'dumbbells', muscleGroup: 'brachialis, forearms', difficulty: 'beginner' },
+    { name: 'Alternating Incline Dumbbell Curls', equipment: 'dumbbells', muscleGroup: 'biceps', difficulty: 'intermediate' },
+    { name: 'Cross-Body Hammer Curls', equipment: 'dumbbells', muscleGroup: 'brachialis, biceps', difficulty: 'beginner' },
+    { name: 'Towel Pull-Ups', equipment: 'bodyweight', muscleGroup: 'grip, forearms, back', difficulty: 'advanced' }
+  ],
+'Decline Bench Press': [
+    { name: 'Decline Barbell Bench Press', equipment: 'barbell', muscleGroup: 'lower chest', difficulty: 'intermediate' },
+    { name: 'Dips', equipment: 'bodyweight', muscleGroup: 'chest, triceps', difficulty: 'intermediate' },
+    { name: 'Decline Push-Ups', equipment: 'bodyweight', muscleGroup: 'lower chest', difficulty: 'beginner' },
+    { name: 'Low Cable Crossover', equipment: 'cable', muscleGroup: 'lower chest', difficulty: 'intermediate' },
+    { name: 'High-to-Low Cable Flyes', equipment: 'cable', muscleGroup: 'lower chest', difficulty: 'intermediate' }
+  ],
+'Step Ups': [
+    { name: 'Barbell Lunges', equipment: 'barbell', muscleGroup: 'quadriceps, glutes', difficulty: 'intermediate' },
+    { name: 'Bulgarian Split Squats', equipment: 'dumbbells', muscleGroup: 'quadriceps, glutes', difficulty: 'intermediate' },
+    { name: 'Pistol Squats (Assisted)', equipment: 'bodyweight', muscleGroup: 'quadriceps, glutes', difficulty: 'advanced' },
+    { name: 'Box Jumps', equipment: 'plyometric', muscleGroup: 'quadriceps, glutes', difficulty: 'intermediate' },
+    { name: 'Single-Leg Press', equipment: 'machine', muscleGroup: 'quadriceps, glutes', difficulty: 'beginner' }
+  ],
+'Glute Ham Raise': [
+    { name: 'Nordic Curls', equipment: 'bodyweight', muscleGroup: 'hamstrings, glutes', difficulty: 'advanced' },
+    { name: 'Stability Ball Hamstring Curl', equipment: 'stability ball', muscleGroup: 'hamstrings, glutes', difficulty: 'intermediate' },
+    { name: 'Romanian Deadlift (RDL)', equipment: 'barbell', muscleGroup: 'hamstrings, glutes', difficulty: 'intermediate' },
+    { name: 'Good Mornings', equipment: 'barbell', muscleGroup: 'hamstrings, glutes', difficulty: 'intermediate' },
+    { name: 'Lying Leg Curls', equipment: 'machine', muscleGroup: 'hamstrings', difficulty: 'beginner' }
+  ],
+'Fire Hydrants': [
+    { name: 'Clamshells', equipment: 'bodyweight', muscleGroup: 'glutes', difficulty: 'beginner' },
+    { name: 'Banded Side Steps', equipment: 'bands', muscleGroup: 'glutes', difficulty: 'beginner' },
+    { name: 'Cable Hip Abductions', equipment: 'cable', muscleGroup: 'glutes', difficulty: 'intermediate' },
+    { name: 'Lateral Lunges', equipment: 'bodyweight', muscleGroup: 'glutes, adductors', difficulty: 'beginner' },
+    { name: 'Donkey Kicks', equipment: 'bodyweight', muscleGroup: 'glutes', difficulty: 'beginner' }
+  ],
+'Standing Calf Raise': [
+    { name: 'Seated Calf Raise', equipment: 'machine', muscleGroup: 'calves', difficulty: 'beginner' },
+    { name: 'Donkey Calf Raise', equipment: 'machine', muscleGroup: 'calves', difficulty: 'intermediate' },
+    { name: 'Leg Press Calf Raise', equipment: 'machine', muscleGroup: 'calves', difficulty: 'beginner' },
+    { name: 'Farmer\'s Walk on Toes', equipment: 'dumbbells', muscleGroup: 'calves', difficulty: 'intermediate' },
+    { name: 'Box Jumps', equipment: 'plyometric', muscleGroup: 'calves', difficulty: 'intermediate' }
+  ],
+'Dragon Flags': [
+    { name: 'Hanging Leg Raises', equipment: 'pull-up bar', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Ab Rollouts', equipment: 'ab wheel', muscleGroup: 'core', difficulty: 'advanced' },
+    { name: 'L-Sits', equipment: 'parallel bars', muscleGroup: 'core', difficulty: 'advanced' },
+    { name: 'Stability Ball Rollouts', equipment: 'stability ball', muscleGroup: 'core', difficulty: 'intermediate' },
+    { name: 'Stirring The Pot', equipment: 'stability ball', muscleGroup: 'core', difficulty: 'advanced' }
+  ],
+
+
+// Back exercises alternatives
   'barbell row': [
     { name: 'Dumbbell Row', equipment: 'dumbbells', muscleGroup: 'back', difficulty: 'beginner' },
     { name: 'Machine Row', equipment: 'machine', muscleGroup: 'back', difficulty: 'beginner' },
@@ -925,7 +1870,21 @@ const exerciseAlternatives = {
     { name: 'Machine Shrug', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
     { name: 'Farmer\'s Walk', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' }
   ],
-  
+
+  'upright row': [
+    { name: 'Dumbbell Upright Row', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Cable Upright Row', equipment: 'cable', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Upright Row', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' }
+  ],
+
+  'arnold press': [
+    { name: 'Dumbbell Shoulder Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Machine Shoulder Press', equipment: 'machine', muscleGroup: 'shoulders', difficulty: 'beginner' },
+    { name: 'Arnold Press', equipment: 'dumbbells', muscleGroup: 'shoulders', difficulty: 'intermediate' },
+    { name: 'Push Press', equipment: 'barbell', muscleGroup: 'shoulders', difficulty: 'intermediate' }
+  ],
+
+
   // Leg exercises alternatives
   'barbell squat': [
     { name: 'Dumbbell Squat', equipment: 'dumbbells', muscleGroup: 'legs', difficulty: 'beginner' },
@@ -1771,13 +2730,13 @@ const exerciseAlternatives = {
 'elliptical trainer': [
   { name: 'Treadmill', equipment: 'treadmill', muscleGroup: 'legs', difficulty: 'beginner' },
   { name: 'Stair Climber', equipment: 'stair machine', muscleGroup: 'legs', difficulty: 'intermediate' },
-  { name: 'Arc Trainer', equipment: 'arc trainer', muscleGroup: 'legs', difficulty: 'intermediate' },
   { name: 'Rowing Machine', equipment: 'rower', muscleGroup: 'full body', difficulty: 'intermediate' },
   { name: 'Cross-country Ski Machine', equipment: 'ski machine', muscleGroup: 'full body', difficulty: 'advanced' },
   { name: 'Walking Lunges', equipment: 'bodyweight', muscleGroup: 'legs', difficulty: 'beginner' },
   { name: 'Mountain Climbers', equipment: 'bodyweight', muscleGroup: 'core', difficulty: 'intermediate' }
-],
+  ]
 };
+  
 
 // Powerlifting-specific alternatives
 const powerliftingAlternatives = {
@@ -1796,7 +2755,7 @@ const powerliftingAlternatives = {
     { name: 'Trap Bar Deadlift', equipment: 'trap bar', muscleGroup: 'hamstrings', difficulty: 'beginner' },
     { name: 'Rack Pulls', equipment: 'barbell', muscleGroup: 'back', difficulty: 'intermediate' }
   ]
-};
+}
 
 // Calisthenics-specific alternatives
 const calisthenicsAlternatives = {
@@ -1848,11 +2807,123 @@ const medicalConditionPatterns = {
   ]
 };
 
+// Enhanced medical notes for better accuracy
+const getEnhancedMedicalNotes = (condition, severity) => {
+  const enhancedNotes = {
+    backPain: {
+      mild: "Focus on core strengthening and proper form. Avoid heavy lifting, twisting motions, and exercises that cause pain. Emphasize neutral spine position in all exercises.",
+      moderate: "Start with gentle mobility exercises and core activation. Avoid forward bending and heavy loading. Consult with physical therapist for specific guidance on exercise progression.",
+      severe: "Rest and gentle stretching only. Focus on pain-free range of motion. Avoid any exercise that increases pain. Consult healthcare provider before starting any exercise program."
+    },
+    kneeProblems: {
+      mild: "Low-impact exercises recommended. Focus on quadriceps and hamstring strengthening. Avoid deep squats, jumping, and high-impact activities. Use pain as your guide.",
+      moderate: "Avoid high-impact activities and deep knee bends. Use supported exercises and maintain proper alignment. Focus on range of motion and gradual strength building.",
+      severe: "Minimal weight-bearing exercises. Focus on range of motion and gentle strengthening. Swimming and cycling may be better options. Consult orthopedic specialist."
+    },
+    hypertension: {
+      mild: "Monitor blood pressure during exercise. Avoid heavy lifting, breath-holding (Valsalva maneuver), and isometric exercises. Focus on rhythmic breathing and moderate intensity.",
+      moderate: "Low to moderate intensity only. Avoid exercises that cause straining. Monitor for dizziness, chest pain, or excessive shortness of breath. Regular blood pressure checks recommended.",
+      severe: "Light activity only under medical supervision. Focus on gentle movement and stress reduction. Avoid strenuous exercise and monitor symptoms closely."
+    },
+    diabetes: {
+      mild: "Monitor blood sugar levels before, during, and after exercise. Stay hydrated and have quick sugar source available. Time exercise with medication schedule.",
+      moderate: "Consistent moderate exercise helps insulin sensitivity. Avoid exercise during peak insulin activity. Monitor for hypoglycemia symptoms during and after workout.",
+      severe: "Medical supervision recommended. Focus on gentle, consistent activity patterns. Monitor blood glucose closely and adjust insulin/medication with medical guidance."
+    },
+    arthritis: {
+      mild: "Gentle range of motion exercises. Warm up properly and avoid overexertion. Focus on pain-free movements and listen to your body's signals.",
+      moderate: "Low-impact activities only. Listen to joint feedback and adjust intensity accordingly. Avoid exercises that cause pain or inflammation the next day.",
+      severe: "Focus on maintaining mobility. Avoid exercises that cause pain or inflammation. Consider water-based exercises for joint relief. Consult rheumatologist for specific guidance."
+    },
+    heartDisease: {
+      mild: "Gradual progression recommended. Monitor heart rate and symptoms during exercise. Avoid sudden intense efforts and focus on steady pace.",
+      moderate: "Supervised exercise program recommended. Avoid high-intensity activities. Monitor for chest pain, dizziness, or unusual shortness of breath.",
+      severe: "Medical clearance required. Very light activity only under supervision. Focus on breathing exercises and gentle movement. Stop immediately if symptoms occur."
+    }
+  };
+  
+  return enhancedNotes[condition]?.[severity] || "Consult with healthcare provider before starting any exercise program. Stop immediately if you experience any pain or discomfort.";
+};
+
+// NEW: Function to calculate exercise safety score for age-appropriate selection
+const getExerciseSafetyScore = (exerciseName, age) => {
+  const name = exerciseName.toLowerCase();
+  let score = 5; // Base score
+  
+  // Bonus points for safe exercises
+  if (name.includes('machine')) score += 3;
+  if (name.includes('cable')) score += 2;
+  if (name.includes('seated')) score += 2;
+  if (name.includes('light')) score += 2;
+  if (name.includes('bodyweight')) score += 1;
+  if (name.includes('band')) score += 2;
+  if (name.includes('dumbbell')) score += 1;
+  
+  // Penalty points for risky exercises (more severe for older ages)
+  if (name.includes('barbell')) score -= age > 60 ? 3 : 2;
+  if (name.includes('heavy')) score -= age > 60 ? 4 : 3;
+  if (name.includes('deadlift')) score -= age > 60 ? 4 : 3;
+  if (name.includes('max')) score -= age > 60 ? 4 : 3;
+  if (name.includes('explosive')) score -= age > 60 ? 4 : 3;
+  if (name.includes('jump')) score -= age > 60 ? 4 : 3;
+  if (name.includes('plyometric')) score -= age > 60 ? 4 : 3;
+  if (name.includes('overhead')) score -= age > 60 ? 3 : 2;
+  
+  return Math.max(1, score); // Minimum score of 1
+};
+
+// Function to find warm-up alternatives
+const findWarmUpAlternatives = (warmUpName) => {
+  const normalizedName = warmUpName.toLowerCase().trim();
+  
+  let alternatives = warmUpAlternatives[normalizedName] || [];
+  
+  // If no direct match, try partial matching
+  if (alternatives.length === 0) {
+    for (const [key, altList] of Object.entries(warmUpAlternatives)) {
+      if (normalizedName.includes(key) || key.includes(normalizedName)) {
+        alternatives = altList;
+        break;
+      }
+    }
+  }
+  
+  return alternatives.length > 0 ? alternatives : [];
+};
+
 // Function to find cardio alternatives
-const findCardioAlternatives = (cardioName, preferredIntensity = null, availableEquipment = null) => {
+const findCardioAlternatives = (cardioName, preferredIntensity = null, availableEquipment = null, isMedical = false) => {
   const normalizedName = cardioName.toLowerCase().trim();
   
-  // Find alternatives for the cardio exercise
+  // For medical conditions, only provide gym equipment alternatives
+  if (isMedical) {
+    const medicalCardioOptions = ['treadmill walking', 'elliptical trainer', 'stationary bike', 'recumbent bike', 'rowing machine'];
+    
+    if (medicalCardioOptions.includes(normalizedName)) {
+      let alternatives = cardioAlternatives[normalizedName] || [];
+      
+      // Filter to only include gym equipment
+      alternatives = alternatives.filter(alt => 
+        alt.equipment.toLowerCase().includes('treadmill') ||
+        alt.equipment.toLowerCase().includes('elliptical') ||
+        alt.equipment.toLowerCase().includes('bike') ||
+        alt.equipment.toLowerCase().includes('stationary') ||
+        alt.equipment.toLowerCase().includes('rowing')
+      );
+      
+      return alternatives;
+    }
+    
+    // If it's a medical condition but the cardio isn't in our medical list, return gym options only
+    return [
+      { name: 'Treadmill Walking', description: 'Gentle walking on treadmill', duration: '10-15 minutes', intensity: 'very low', equipment: 'treadmill' },
+      { name: 'Elliptical Trainer', description: 'Low-impact elliptical machine', duration: '10-15 minutes', intensity: 'low', equipment: 'elliptical machine' },
+      { name: 'Stationary Bike', description: 'Seated cycling', duration: '10-15 minutes', intensity: 'low', equipment: 'stationary bike' },
+      { name: 'Rowing Machine', description: 'Light rowing at comfortable pace', duration: '10-15 minutes', intensity: 'low', equipment: 'rowing machine' }
+    ];
+  }
+  
+  // Original logic for non-medical users
   let alternatives = cardioAlternatives[normalizedName] || [];
   
   // If no direct match, try partial matching
@@ -1885,7 +2956,7 @@ const findCardioAlternatives = (cardioName, preferredIntensity = null, available
 };
 
 // Function to replace cardio exercise with alternative
-export const replaceCardioWithAlternative = (originalCardio, alternativeCardio) => {
+const replaceCardioWithAlternative = (originalCardio, alternativeCardio) => {
   return {
     ...originalCardio,
     name: `Cardio: ${alternativeCardio.name}`,
@@ -1898,14 +2969,15 @@ export const replaceCardioWithAlternative = (originalCardio, alternativeCardio) 
 };
 
 // Function to add cardio alternatives to workout plan
-export const addCardioAlternativesToWorkoutPlan = (workoutPlan, preferredIntensity = null, availableEquipment = null) => {
+const addCardioAlternativesToWorkoutPlan = (workoutPlan, preferredIntensity = null, availableEquipment = null) => {
   return workoutPlan.map(dayPlan => ({
     ...dayPlan,
     workouts: dayPlan.workouts.map(workout => {
       if (workout.isCardio) {
         // Extract the actual cardio name (remove "Cardio: " prefix)
         const cardioName = workout.name.replace('Cardio: ', '');
-        const alternatives = findCardioAlternatives(cardioName, preferredIntensity, availableEquipment);
+        const isMedicalWorkout = dayPlan.isMedicalPlan || workout.isMedical;
+        const alternatives = findCardioAlternatives(cardioName, preferredIntensity, availableEquipment, isMedicalWorkout);
         
         return {
           ...workout,
@@ -1922,8 +2994,8 @@ export const addCardioAlternativesToWorkoutPlan = (workoutPlan, preferredIntensi
 };
 
 // Function to get cardio alternatives for UI display
-export const getCardioAlternativesForUI = (cardioName, preferredIntensity = null, availableEquipment = null) => {
-  const alternatives = findCardioAlternatives(cardioName, preferredIntensity, availableEquipment);
+const getCardioAlternativesForUI = (cardioName, preferredIntensity = null, availableEquipment = null, isMedical = false) => {
+  const alternatives = findCardioAlternatives(cardioName, preferredIntensity, availableEquipment, isMedical);
   
   return {
     originalCardio: cardioName,
@@ -1934,7 +3006,7 @@ export const getCardioAlternativesForUI = (cardioName, preferredIntensity = null
 };
 
 // Function to handle cardio alternative selection from UI
-export const selectCardioAlternative = (originalWorkoutPlan, dayIndex, workoutIndex, alternativeIndex) => {
+const selectCardioAlternative = (originalWorkoutPlan, dayIndex, workoutIndex, alternativeIndex) => {
   const updatedPlan = [...originalWorkoutPlan];
   const day = updatedPlan[dayIndex];
   const workout = day.workouts[workoutIndex];
@@ -1985,7 +3057,367 @@ const selectMedicalWarmUp = (detectedConditions, usedWarmUps = new Set()) => {
   };
 };
 
-// Function to select non-redundant warm-up exercises based on workout type and day
+// Enhanced function to adjust workout parameters for age (MODIFIED FOR 40+ USERS)
+const adjustWorkoutForAge = (workout, age, fitnessLevel, gender) => {
+  if (age <= 40) return workout;
+  
+  const adjustedWorkout = { ...workout };
+  
+  // SIGNIFICANTLY REDUCE SETS for users above 40
+  if (adjustedWorkout.sets) {
+    if (age >= 60) {
+      adjustedWorkout.sets = Math.max(2, Math.floor(adjustedWorkout.sets * 0.6)); // 40% reduction for seniors
+    } else {
+      adjustedWorkout.sets = Math.max(2, Math.floor(adjustedWorkout.sets * 0.7)); // 30% reduction for 40+
+    }
+  }
+  
+  // MODIFIED REPS FOR 40+ USERS: 8-10 reps (instead of previous ranges)
+  if (adjustedWorkout.reps) {
+    if (age >= 60) {
+      adjustedWorkout.reps = '8-10'; // Consistent 8-10 reps for seniors
+    } else {
+      adjustedWorkout.reps = '8-10'; // Consistent 8-10 reps for 40-59
+    }
+  }
+  
+  // INCREASE REST PERIODS to 120 seconds for better recovery
+  if (adjustedWorkout.rest) {
+    adjustedWorkout.rest = '120s'; // Fixed 120 seconds rest for all users above 40
+  }
+  
+  // Add age-specific notes
+  adjustedWorkout.ageNotes = age >= 60 ? 
+    "Senior adaptation: Reduced volume (2-3 sets), controlled reps (8-10), extended rest (120s) for joint safety and recovery" :
+    "Age-adapted: Moderate volume (2-3 sets), controlled reps (8-10), extended rest (120s) for optimal recovery";
+  
+  adjustedWorkout.isAgeAdjusted = true;
+  adjustedWorkout.ageGroup = age >= 60 ? 'senior' : 'mature';
+  
+  return adjustedWorkout;
+};
+
+// MODIFIED: Enhanced function to select age-appropriate exercises (BODYBUILDING-ONLY FILTERING ADDED)
+const selectAgeAppropriateExercises = (workoutType, age, previousExercises = [], workoutPreference, fitnessLevel, exercisesPerWorkout = 8, gender = 'male') => {
+  const targetMuscleGroups = muscleGroupFocus[workoutType] || ['full body'];
+  const selectedExercises = [];
+  const usedExercises = new Set(previousExercises);
+  
+  // Use senior-friendly exercises for users above 40
+  let exerciseSource = age > 40 ? seniorFriendlyExercisePools : 
+                      (gender === 'female' ? femaleExercisePools : exercisePools);
+  
+  // FOR BODYBUILDING: Use only bodybuilding-specific exercises, exclude calisthenics and powerlifting
+  if (workoutPreference === 'bodybuilding') {
+    exerciseSource = gender === 'female' ? femaleExercisePools : exercisePools;
+    
+    // Filter out any calisthenics or powerlifting exercises
+    Object.keys(exerciseSource).forEach(muscleGroup => {
+      exerciseSource[muscleGroup] = exerciseSource[muscleGroup].filter(exercise => {
+        const lowerExercise = exercise.toLowerCase();
+        // Exclude calisthenics exercises
+        const isCalisthenics = lowerExercise.includes('handstand') || 
+                              lowerExercise.includes('planche') ||
+                              lowerExercise.includes('lever') ||
+                              lowerExercise.includes('muscle up') ||
+                              lowerExercise.includes('l-sit') ||
+                              lowerExercise.includes('dragon flag') ||
+                              lowerExercise.includes('human flag') ||
+                              lowerExercise.includes('skin the cat') ||
+                              lowerExercise.includes('australian pull') ||
+                              lowerExercise.includes('pike push') ||
+                              lowerExercise.includes('pseudo planche');
+        
+        // Exclude powerlifting-specific exercises
+        const isPowerlifting = lowerExercise.includes('competition') ||
+                              lowerExercise.includes('low bar') ||
+                              lowerExercise.includes('high bar') ||
+                              lowerExercise.includes('safety bar') ||
+                              lowerExercise.includes('pause squat') ||
+                              lowerExercise.includes('box squat') ||
+                              lowerExercise.includes('spoto press') ||
+                              lowerExercise.includes('floor press') ||
+                              lowerExercise.includes('pin press') ||
+                              lowerExercise.includes('board press') ||
+                              lowerExercise.includes('deficit deadlift') ||
+                              lowerExercise.includes('rack pull') ||
+                              lowerExercise.includes('block pull');
+        
+        return !isCalisthenics && !isPowerlifting;
+      });
+    });
+  }
+  
+  // FOR USERS ABOVE 40: Avoid heavy powerlifting exercises and prioritize joint-friendly movements
+  if (age > 40 && workoutPreference !== 'bodybuilding') {
+    if (workoutPreference === 'powerlifting') {
+      // Replace heavy powerlifting exercises with safer machine-based alternatives
+      exerciseSource = { ...seniorFriendlyExercisePools };
+    }
+    
+    // Further reduce exercise count for users above 40 to prevent overtraining
+    exercisesPerWorkout = Math.max(4, exercisesPerWorkout - 2); // Reduce by 2 exercises
+  }
+  
+  if (workoutPreference === 'calisthenics' && workoutPreference !== 'bodybuilding') {
+    exerciseSource = calisthenicsExercisePools;
+  } else if (workoutPreference === 'powerlifting' && age <= 40 && workoutPreference !== 'bodybuilding') {
+    exerciseSource = gender === 'female' ? { ...femaleExercisePools, ...powerliftingExercisePools } : { ...exercisePools, ...powerliftingExercisePools };
+  }
+  
+  // For users above 40, prioritize safer exercises and avoid high-impact movements
+  if (age > 40) {
+    // Filter out exercises that may be risky for older adults
+    const riskyExercises = [
+      'heavy', 'barbell', 'deadlift', 'squat', 'explosive', 'jump', 'plyometric',
+      'overhead', 'max', 'one rep', 'olympic', 'clean', 'snatch'
+    ];
+    
+    Object.keys(exerciseSource).forEach(muscleGroup => {
+      exerciseSource[muscleGroup] = exerciseSource[muscleGroup].filter(exercise => 
+        !riskyExercises.some(risky => exercise.toLowerCase().includes(risky))
+      );
+    });
+  }
+  
+  // MODIFIED: Special handling for 2-day full body workouts
+  if (workoutType.includes('Full Body')) {
+    // Define the essential muscle groups to target in full body workouts
+    const essentialMuscleGroups = ['chest', 'back', 'quads', 'hamstrings', 'shoulders', 'biceps', 'triceps', 'core'];
+    
+    // For 2-day full body, ensure we get one exercise from each major muscle group
+    essentialMuscleGroups.forEach(muscleGroup => {
+      const availableExercises = exerciseSource[muscleGroup] || [];
+      
+      if (availableExercises.length === 0) return;
+      
+      // Filter out recently used exercises
+      let filteredExercises = availableExercises.filter(exercise => 
+        !usedExercises.has(exercise)
+      );
+      
+      // If we don't have enough new exercises, include some from the full pool
+      if (filteredExercises.length < 1) {
+        filteredExercises = availableExercises;
+      }
+      
+      // For users above 40, prioritize machine-based and controlled movements
+      if (age > 40) {
+        filteredExercises = filteredExercises.sort((a, b) => {
+          const aScore = getExerciseSafetyScore(a, age);
+          const bScore = getExerciseSafetyScore(b, age);
+          return bScore - aScore; // Higher safety score first
+        });
+      }
+      
+      // Select 1 exercise per muscle group for full body workouts
+      const count = 1;
+      const shuffled = [...filteredExercises].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, count);
+      
+      if (selected.length > 0) {
+        selectedExercises.push(...selected);
+        selected.forEach(ex => usedExercises.add(ex));
+      }
+    });
+    
+    // If we still need more exercises, add additional core or compound exercises
+    if (selectedExercises.length < exercisesPerWorkout) {
+      const needed = exercisesPerWorkout - selectedExercises.length;
+      const allExercises = Object.values(exerciseSource).flat();
+      const availableExercises = allExercises.filter(ex => !usedExercises.has(ex));
+      
+      // For 40+ users, prioritize safer exercises when adding extras
+      let additional = availableExercises;
+      if (age > 40) {
+        additional = availableExercises.sort((a, b) => {
+          const aScore = getExerciseSafetyScore(a, age);
+          const bScore = getExerciseSafetyScore(b, age);
+          return bScore - aScore;
+        });
+      }
+      
+      additional = additional.slice(0, needed);
+      selectedExercises.push(...additional);
+      additional.forEach(ex => usedExercises.add(ex));
+    }
+    
+    return selectedExercises.slice(0, exercisesPerWorkout);
+  }
+  
+  // Original logic for non-full body workouts
+  targetMuscleGroups.forEach(muscleGroup => {
+    const availableExercises = exerciseSource[muscleGroup] || [];
+    
+    if (availableExercises.length === 0) return;
+    
+    // Filter out recently used exercises
+    let filteredExercises = availableExercises.filter(exercise => 
+      !usedExercises.has(exercise)
+    );
+    
+    // If we don't have enough new exercises, include some from the full pool
+    if (filteredExercises.length < 2) {
+      filteredExercises = availableExercises;
+    }
+    
+    // For users above 40, prioritize machine-based and controlled movements
+    if (age > 40) {
+      filteredExercises = filteredExercises.sort((a, b) => {
+        const aScore = getExerciseSafetyScore(a, age);
+        const bScore = getExerciseSafetyScore(b, age);
+        return bScore - aScore; // Higher safety score first
+      });
+    }
+    
+    const count = age > 40 ? 1 : 2; // Only 1 exercise per muscle group for 40+
+    const shuffled = age > 40 ? filteredExercises : [...filteredExercises].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, count);
+    
+    selectedExercises.push(...selected);
+    selected.forEach(ex => usedExercises.add(ex));
+  });
+  
+  // If we still don't have enough exercises, add from any available pool
+  if (selectedExercises.length < exercisesPerWorkout) {
+    const needed = exercisesPerWorkout - selectedExercises.length;
+    const allExercises = Object.values(exerciseSource).flat();
+    const availableExercises = allExercises.filter(ex => !usedExercises.has(ex));
+    
+    // For 40+ users, prioritize safer exercises when adding extras
+    let additional = availableExercises;
+    if (age > 40) {
+      additional = availableExercises.sort((a, b) => {
+        const aScore = getExerciseSafetyScore(a, age);
+        const bScore = getExerciseSafetyScore(b, age);
+        return bScore - aScore;
+      });
+    }
+    
+    additional = additional.slice(0, needed);
+    selectedExercises.push(...additional);
+    additional.forEach(ex => usedExercises.add(ex));
+  }
+  
+  return selectedExercises.slice(0, exercisesPerWorkout);
+};
+
+// Enhanced warm-up selection for age
+const selectAgeAppropriateWarmUp = (workoutPreference, workoutType, gender = 'male', isMedical = false, dayIndex = 0, usedWarmUps = new Set(), detectedConditions = [], age = 30) => {
+  
+  // For users above 40, use senior-specific warm-ups
+  if (age > 40) {
+    let warmUpPool = [...seniorWarmUpExercises.general];
+    
+    // Add medical condition specific warm-ups if needed
+    if (isMedical && detectedConditions.length > 0) {
+      return selectMedicalWarmUp(detectedConditions, usedWarmUps);
+    }
+    
+    // Filter out recently used warm-ups
+    const availableWarmUps = warmUpPool.filter(warmUp => !usedWarmUps.has(warmUp.name));
+    
+    // Select 2 warm-up exercises for regular workouts, 1 for medical
+    const count = isMedical ? 1 : 2;
+    let finalWarmUpPool = availableWarmUps.length >= count ? availableWarmUps : warmUpPool;
+    
+    const shuffled = [...finalWarmUpPool].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, count);
+    
+    selected.forEach(warmUp => usedWarmUps.add(warmUp.name));
+    
+    return {
+      warmUps: selected,
+      usedWarmUps: usedWarmUps
+    };
+  }
+  
+  // Original warm-up selection for users 40 and below
+  return selectWarmUpExercises(workoutPreference, workoutType, gender, isMedical, dayIndex, usedWarmUps, detectedConditions);
+};
+
+// Enhanced cardio selection for age
+const selectAgeAppropriateCardio = (workoutType, fitnessGoal, fitnessLevel, dayIndex, isMedical = false, workoutPreference = 'general', age = 30) => {
+  
+  // For users above 40, use gentler cardio options
+  if (age > 40) {
+    const seniorCardioOptions = [
+      {
+        name: 'Treadmill Walking',
+        description: 'Gentle walking on treadmill at comfortable pace',
+        duration: age >= 60 ? '12-15 minutes' : '15-20 minutes',
+        intensity: 'very low',
+        equipment: 'treadmill',
+        ageGroup: 'senior'
+      },
+      {
+        name: 'Stationary Bike',
+        description: 'Seated cycling at very light resistance',
+        duration: age >= 60 ? '12-15 minutes' : '15-20 minutes',
+        intensity: 'very low',
+        equipment: 'stationary bike',
+        ageGroup: 'senior'
+      },
+      {
+        name: 'Elliptical Trainer',
+        description: 'Low-impact elliptical at gentle pace',
+        duration: age >= 60 ? '10-12 minutes' : '12-15 minutes',
+        intensity: 'low',
+        equipment: 'elliptical machine',
+        ageGroup: 'senior'
+      },
+      {
+        name: 'Rowing Machine (Light)',
+        description: 'Very light rowing with focus on technique',
+        duration: age >= 60 ? '8-10 minutes' : '10-12 minutes',
+        intensity: 'low',
+        equipment: 'rowing machine',
+        ageGroup: 'senior'
+      }
+    ];
+    
+    // Rotate through cardio options based on day index
+    const selectedIndex = dayIndex % seniorCardioOptions.length;
+    return seniorCardioOptions[selectedIndex];
+  }
+  
+  // Original cardio selection for users 40 and below
+  return selectCardioExercise(workoutType, fitnessGoal, fitnessLevel, dayIndex, isMedical, workoutPreference);
+};
+
+// Enhanced rep range calculation with age consideration (MODIFIED FOR 40+ USERS)
+const getAgeAppropriateRepRange = (fitnessGoal, fitnessLevel, muscleGroup, workoutPreference = 'general', gender = 'male', age = 30) => {
+  // FOR USERS ABOVE 40: Use consistent 8-10 reps for hypertrophy and joint safety
+  if (age > 40) {
+    return '8-10'; // Consistent moderate rep range for all users above 40
+  }
+  
+  // Original rep range calculation for users 40 and below
+  return getRepRange(fitnessGoal, fitnessLevel, muscleGroup, workoutPreference, gender);
+};
+
+// Enhanced workout intensity for age
+const getAgeAppropriateWorkoutIntensity = (fitnessLevel, workoutType, workoutPreference = 'general', gender = 'male', age = 30) => {
+  let baseIntensity = getWorkoutIntensity(fitnessLevel, workoutType, workoutPreference, gender);
+  
+  // Reduce intensity for users above 40
+  if (age > 40) {
+    if (age >= 60) {
+      return 'very low';
+    } else if (age >= 50) {
+      return 'low';
+    } else {
+      // 40-49
+      if (baseIntensity === 'very high') return 'high';
+      if (baseIntensity === 'high') return 'moderate-high';
+      return baseIntensity;
+    }
+  }
+  
+  return baseIntensity;
+};
+
+// MODIFIED: Enhanced warm-up selection for bodybuilding and powerlifting (BODYBUILDING-ONLY FILTERING)
 const selectWarmUpExercises = (workoutPreference, workoutType, gender = 'male', isMedical = false, dayIndex = 0, usedWarmUps = new Set(), detectedConditions = []) => {
   
   // MEDICAL CONDITIONS: Only 1 warm-up specifically for the medical condition
@@ -1993,40 +3425,112 @@ const selectWarmUpExercises = (workoutPreference, workoutType, gender = 'male', 
     return selectMedicalWarmUp(detectedConditions, usedWarmUps);
   }
   
-  // REGULAR WORKOUTS: 2 warm-ups with muscle specificity
+  // REGULAR WORKOUTS: 2 warm-ups with muscle specificity - GYM FOCUSED
   let warmUpPool = [];
   
-  // Determine primary muscle groups for this workout type
-  const targetMuscles = muscleGroupFocus[workoutType] || ['full body'];
-  
-  // Add muscle-group specific warm-ups based on workout type
-  if (workoutType.includes('Chest') || workoutType.includes('Push') || workoutType.includes('Bench')) {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.chest];
-  }
-  if (workoutType.includes('Back') || workoutType.includes('Pull') || workoutType.includes('Deadlift')) {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.back];
-  }
-  if (workoutType.includes('Leg') || workoutType.includes('Lower') || workoutType.includes('Squat') || workoutType.includes('Glute')) {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.legs];
-  }
-  if (workoutType.includes('Shoulder') || workoutType.includes('Arm')) {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.shoulders, ...warmUpExercises.arms];
-  }
-  
-  // Add preference-specific warm-ups
-  if (workoutPreference === 'powerlifting') {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.powerlifting];
-  } else if (workoutPreference === 'calisthenics') {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.calisthenics];
-  } else if (workoutPreference === 'bodybuilding') {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.bodybuilding];
-  } else if (gender === 'female') {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.female_focused];
-  }
-  
-  // Add general warm-ups if pool is still small
-  if (warmUpPool.length < 4) {
-    warmUpPool = [...warmUpPool, ...warmUpExercises.general];
+  // FOR BODYBUILDING: Use only bodybuilding-specific gym warm-ups
+  if (workoutPreference === 'bodybuilding') {
+    warmUpPool = [...warmUpExercises.bodybuilding];
+    
+    // Add muscle-specific warm-ups but ensure they're gym-focused
+    const targetMuscles = muscleGroupFocus[workoutType] || ['full body'];
+    
+    if (workoutType.includes('Chest') || workoutType.includes('Push') || workoutType.includes('Bench')) {
+      const chestWarmUps = warmUpExercises.chest.filter(warmUp => 
+        warmUp.equipment.includes('machine') || 
+        warmUp.equipment.includes('cable') ||
+        warmUp.equipment.includes('dumbbell')
+      );
+      warmUpPool = [...warmUpPool, ...chestWarmUps];
+    }
+    if (workoutType.includes('Back') || workoutType.includes('Pull')) {
+      const backWarmUps = warmUpExercises.back.filter(warmUp => 
+        warmUp.equipment.includes('machine') || 
+        warmUp.equipment.includes('cable') ||
+        warmUp.equipment.includes('rowing')
+      );
+      warmUpPool = [...warmUpPool, ...backWarmUps];
+    }
+    if (workoutType.includes('Leg') || workoutType.includes('Lower') || workoutType.includes('Squat') || workoutType.includes('Glute')) {
+      const legWarmUps = warmUpExercises.legs.filter(warmUp => 
+        warmUp.equipment.includes('machine') || 
+        warmUp.equipment.includes('bodyweight') && warmUp.name.toLowerCase().includes('dynamic')
+      );
+      warmUpPool = [...warmUpPool, ...legWarmUps];
+    }
+    
+    // Filter to ensure ONLY gym equipment is used for bodybuilding
+    warmUpPool = warmUpPool.filter(warmUp => 
+      warmUp.location === 'gym' && 
+      (warmUp.equipment.includes('machine') || 
+       warmUp.equipment.includes('treadmill') || 
+       warmUp.equipment.includes('bike') ||
+       warmUp.equipment.includes('rowing') ||
+       warmUp.equipment.includes('cable') ||
+       warmUp.equipment.includes('dumbbell') ||
+       warmUp.equipment.includes('barbell') ||
+       warmUp.equipment.includes('bands'))
+    );
+  } else {
+    // Original logic for other workout preferences
+    // Determine primary muscle groups for this workout type
+    const targetMuscles = muscleGroupFocus[workoutType] || ['full body'];
+    
+    // Add muscle-group specific warm-ups based on workout type (GYM-ONLY)
+    if (workoutType.includes('Chest') || workoutType.includes('Push') || workoutType.includes('Bench')) {
+      warmUpPool = [...warmUpPool, ...warmUpExercises.chest];
+    }
+    if (workoutType.includes('Back') || workoutType.includes('Pull') || workoutType.includes('Deadlift')) {
+      warmUpPool = [...warmUpPool, ...warmUpExercises.back];
+    }
+    if (workoutType.includes('Leg') || workoutType.includes('Lower') || workoutType.includes('Squat') || workoutType.includes('Glute')) {
+      warmUpPool = [...warmUpPool, ...warmUpExercises.legs];
+    }
+    if (workoutType.includes('Shoulder') || workoutType.includes('Arm')) {
+      warmUpPool = [...warmUpPool, ...warmUpExercises.shoulders, ...warmUpExercises.arms];
+    }
+    
+    // Add preference-specific warm-ups - GYM FOCUSED ONLY
+    if (workoutPreference === 'powerlifting') {
+      // Use ONLY powerlifting gym-specific warm-ups
+      warmUpPool = [...warmUpPool, ...warmUpExercises.powerlifting];
+    } else if (workoutPreference === 'calisthenics') {
+      warmUpPool = [...warmUpPool, ...warmUpExercises.calisthenics];
+    } else if (workoutPreference === 'bodybuilding') {
+      // Use ONLY bodybuilding gym-specific warm-ups
+      warmUpPool = [...warmUpPool, ...warmUpExercises.bodybuilding];
+    } else if (gender === 'female') {
+      warmUpPool = [...warmUpPool, ...warmUpExercises.female_focused];
+    }
+    
+    // Add general gym warm-ups if pool is still small
+    if (warmUpPool.length < 4) {
+      const gymGeneralWarmUps = warmUpExercises.general.filter(warmUp => 
+        warmUp.equipment.includes('machine') || 
+        warmUp.equipment.includes('treadmill') || 
+        warmUp.equipment.includes('bike') ||
+        warmUp.equipment.includes('rowing') ||
+        warmUp.equipment.includes('cable') ||
+        warmUp.equipment.includes('dumbbell') ||
+        warmUp.equipment.includes('barbell')
+      );
+      warmUpPool = [...warmUpPool, ...gymGeneralWarmUps];
+    }
+    
+    // Filter to ensure ONLY gym equipment is used for bodybuilding and powerlifting
+    if (workoutPreference === 'bodybuilding' || workoutPreference === 'powerlifting') {
+      warmUpPool = warmUpPool.filter(warmUp => 
+        warmUp.location === 'gym' && 
+        (warmUp.equipment.includes('machine') || 
+         warmUp.equipment.includes('treadmill') || 
+         warmUp.equipment.includes('bike') ||
+         warmUp.equipment.includes('rowing') ||
+         warmUp.equipment.includes('cable') ||
+         warmUp.equipment.includes('dumbbell') ||
+         warmUp.equipment.includes('barbell') ||
+         warmUp.equipment.includes('bands'))
+      );
+    }
   }
   
   // Filter out recently used warm-ups to avoid redundancy
@@ -2048,16 +3552,110 @@ const selectWarmUpExercises = (workoutPreference, workoutType, gender = 'male', 
   };
 };
 
-// Function to select appropriate cardio based on workout type and goals
-const selectCardioExercise = (workoutType, fitnessGoal, fitnessLevel, dayIndex, isMedical = false) => {
+// Enhanced cardio selection for medical conditions to ensure variety
+const selectCardioExercise = (workoutType, fitnessGoal, fitnessLevel, dayIndex, isMedical = false, workoutPreference = 'general') => {
   let cardioPool = cardioExercises.general;
   
-  // Medical conditions get gentle cardio
+  // Medical conditions get gentle cardio - ONLY GYM EQUIPMENT
   if (isMedical) {
-    return cardioExercises.medical[0];
+    const medicalGymCardio = [
+      {
+        name: 'Treadmill Walking',
+        description: 'Gentle walking on treadmill at comfortable pace',
+        duration: '10-15 minutes',
+        intensity: 'very low',
+        equipment: 'treadmill'
+      },
+      {
+        name: 'Elliptical Trainer',
+        description: 'Low-impact elliptical machine at moderate pace',
+        duration: '10-15 minutes',
+        intensity: 'low',
+        equipment: 'elliptical machine'
+      },
+      {
+        name: 'Stationary Bike',
+        description: 'Seated cycling at comfortable resistance',
+        duration: '10-15 minutes',
+        intensity: 'low',
+        equipment: 'stationary bike'
+      },
+      {
+        name: 'Rowing Machine',
+        description: 'Light rowing at comfortable pace',
+        duration: '10-15 minutes',
+        intensity: 'low',
+        equipment: 'rowing machine'
+      },
+      {
+        name: 'Recumbent Bike',
+        description: 'Seated cycling with back support',
+        duration: '10-15 minutes',
+        intensity: 'very low',
+        equipment: 'recumbent bike'
+      }
+    ];
+    
+    // Rotate through cardio options based on day index to provide variety
+    const selectedIndex = dayIndex % medicalGymCardio.length;
+    return medicalGymCardio[selectedIndex];
   }
   
-  // Adjust cardio based on fitness goal
+  // Bodybuilding and powerlifting get gym-only cardio
+  if (workoutPreference === 'bodybuilding' || workoutPreference === 'powerlifting') {
+    const gymCardioOptions = [
+      {
+        name: 'Treadmill',
+        description: 'Walking or light jogging on treadmill',
+        duration: '10-15 minutes',
+        intensity: 'low-moderate',
+        equipment: 'treadmill'
+      },
+      {
+        name: 'Stationary Bike',
+        description: 'Moderate pace cycling',
+        duration: '10-15 minutes',
+        intensity: 'low-moderate',
+        equipment: 'stationary bike'
+      },
+      {
+        name: 'Elliptical Trainer',
+        description: 'Low-impact elliptical machine',
+        duration: '10-15 minutes',
+        intensity: 'moderate',
+        equipment: 'elliptical machine'
+      },
+      {
+        name: 'Rowing Machine',
+        description: 'Full body rowing at moderate pace',
+        duration: '8-12 minutes',
+        intensity: 'moderate',
+        equipment: 'rowing machine'
+      },
+      {
+        name: 'Stair Climber',
+        description: 'Steady pace stair climbing',
+        duration: '10-12 minutes',
+        intensity: 'moderate',
+        equipment: 'stair climber machine'
+      }
+    ];
+    
+    // Adjust cardio based on fitness goal for bodybuilding/powerlifting
+    if (fitnessGoal === 'weightLoss' || fitnessGoal === 'cutting') {
+      return gymCardioOptions[dayIndex % gymCardioOptions.length];
+    } else if (fitnessGoal === 'muscleGain' || fitnessGoal === 'bulking') {
+      // Lighter cardio for muscle gain
+      const lightCardio = gymCardioOptions.filter(cardio => 
+        cardio.intensity === 'low' || cardio.intensity === 'low-moderate'
+      );
+      return lightCardio[dayIndex % lightCardio.length];
+    } else {
+      return gymCardioOptions[dayIndex % gymCardioOptions.length];
+    }
+  }
+  
+  // Original logic for other workout preferences
   if (fitnessGoal === 'weightLoss' || fitnessGoal === 'cutting') {
     if (dayIndex % 2 === 0) {
       cardioPool = [...cardioExercises.hiit, ...cardioExercises.general];
@@ -2065,7 +3663,7 @@ const selectCardioExercise = (workoutType, fitnessGoal, fitnessLevel, dayIndex, 
       cardioPool = [...cardioExercises.steady_state, ...cardioExercises.general];
     }
   } else if (fitnessGoal === 'muscleGain' || fitnessGoal === 'bulking') {
-    cardioPool = cardioExercises.cool_down; // Lighter cardio for muscle gain
+    cardioPool = cardioExercises.cool_down;
   }
   
   // Adjust for fitness level
@@ -2073,9 +3671,9 @@ const selectCardioExercise = (workoutType, fitnessGoal, fitnessLevel, dayIndex, 
     cardioPool = cardioPool.filter(cardio => cardio.intensity !== 'very high' && cardio.intensity !== 'high');
   }
   
-  // Select random cardio exercise
+  // Select random cardio exercise with day-based variation
   const shuffled = [...cardioPool].sort(() => 0.5 - Math.random());
-  return shuffled[0];
+  return shuffled[dayIndex % shuffled.length];
 };
 
 // Helper function to get rep range based on goals and muscle group
@@ -2144,6 +3742,7 @@ const getExerciseEquipment = (exerciseName) => {
   if (name.includes('bar')) return 'bar';
   if (name.includes('trap bar')) return 'trap bar';
   if (name.includes('safety bar')) return 'safety bar';
+  if (name.includes('rowing')) return 'rowing machine';
   return 'various';
 };
 
@@ -2152,7 +3751,7 @@ const isCompoundExercise = (exerciseName) => {
   const compounds = [
     'squat', 'deadlift', 'bench press', 'overhead press', 'row', 'pull', 'push up',
     'lunge', 'hip thrust', 'clean', 'snatch', 'dip', 'pullup', 'chinup', 'muscle up',
-    'handstand', 'planche', 'front lever', 'back lever'
+    'handstand', 'planche', 'front lever', 'back lever', 'rowing machine'
   ];
   return compounds.some(compound => exerciseName.toLowerCase().includes(compound));
 };
@@ -2210,7 +3809,7 @@ const getRandomExercise = (exercisePool, usedExercises) => {
 };
 
 // Enhanced medical condition detection for multiple conditions
-export const detectMedicalConditions = (medicalConditionsText, workoutPreference = 'general') => {
+const detectMedicalConditions = (medicalConditionsText, workoutPreference = 'general') => {
   if (!medicalConditionsText || medicalConditionsText.trim() === '') return [];
   
   const conditions = [];
@@ -2319,7 +3918,8 @@ const getPreferenceBasedExercises = (workoutPreference, fitnessLevel, fitnessGoa
       { name: 'Band Pull Aparts', muscleGroup: 'back', equipment: 'bands', description: 'Shoulder health and back activation' },
       { name: 'Plank', muscleGroup: 'core', equipment: 'bodyweight', description: 'Core stability exercise' },
       { name: 'Bird Dog', muscleGroup: 'core', equipment: 'bodyweight', description: 'Core and balance exercise' },
-      { name: 'Glute Bridges', muscleGroup: 'glutes', equipment: 'bodyweight', description: 'Glute activation exercise' }
+      { name: 'Glute Bridges', muscleGroup: 'glutes', equipment: 'bodyweight', description: 'Glute activation exercise' },
+      { name: 'Rowing Machine', muscleGroup: 'back', equipment: 'rowing machine', description: 'Full body low-impact exercise' }
     ],
     powerlifting: [
       { name: 'Goblet Squats', muscleGroup: 'legs', equipment: 'dumbbell', description: 'Safe squat variation' },
@@ -2327,7 +3927,8 @@ const getPreferenceBasedExercises = (workoutPreference, fitnessLevel, fitnessGoa
       { name: 'Inverted Rows', muscleGroup: 'back', equipment: 'bodyweight', description: 'Back strengthening exercise' },
       { name: 'Plank', muscleGroup: 'core', equipment: 'bodyweight', description: 'Core stability' },
       { name: 'Bodyweight Lunges', muscleGroup: 'legs', equipment: 'bodyweight', description: 'Leg exercise' },
-      { name: 'Face Pulls', muscleGroup: 'shoulders', equipment: 'bands', description: 'Shoulder health exercise' }
+      { name: 'Face Pulls', muscleGroup: 'shoulders', equipment: 'bands', description: 'Shoulder health exercise' },
+      { name: 'Rowing Machine', muscleGroup: 'back', equipment: 'rowing machine', description: 'Full body strength exercise' }
     ],
     calisthenics: [
       { name: 'Bodyweight Squats', muscleGroup: 'legs', equipment: 'bodyweight', description: 'Fundamental leg exercise' },
@@ -2368,7 +3969,7 @@ const getCombinedMedicalNotes = (detectedConditions) => {
   const notes = [];
   
   detectedConditions.forEach(condition => {
-    const conditionNote = getMedicalNotes(condition.condition, condition.severity);
+    const conditionNote = getEnhancedMedicalNotes(condition.condition, condition.severity);
     notes.push(`${condition.condition}: ${conditionNote}`);
   });
   
@@ -2380,12 +3981,26 @@ const getCombinedMedicalNotes = (detectedConditions) => {
   return notes.join(' ');
 };
 
-// Enhanced function to convert exercises to workout format with warm-ups and cardio
-const convertExercisesToWorkoutFormat = (exercises, warmUpExercises, cardioExercise, day, i, workoutType, workoutPreference, fitnessLevel, fitnessGoal, gender, isMedical = false) => {
+// Helper function to categorize equipment
+const getEquipmentType = (equipment) => {
+  if (equipment.includes('barbell')) return 'barbell';
+  if (equipment.includes('dumbbell')) return 'dumbbells';
+  if (equipment.includes('machine')) return 'machine';
+  if (equipment.includes('cable')) return 'cable';
+  if (equipment.includes('treadmill') || equipment.includes('bike') || equipment.includes('elliptical')) return 'cardio_machine';
+  if (equipment.includes('bands')) return 'bands';
+  if (equipment.includes('rowing')) return 'rowing_machine';
+  return 'other';
+};
+
+// Enhanced function to convert exercises to workout format with warm-ups and cardio - UPDATED WITH WARM-UP ALTERNATIVES AND AGE SUPPORT
+const convertExercisesToWorkoutFormat = (exercises, warmUpExercises, cardioExercise, day, i, workoutType, workoutPreference, fitnessLevel, fitnessGoal, gender, isMedical = false, age = 30) => {
   const workouts = [];
   
-  // Add warm-up exercises first (1 for medical, 2 for regular)
+  // Add warm-up exercises first (1 for medical, 2 for regular) with alternatives
   warmUpExercises.forEach((warmUp, index) => {
+    const warmUpAlternativesList = findWarmUpAlternatives(warmUp.name);
+    
     workouts.push({
       id: `${day}-${i}-warmup-${index}`,
       name: warmUp.name,
@@ -2400,10 +4015,16 @@ const convertExercisesToWorkoutFormat = (exercises, warmUpExercises, cardioExerc
       isWarmUp: true,
       purpose: warmUp.purpose,
       workoutStyle: workoutPreference,
-      alternatives: [],
+      alternatives: warmUpAlternativesList,
+      hasAlternatives: warmUpAlternativesList.length > 0,
+      alternativeButtonText: warmUpAlternativesList.length > 0 ? `View ${warmUpAlternativesList.length} Alternatives` : 'No Alternatives Available',
       genderOptimized: gender === 'female' ? 'female_friendly' : 'standard',
       isMedical: isMedical,
-      isMedicalSpecific: !!warmUp.medicalCondition
+      isMedicalSpecific: !!warmUp.medicalCondition,
+      location: warmUp.location || 'gym',
+      // Add specific tags for bodybuilding/powerlifting
+      isGymSpecific: workoutPreference === 'bodybuilding' || workoutPreference === 'powerlifting',
+      equipmentType: getEquipmentType(warmUp.equipment)
     });
   });
   
@@ -2443,7 +4064,7 @@ const convertExercisesToWorkoutFormat = (exercises, warmUpExercises, cardioExerc
       name: exercise,
       muscleGroup: muscleGroup,
       sets: sets,
-      reps: getRepRange(fitnessGoal, fitnessLevel, muscleGroup, workoutPreference, gender),
+      reps: getAgeAppropriateRepRange(fitnessGoal, fitnessLevel, muscleGroup, workoutPreference, gender, age),
       rest: isSBDExercise ? '120-180s' : (workoutPreference === 'calisthenics' ? '45-75s' : '60-90s'),
       difficulty: fitnessLevel,
       equipment: getExerciseEquipment(exercise),
@@ -2461,7 +4082,8 @@ const convertExercisesToWorkoutFormat = (exercises, warmUpExercises, cardioExerc
   // Add cardio exercise at the end with alternatives
   if (cardioExercise) {
     const cardioName = cardioExercise.name.toLowerCase();
-    const cardioAlternativesList = findCardioAlternatives(cardioName);
+    const isMedicalCardio = isMedical;
+    const cardioAlternativesList = findCardioAlternatives(cardioName, null, null, isMedicalCardio);
     
     workouts.push({
       id: `${day}-${i}-cardio`,
@@ -2491,16 +4113,304 @@ const convertExercisesToWorkoutFormat = (exercises, warmUpExercises, cardioExerc
   return workouts;
 };
 
-// Enhanced non-redundant workout generation with muscle-specific warm-ups and cardio
-export const generateNonRedundantWorkoutPlan = (userData) => {
-  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, gender } = userData;
+// Helper function to get safe fallback exercises for medical conditions
+const getSafeMedicalFallbackExercises = (count, detectedConditions) => {
+  const safeExercises = [
+    { name: 'Gentle Walking', muscleGroup: 'cardiovascular', equipment: 'treadmill', description: 'Light walking for circulation' },
+    { name: 'Breathing Exercises', muscleGroup: 'core', equipment: 'bodyweight', description: 'Diaphragmatic breathing for relaxation' },
+    { name: 'Seated Marching', muscleGroup: 'legs', equipment: 'chair', description: 'Gentle leg movement while seated' },
+    { name: 'Arm Circles', muscleGroup: 'shoulders', equipment: 'bodyweight', description: 'Gentle shoulder mobility' },
+    { name: 'Ankle Circles', muscleGroup: 'calves', equipment: 'bodyweight', description: 'Ankle mobility exercise' },
+    { name: 'Neck Tilts', muscleGroup: 'neck', equipment: 'bodyweight', description: 'Gentle neck mobility' },
+    { name: 'Rowing Machine (Light)', muscleGroup: 'full body', equipment: 'rowing machine', description: 'Low-impact full body movement' }
+  ];
+  
+  // Filter based on medical conditions
+  let filteredExercises = [...safeExercises];
+  
+  if (detectedConditions.some(cond => cond.condition === 'backPain')) {
+    filteredExercises = filteredExercises.filter(ex => 
+      !ex.muscleGroup.includes('back') || ex.name.includes('Gentle') || ex.name.includes('Breathing')
+    );
+  }
+  
+  if (detectedConditions.some(cond => cond.condition === 'kneeProblems')) {
+    filteredExercises = filteredExercises.filter(ex => 
+      !ex.muscleGroup.includes('legs') || ex.name.includes('Seated') || ex.name.includes('Ankle')
+    );
+  }
+  
+  return filteredExercises.slice(0, count);
+};
+
+// MODIFIED: Enhanced function to handle multiple medical conditions with better exercise distribution
+const generateMultiConditionWorkout = (detectedConditions, userData) => {
+  const { fitnessLevel, selectedDays, gender, workoutPreference } = userData;
+  
+  // Sort conditions by severity (most severe first)
+  const sortedConditions = detectedConditions.sort((a, b) => {
+    const severityOrder = { 'severe': 3, 'moderate': 2, 'mild': 1 };
+    return severityOrder[b.severity] - severityOrder[a.severity];
+  });
+
+  // Get workouts for each condition and merge them
+  let combinedWorkouts = [];
+  
+  sortedConditions.forEach(condition => {
+    const conditionWorkouts = enhancedMedicalWorkouts[condition.condition] || [];
+    // MODIFIED: Take fewer exercises for arthritis and knee problems
+    const hasArthritisOrKnee = condition.condition === 'arthritis' || condition.condition === 'kneeProblems';
+    const exerciseCount = hasArthritisOrKnee ? 
+      Math.max(2, Math.floor(4 / detectedConditions.length)) : // Fewer exercises for arthritis/knee
+      Math.max(2, Math.floor(6 / detectedConditions.length)); // Regular count for other conditions
+    
+    combinedWorkouts = [...combinedWorkouts, ...conditionWorkouts.slice(0, exerciseCount)];
+  });
+
+  // Remove duplicates
+  combinedWorkouts = combinedWorkouts.filter((workout, index, self) => 
+    index === self.findIndex(w => w.name === workout.name)
+  );
+
+  // MODIFIED: Ensure we don't exceed limits for arthritis and knee problems
+  const hasArthritis = detectedConditions.some(cond => cond.condition === 'arthritis');
+  const hasKneeProblems = detectedConditions.some(cond => cond.condition === 'kneeProblems');
+  
+  let maxExercises;
+  if (hasArthritis || hasKneeProblems) {
+    maxExercises = selectedDays.length * 5; // MAX 5 per day for arthritis/knee
+  } else {
+    maxExercises = selectedDays.length * 6; // Regular limit for other conditions
+  }
+
+  if (combinedWorkouts.length > maxExercises) {
+    combinedWorkouts = combinedWorkouts.slice(0, maxExercises);
+  }
+
+  return combinedWorkouts;
+};
+
+// MODIFIED: Enhanced medical workout generation with warm-up, exercises, and cardio for all days
+const generateEnhancedMedicalWorkoutPlan = (medicalText, userData) => {
+  const { fitnessLevel, selectedDays, gender, workoutPreference, weight, fitnessGoal, age = 30 } = userData;
+  
+  const detectedConditions = detectMedicalConditions(medicalText, workoutPreference);
+  
+  if (detectedConditions.length === 0) {
+    return null;
+  }
+
+  // Handle single or multiple conditions
+  let medicalExercises = [];
+  if (detectedConditions.length === 1) {
+    const condition = detectedConditions[0];
+    medicalExercises = enhancedMedicalWorkouts[condition.condition] || [];
+  } else {
+    medicalExercises = generateMultiConditionWorkout(detectedConditions, userData);
+  }
+
+  const workoutIntensity = getWorkoutIntensityForMedical(
+    detectedConditions[0].condition, 
+    detectedConditions[0].severity, 
+    fitnessLevel, 
+    gender
+  );
+
+  const preferenceExercises = getPreferenceBasedExercises(workoutPreference, fitnessLevel, fitnessGoal, 2, gender);
+  
+  const weeklyPlan = [];
+  const allUsedExercises = new Set();
+  let usedWarmUps = new Set();
+  
+  // MODIFIED: Calculate exercises per workout with max 5 for arthritis and knee problems
+  const getMedicalExercisesPerWorkout = (dayCount, detectedConditions) => {
+    // Check if we have arthritis or knee problems
+    const hasArthritis = detectedConditions.some(cond => cond.condition === 'arthritis');
+    const hasKneeProblems = detectedConditions.some(cond => cond.condition === 'kneeProblems');
+    
+    // MAX 5 MAIN EXERCISES for arthritis and knee problems
+    if (hasArthritis || hasKneeProblems) {
+      return 5; // Maximum 5 main exercises
+    }
+    
+    // Regular calculation for other conditions
+    if (dayCount <= 2) return 6;
+    if (dayCount <= 4) return 5;
+    return 4;
+  };
+  
+  const exercisesPerWorkout = getMedicalExercisesPerWorkout(selectedDays.length, detectedConditions);
+  const preferenceExerciseCount = Math.min(2, Math.floor(exercisesPerWorkout / 2));
+
+  for (let i = 0; i < selectedDays.length; i++) {
+    const day = selectedDays[i];
+    
+    // Select appropriate warm-up (1 for medical conditions)
+    const warmUpSelection = selectAgeAppropriateWarmUp(workoutPreference, 'Medical', gender, true, i, usedWarmUps, detectedConditions, age);
+    const warmUpExercises = warmUpSelection.warmUps;
+    usedWarmUps = warmUpSelection.usedWarmUps;
+    
+    // Select gentle cardio specifically for medical conditions
+    const cardioExercise = selectAgeAppropriateCardio('Medical', fitnessGoal, fitnessLevel, i, true, workoutPreference, age);
+    
+    // Get medical exercises
+    const availableMedicalExercises = medicalExercises.filter(workout => 
+      !allUsedExercises.has(workout.name)
+    );
+    
+    const dayMedicalExercises = availableMedicalExercises.slice(0, exercisesPerWorkout - preferenceExerciseCount);
+    
+    // If we don't have enough medical exercises, supplement with preference exercises
+    let additionalNeeded = (exercisesPerWorkout - preferenceExerciseCount) - dayMedicalExercises.length;
+    let additionalMedicalExercises = [];
+    
+    if (additionalNeeded > 0) {
+      // Get more medical exercises from other conditions or reuse some
+      const allMedicalExercises = medicalExercises.filter(ex => 
+        !allUsedExercises.has(ex.name) && !dayMedicalExercises.includes(ex)
+      );
+      additionalMedicalExercises = allMedicalExercises.slice(0, additionalNeeded);
+    }
+    
+    // Get preference exercises
+    const availablePreferenceExercises = preferenceExercises.filter(exercise => 
+      !allUsedExercises.has(exercise.name)
+    );
+    
+    const dayPreferenceExercises = availablePreferenceExercises.slice(0, preferenceExerciseCount);
+    
+    // Combine all exercises for this day
+    const allDayExercises = [
+      ...dayMedicalExercises,
+      ...additionalMedicalExercises,
+      ...dayPreferenceExercises
+    ];
+    
+    // MODIFIED: For arthritis and knee problems, ensure we don't exceed 5 main exercises
+    const hasArthritis = detectedConditions.some(cond => cond.condition === 'arthritis');
+    const hasKneeProblems = detectedConditions.some(cond => cond.condition === 'kneeProblems');
+    
+    let finalDayExercises = allDayExercises;
+    if ((hasArthritis || hasKneeProblems) && allDayExercises.length > 5) {
+      finalDayExercises = allDayExercises.slice(0, 5);
+    }
+    
+    // If we still don't have enough exercises, add safe fallback exercises
+    if (finalDayExercises.length < exercisesPerWorkout) {
+      const needed = exercisesPerWorkout - finalDayExercises.length;
+      const safeFallbacks = getSafeMedicalFallbackExercises(needed, detectedConditions);
+      finalDayExercises.push(...safeFallbacks);
+    }
+    
+    // MODIFIED: Final check to ensure max 5 for arthritis and knee problems
+    if ((hasArthritis || hasKneeProblems) && finalDayExercises.length > 5) {
+      finalDayExercises = finalDayExercises.slice(0, 5);
+    }
+    
+    // Extract just the exercise names
+    const dayExerciseNames = finalDayExercises.map(ex => ex.name || ex);
+    
+    // Add to used exercises
+    dayExerciseNames.forEach(exercise => allUsedExercises.add(exercise));
+
+    // Convert to workout format with warm-up and cardio
+    const workouts = convertExercisesToWorkoutFormat(
+      dayExerciseNames,
+      warmUpExercises,
+      cardioExercise,
+      day,
+      i,
+      `Medical ${detectedConditions.map(c => c.condition).join(' + ')}`,
+      workoutPreference,
+      fitnessLevel,
+      fitnessGoal,
+      gender,
+      true,
+      age
+    );
+
+    // Update medical-specific properties
+    const updatedWorkouts = workouts.map(workout => {
+      if (!workout.isWarmUp && !workout.isCardio) {
+        const isPreferenceExercise = dayPreferenceExercises.some(prefEx => prefEx.name === workout.name);
+        const medicalExerciseData = medicalExercises.find(medEx => medEx.name === workout.name) || 
+                                  finalDayExercises.find(ex => ex.name === workout.name);
+        
+        return adjustWorkoutForAge({
+          ...workout,
+          isMedical: true,
+          isPreferenceBased: isPreferenceExercise,
+          workoutStyle: isPreferenceExercise ? workoutPreference : 'medical',
+          sets: medicalExerciseData?.sets || (gender === 'female' ? (fitnessLevel === 'beginner' ? 2 : 3) : (fitnessLevel === 'beginner' ? 3 : 4)),
+          reps: medicalExerciseData?.reps || getMedicalRepRange(fitnessGoal, fitnessLevel, workoutIntensity, gender),
+          rest: workoutIntensity === 'very low' ? '60-90s' : '45-75s',
+          purpose: medicalExerciseData?.purpose || workout.description,
+          medicalSafe: true
+        }, age, fitnessLevel, gender);
+      }
+      return workout;
+    });
+    
+    // MODIFIED: Update exercise count note for arthritis and knee problems
+    const hasArthritisOrKnee = detectedConditions.some(cond => 
+      cond.condition === 'arthritis' || cond.condition === 'kneeProblems'
+    );
+    
+    let exerciseCountNote;
+    if (hasArthritisOrKnee) {
+      exerciseCountNote = `Medical plan (arthritis/knee): ${finalDayExercises.length} main exercises + ${warmUpExercises.length} warm-up + cardio (limited to 5 main exercises for joint safety)`;
+    } else {
+      exerciseCountNote = `Medical plan: ${finalDayExercises.length} exercises + ${warmUpExercises.length} warm-up + cardio`;
+    }
+    
+    weeklyPlan.push({
+      day,
+      workoutType: `Medical ${detectedConditions.map(c => c.condition).join(' + ')}`,
+      workouts: updatedWorkouts,
+      totalExercises: updatedWorkouts.length,
+      focusMuscles: ['safe movements', 'medical appropriate', workoutPreference],
+      intensity: workoutIntensity,
+      estimatedDuration: `${Math.round(updatedWorkouts.length * 8)}-${Math.round(updatedWorkouts.length * 12)} minutes`,
+      isMedicalPlan: true,
+      medicalNotes: getCombinedMedicalNotes(detectedConditions),
+      detectedConditions: detectedConditions.map(c => ({ condition: c.condition, severity: c.severity })),
+      preferenceIntegration: `${preferenceExerciseCount} ${workoutPreference} exercises included`,
+      workoutStyle: workoutPreference,
+      hasWarmUp: true,
+      warmUpCount: warmUpExercises.length,
+      hasCardio: true,
+      cardioType: 'gentle',
+      exerciseCountNote: exerciseCountNote,
+      genderOptimization: gender === 'female' ? 'female_adapted' : 'standard',
+      conditionSpecific: true,
+      safetyLevel: 'enhanced',
+      dayNumber: i + 1,
+      totalDays: selectedDays.length,
+      ageAdaptation: age > 40 ? (age >= 60 ? 'senior_optimized' : 'mature_adapted') : 'standard',
+      ageGroup: age >= 60 ? 'senior' : age > 40 ? 'mature' : 'adult',
+      // NEW: Flag for limited exercise count due to arthritis/knee problems
+      limitedExerciseCount: hasArthritisOrKnee,
+      maxMainExercises: hasArthritisOrKnee ? 5 : exercisesPerWorkout
+    });
+  }
+  
+  return addCardioAlternativesToWorkoutPlan(weeklyPlan);
+};
+
+// MODIFIED: Enhanced non-redundant workout generation with muscle-specific warm-ups and cardio (BODYBUILDING-ONLY FILTERING)
+const generateNonRedundantWorkoutPlan = (userData) => {
+  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, gender, age = 30 } = userData;
   
   const dayCount = selectedDays.length;
   
-  // Select appropriate workout pattern based on preference and gender
+  // MODIFIED: Force 2-day splits to be full body workouts
   let patternConfig, finalPattern;
   
-  if (gender === 'female') {
+  if (dayCount === 2) {
+    // For 2 days, always use full body workouts
+    patternConfig = workoutDistributionPatterns['2'];
+    finalPattern = patternConfig.pattern; // This will be ['Full Body A', 'Full Body B']
+  } else if (gender === 'female') {
     patternConfig = femaleWorkoutPatterns[dayCount.toString()] || femaleWorkoutPatterns['3'];
     finalPattern = patternConfig.pattern;
     
@@ -2543,9 +4453,22 @@ export const generateNonRedundantWorkoutPlan = (userData) => {
   const allUsedExercises = new Set();
   let usedWarmUps = new Set(); // Track used warm-ups to avoid redundancy
   
-  const getExercisesPerWorkout = (dayCount, gender = 'male') => {
+  // MODIFIED: Adjust exercises per workout for 2-day full body plans
+  const getExercisesPerWorkout = (dayCount, gender = 'male', age = 30) => {
+    if (dayCount === 2) {
+      // For 2-day full body, include enough exercises to cover all major muscle groups
+      return age > 40 ? 8 : 9; // 8-9 exercises to cover chest, back, legs, shoulders, arms, core
+    }
+    
+    if (age > 40) {
+      // Significantly reduce volume for users above 40
+      if (dayCount <= 2) return 6;
+      if (dayCount <= 4) return 5;
+      return 4;
+    }
+    
     if (gender === 'female') {
-      if (dayCount <= 2) return 8;  // Reduced to account for warm-ups and cardio
+      if (dayCount <= 2) return 8;
       if (dayCount <= 4) return 7;
       return 6;
     } else {
@@ -2555,23 +4478,24 @@ export const generateNonRedundantWorkoutPlan = (userData) => {
     }
   };
   
-  const exercisesPerWorkout = getExercisesPerWorkout(dayCount, gender);
+  const exercisesPerWorkout = getExercisesPerWorkout(dayCount, gender, age);
   
   for (let i = 0; i < dayCount; i++) {
     const day = selectedDays[i];
     const workoutType = finalPattern[i];
     
-    // Select non-redundant warm-up exercises for this day
-    const warmUpSelection = selectWarmUpExercises(workoutPreference, workoutType, gender, false, i, usedWarmUps);
+    // Select non-redundant warm-up exercises for this day - GYM FOCUSED
+    const warmUpSelection = selectAgeAppropriateWarmUp(workoutPreference, workoutType, gender, false, i, usedWarmUps, [], age);
     const warmUpExercises = warmUpSelection.warmUps;
     usedWarmUps = warmUpSelection.usedWarmUps;
     
     // Select cardio exercise for the end
-    const cardioExercise = selectCardioExercise(workoutType, fitnessGoal, fitnessLevel, i);
+    const cardioExercise = selectAgeAppropriateCardio(workoutType, fitnessGoal, fitnessLevel, i, false, workoutPreference, age);
     
     // Get exercises for this day, avoiding redundancy
-    let dayExercises = selectExercisesForDay(
+    let dayExercises = selectAgeAppropriateExercises(
       workoutType, 
+      age,
       Array.from(allUsedExercises), 
       workoutPreference, 
       fitnessLevel, 
@@ -2581,7 +4505,36 @@ export const generateNonRedundantWorkoutPlan = (userData) => {
     
     // FALLBACK: If no exercises were selected, use basic exercises
     if (dayExercises.length === 0) {
-      dayExercises = getFallbackExercises(workoutType, workoutPreference, fitnessLevel, gender);
+      dayExercises = getFallbackExercises(workoutType, workoutPreference, fitnessLevel, gender, age);
+    }
+    
+    // MODIFIED: For 2-day full body, ensure we have exercises for all major muscle groups
+    if (dayCount === 2 && workoutType.includes('Full Body')) {
+      const essentialMuscleGroups = ['chest', 'back', 'quads', 'hamstrings', 'shoulders', 'biceps', 'triceps', 'core'];
+      const currentMuscleGroups = new Set();
+      
+      // Analyze which muscle groups we currently have
+      dayExercises.forEach(exercise => {
+        Object.keys(exercisePools).forEach(muscleGroup => {
+          if (exercisePools[muscleGroup].includes(exercise)) {
+            currentMuscleGroups.add(muscleGroup);
+          }
+        });
+      });
+      
+      // Add missing muscle groups
+      essentialMuscleGroups.forEach(muscleGroup => {
+        if (!currentMuscleGroups.has(muscleGroup) && exercisePools[muscleGroup]) {
+          const availableExercises = exercisePools[muscleGroup].filter(ex => 
+            !allUsedExercises.has(ex) && !dayExercises.includes(ex)
+          );
+          if (availableExercises.length > 0) {
+            const randomExercise = availableExercises[Math.floor(Math.random() * availableExercises.length)];
+            dayExercises.push(randomExercise);
+            allUsedExercises.add(randomExercise);
+          }
+        }
+      });
     }
     
     // Add to used exercises
@@ -2599,209 +4552,92 @@ export const generateNonRedundantWorkoutPlan = (userData) => {
       fitnessLevel, 
       fitnessGoal, 
       gender,
-      false // isMedical
+      false, // isMedical
+      age
     );
+    
+    // Apply age adjustments to each workout
+    const ageAdjustedWorkouts = workouts.map(workout => 
+      adjustWorkoutForAge(workout, age, fitnessLevel, gender)
+    );
+    
+    // MODIFIED: Enhanced description for 2-day full body plans
+    let exerciseCountNote;
+    if (dayCount === 2) {
+      exerciseCountNote = age > 40 ? 
+        `2-Day Full Body Plan (40+): Comprehensive full body workout covering all major muscle groups. Features: 8-10 reps, 120s rest, balanced muscle targeting` : 
+        `2-Day Full Body Plan: Complete full body workout targeting chest, back, legs, shoulders, arms, and core each session`;
+    } else {
+      exerciseCountNote = age > 40 ? 
+        `Age-adapted plan (40+): ${exercisesPerWorkout} main exercises + ${warmUpExercises.length} warm-ups + cardio. Features: 8-10 reps, 120s rest, reduced volume for optimal recovery` : 
+        workoutPreference === 'bodybuilding' || workoutPreference === 'powerlifting' ? 
+        `Gym-only ${workoutPreference} plan: ${exercisesPerWorkout} main exercises + ${warmUpExercises.length} gym warm-ups + gym cardio` : 
+        gender === 'female' ? 
+        `Female-optimized: ${exercisesPerWorkout} main exercises + ${warmUpExercises.length} warm-ups + cardio` : 
+        `${workoutPreference} plan: ${exercisesPerWorkout} main exercises + ${warmUpExercises.length} warm-ups + cardio`;
+    }
     
     weeklyPlan.push({
       day,
       workoutType,
-      workouts,
-      totalExercises: workouts.length,
+      workouts: ageAdjustedWorkouts,
+      totalExercises: ageAdjustedWorkouts.length,
       focusMuscles: muscleGroupFocus[workoutType] || ['full body'],
-      intensity: getWorkoutIntensity(fitnessLevel, workoutType, workoutPreference, gender),
-      estimatedDuration: `${Math.round(workouts.length * (workoutPreference === 'calisthenics' ? 4 : 5))}-${Math.round(workouts.length * (workoutPreference === 'calisthenics' ? 6 : 7))} minutes`,
+      intensity: getAgeAppropriateWorkoutIntensity(fitnessLevel, workoutType, workoutPreference, gender, age),
+      estimatedDuration: `${Math.round(ageAdjustedWorkouts.length * (workoutPreference === 'calisthenics' ? 4 : 5))}-${Math.round(ageAdjustedWorkouts.length * (workoutPreference === 'calisthenics' ? 6 : 7))} minutes`,
       dayNumber: i + 1,
       workoutStyle: workoutPreference,
-      hasSBD: workoutPreference === 'powerlifting' && workouts.some(w => w.isSBD),
+      hasSBD: workoutPreference === 'powerlifting' && ageAdjustedWorkouts.some(w => w.isSBD),
       hasWarmUp: true,
       warmUpCount: warmUpExercises.length,
       hasCardio: true,
       cardioType: cardioExercise.intensity,
-      exerciseCountNote: gender === 'female' ? 
-        `Female-optimized: ${exercisesPerWorkout} main exercises + ${warmUpExercises.length} warm-ups + cardio` : 
-        `${workoutPreference} plan: ${exercisesPerWorkout} main exercises + ${warmUpExercises.length} warm-ups + cardio`,
+      exerciseCountNote: exerciseCountNote,
       genderOptimization: gender === 'female' ? 'female_focused' : 'standard',
       lowerBodyEmphasis: gender === 'female' ? 'high' : 'standard',
       backWorkoutInclusion: gender === 'female' ? 'enhanced' : 'standard',
+      isGymSpecific: workoutPreference === 'bodybuilding' || workoutPreference === 'powerlifting',
       warmUpIncluded: true,
-      warmUpDescription: `Includes ${warmUpExercises.length} muscle-specific warm-up exercises`,
+      warmUpDescription: workoutPreference === 'bodybuilding' || workoutPreference === 'powerlifting' ?
+        `Includes ${warmUpExercises.length} gym-specific warm-up exercises using machines, cables, and free weights` :
+        `Includes ${warmUpExercises.length} warm-up exercises with alternatives`,
       cardioIncluded: true,
-      cardioDescription: `${cardioExercise.name} for ${cardioExercise.duration}`
+      cardioDescription: workoutPreference === 'bodybuilding' || workoutPreference === 'powerlifting' ?
+        `Gym cardio: ${cardioExercise.name} for ${cardioExercise.duration}` :
+        `${cardioExercise.name} for ${cardioExercise.duration}`,
+      ageAdaptation: age > 40 ? (age >= 60 ? 'senior_optimized' : 'mature_adapted') : 'standard',
+      ageGroup: age >= 60 ? 'senior' : age > 40 ? 'mature' : 'adult',
+      // NEW: Specific parameters for 40+ users
+      ageSpecificParams: age > 40 ? {
+        repRange: '8-10',
+        restPeriod: '120s',
+        volume: 'reduced',
+        focus: 'controlled movements and recovery',
+        safety: 'joint-friendly exercises prioritized'
+      } : null,
+      // NEW: For 2-day plans, indicate it's full body
+      isFullBodyPlan: dayCount === 2
     });
   }
   
   return weeklyPlan;
 };
 
-// Enhanced medical workout generation with condition-specific warm-ups (only 1 warm-up)
-export const generateMedicalWorkoutPlanFromText = (medicalText, userData) => {
-  const { fitnessLevel, selectedDays, gender, workoutPreference, weight, fitnessGoal } = userData;
-  
-  const detectedConditions = detectMedicalConditions(medicalText, workoutPreference);
-  
-  if (detectedConditions.length === 0) {
-    return null;
-  }
-  
-  const primaryCondition = detectedConditions.reduce((mostSevere, current) => {
-    const severityOrder = { 'severe': 3, 'moderate': 2, 'mild': 1 };
-    return severityOrder[current.severity] > severityOrder[mostSevere.severity] ? current : mostSevere;
-  }, detectedConditions[0]);
-  
-  const conditionKey = primaryCondition.condition;
-  const severity = primaryCondition.severity;
-  
-  const workoutIntensity = getWorkoutIntensityForMedical(conditionKey, severity, fitnessLevel, gender);
-  
-  let allMedicalWorkouts = [];
-  detectedConditions.forEach(condition => {
-    const conditionWorkouts = medicalConditionWorkouts[condition.condition] || [];
-    allMedicalWorkouts = [...allMedicalWorkouts, ...conditionWorkouts];
-  });
-  
-  let filteredWorkouts = allMedicalWorkouts.filter(workout => 
-    workout.intensity === workoutIntensity || 
-    (workoutIntensity === 'very low' && workout.intensity === 'low')
-  );
-  
-  filteredWorkouts = filteredWorkouts.filter((workout, index, self) => 
-    index === self.findIndex(w => w.name === workout.name)
-  );
-  
-  if (filteredWorkouts.length === 0) {
-    filteredWorkouts = allMedicalWorkouts;
-  }
-  
-  const preferenceExercises = getPreferenceBasedExercises(workoutPreference, fitnessLevel, fitnessGoal, 2, gender);
-  
-  const weeklyPlan = [];
-  const allUsedExercises = new Set();
-  let usedWarmUps = new Set();
-  const totalExercisesPerWorkout = 5; // Reduced for medical plans
-  const preferenceExerciseCount = 2;
-  
-  for (let i = 0; i < selectedDays.length; i++) {
-    const day = selectedDays[i];
-    
-    // Select medical-condition specific warm-up (ONLY 1 for medical conditions)
-    const warmUpSelection = selectWarmUpExercises(workoutPreference, 'Medical', gender, true, i, usedWarmUps, detectedConditions);
-    const warmUpExercises = warmUpSelection.warmUps;
-    usedWarmUps = warmUpSelection.usedWarmUps;
-    
-    // Select gentle cardio for medical plans
-    const cardioExercise = selectCardioExercise('Medical', fitnessGoal, fitnessLevel, i, true);
-    
-    // Get medical exercises (3 out of 5)
-    const availableMedicalExercises = filteredWorkouts.filter(workout => 
-      !allUsedExercises.has(workout.name)
-    );
-    
-    const medicalExercises = availableMedicalExercises.slice(0, totalExercisesPerWorkout - preferenceExerciseCount);
-    
-    // Get preference exercises (2 out of 5)
-    const availablePreferenceExercises = preferenceExercises.filter(exercise => 
-      !allUsedExercises.has(exercise.name)
-    );
-    
-    const dayPreferenceExercises = availablePreferenceExercises.slice(0, preferenceExerciseCount);
-    
-    // Combine exercises
-    const dayExercises = [...medicalExercises.map(ex => ex.name), ...dayPreferenceExercises.map(ex => ex.name)];
-    
-    // Add to used exercises
-    dayExercises.forEach(exercise => allUsedExercises.add(exercise));
-    
-    if (dayExercises.length < totalExercisesPerWorkout) {
-      const additionalNeeded = totalExercisesPerWorkout - dayExercises.length;
-      const additionalMedical = filteredWorkouts
-        .filter(workout => !allUsedExercises.has(workout.name))
-        .slice(0, additionalNeeded);
-      
-      dayExercises.push(...additionalMedical.map(ex => ex.name));
-      additionalMedical.forEach(exercise => allUsedExercises.add(exercise.name));
-    }
-    
-    // Convert to workout format WITH 1 WARM-UP AND CARDIO
-    const workouts = convertExercisesToWorkoutFormat(
-      dayExercises,
-      warmUpExercises,
-      cardioExercise,
-      day,
-      i,
-      `Medical ${detectedConditions.map(c => c.condition).join(' + ')}`,
-      workoutPreference,
-      fitnessLevel,
-      fitnessGoal,
-      gender,
-      true // isMedical
-    );
-    
-    // Get medical condition specific warm-up info
-    const medicalWarmUp = warmUpExercises[0];
-    const isConditionSpecific = !!medicalWarmUp.medicalCondition;
-    
-    // Update medical-specific properties
-    const updatedWorkouts = workouts.map(workout => {
-      if (!workout.isWarmUp && !workout.isCardio) {
-        const isPreferenceExercise = dayPreferenceExercises.some(prefEx => prefEx.name === workout.name);
-        return {
-          ...workout,
-          isMedical: true,
-          isPreferenceBased: isPreferenceExercise,
-          workoutStyle: isPreferenceExercise ? workoutPreference : 'medical',
-          sets: gender === 'female' ? (fitnessLevel === 'beginner' ? 2 : 3) : (fitnessLevel === 'beginner' ? 3 : 4),
-          reps: getMedicalRepRange(fitnessGoal, fitnessLevel, workoutIntensity, gender),
-          rest: workoutIntensity === 'very low' ? '60-90s' : '45-75s',
-        };
-      }
-      return workout;
-    });
-    
-    weeklyPlan.push({
-      day,
-      workoutType: `Medical ${detectedConditions.map(c => c.condition).join(' + ')}`,
-      workouts: updatedWorkouts,
-      totalExercises: updatedWorkouts.length,
-      focusMuscles: ['safe movements', workoutPreference],
-      intensity: workoutIntensity,
-      estimatedDuration: `${Math.round(updatedWorkouts.length * 8)}-${Math.round(updatedWorkouts.length * 12)} minutes`,
-      isMedicalPlan: true,
-      medicalNotes: getCombinedMedicalNotes(detectedConditions),
-      detectedConditions: detectedConditions.map(c => c.condition),
-      preferenceIntegration: `${preferenceExerciseCount} ${workoutPreference} exercises included`,
-      workoutStyle: workoutPreference,
-      hasWarmUp: true,
-      warmUpCount: 1, // Only 1 warm-up for medical conditions
-      isConditionSpecificWarmUp: isConditionSpecific,
-      conditionSpecificWarmUp: isConditionSpecific ? medicalWarmUp.name : null,
-      hasCardio: true,
-      cardioType: 'gentle',
-      exerciseCountNote: 'Medical plan: 5 exercises + 1 condition-specific warm-up + gentle cardio',
-      genderOptimization: gender === 'female' ? 'female_adapted' : 'standard',
-      warmUpIncluded: true,
-      warmUpDescription: isConditionSpecific ? 
-        `Includes 1 condition-specific warm-up for ${medicalWarmUp.medicalCondition}` : 
-        'Includes 1 gentle medical warm-up',
-      cardioIncluded: true,
-      cardioDescription: `Gentle ${cardioExercise.name} for recovery`
-    });
-  }
-  
-  return addCardioAlternativesToWorkoutPlan(weeklyPlan);
-};
-
-// Fallback exercises in case no exercises are selected
-const getFallbackExercises = (workoutType, workoutPreference, fitnessLevel, gender = 'male') => {
+// MODIFIED: Update fallback exercises to be age-appropriate and bodybuilding-only
+const getFallbackExercises = (workoutType, workoutPreference, fitnessLevel, gender = 'male', age = 30) => {
   const fallbackExercises = {
     bodybuilding: [
-      'Bodyweight Squats', 'Push Ups', 'Inverted Rows', 'Plank', 
-      'Glute Bridges', 'Bird Dog', 'Light Dumbbell Press', 'Band Pull Aparts',
-      'Bodyweight Lunges', 'Calf Raises', 'Russian Twists', 'Leg Raises'
+      'Barbell Bench Press', 'Dumbbell Bench Press', 'Incline Dumbbell Press', 
+      'Cable Crossover', 'Lat Pulldown', 'Seated Cable Row', 'Barbell Row',
+      'Dumbbell Shoulder Press', 'Lateral Raises', 'Barbell Curl', 
+      'Triceps Pushdown', 'Barbell Squat', 'Leg Press', 'Leg Extensions',
+      'Leg Curls', 'Calf Raises', 'Cable Crunches', 'Leg Raises'
     ],
     powerlifting: [
       'Goblet Squats', 'Push Ups', 'Inverted Rows', 'Plank',
       'Bodyweight Lunges', 'Face Pulls', 'Band Rows', 'Bodyweight Calf Raises',
-      'Glute Bridges', 'Bird Dog', 'Side Plank', 'Dead Bug'
+      'Glute Bridges', 'Bird Dog', 'Side Plank', 'Dead Bug',
+      'Rowing Machine'
     ],
     calisthenics: [
       'Bodyweight Squats', 'Push Ups', 'Australian Pull Ups', 'Plank',
@@ -2810,10 +4646,32 @@ const getFallbackExercises = (workoutType, workoutPreference, fitnessLevel, gend
     ]
   };
   
-  return fallbackExercises[workoutPreference] || fallbackExercises.bodybuilding;
+  let exercises = fallbackExercises[workoutPreference] || fallbackExercises.bodybuilding;
+  
+  // For bodybuilding, ensure no calisthenics or powerlifting exercises
+  if (workoutPreference === 'bodybuilding') {
+    exercises = exercises.filter(exercise => {
+      const lowerExercise = exercise.toLowerCase();
+      return !lowerExercise.includes('australian pull') && 
+             !lowerExercise.includes('pike push') &&
+             !lowerExercise.includes('goblet squat') && // More powerlifting-oriented
+             !lowerExercise.includes('inverted row');   // More calisthenics-oriented
+    });
+  }
+  
+  // Filter for age-appropriate exercises for users above 40
+  if (age > 40) {
+    exercises = exercises.filter(exercise => 
+      !exercise.toLowerCase().includes('heavy') &&
+      !exercise.toLowerCase().includes('explosive') &&
+      !exercise.toLowerCase().includes('jump')
+    );
+  }
+  
+  return exercises;
 };
 
-// Enhanced exercise selection to guarantee exercises
+// MODIFIED: Enhanced exercise selection to guarantee exercises (BODYBUILDING-ONLY FILTERING)
 const selectExercisesForDay = (workoutType, previousExercises = [], workoutPreference, fitnessLevel, exercisesPerWorkout = 8, gender = 'male') => {
   const targetMuscleGroups = muscleGroupFocus[workoutType] || ['full body'];
   const selectedExercises = [];
@@ -2821,7 +4679,30 @@ const selectExercisesForDay = (workoutType, previousExercises = [], workoutPrefe
   
   // Use appropriate exercise pools based on workout preference and gender
   let exerciseSource = gender === 'female' ? femaleExercisePools : exercisePools;
-  if (workoutPreference === 'calisthenics') {
+  
+  // FOR BODYBUILDING: Ensure only bodybuilding exercises are used
+  if (workoutPreference === 'bodybuilding') {
+    exerciseSource = gender === 'female' ? femaleExercisePools : exercisePools;
+    
+    // Filter out calisthenics and powerlifting exercises
+    Object.keys(exerciseSource).forEach(muscleGroup => {
+      exerciseSource[muscleGroup] = exerciseSource[muscleGroup].filter(exercise => {
+        const lowerExercise = exercise.toLowerCase();
+        const isCalisthenics = lowerExercise.includes('handstand') || 
+                              lowerExercise.includes('planche') ||
+                              lowerExercise.includes('lever') ||
+                              lowerExercise.includes('muscle up') ||
+                              lowerExercise.includes('australian pull');
+        
+        const isPowerlifting = lowerExercise.includes('competition') ||
+                              lowerExercise.includes('pause ') ||
+                              lowerExercise.includes('deficit ') ||
+                              lowerExercise.includes('rack pull');
+        
+        return !isCalisthenics && !isPowerlifting;
+      });
+    });
+  } else if (workoutPreference === 'calisthenics') {
     exerciseSource = calisthenicsExercisePools;
   } else if (workoutPreference === 'powerlifting') {
     exerciseSource = gender === 'female' ? { ...femaleExercisePools, ...powerliftingExercisePools } : { ...exercisePools, ...powerliftingExercisePools };
@@ -2926,7 +4807,7 @@ const findExerciseAlternatives = (exerciseName, preferredEquipment = null, fitne
 };
 
 // Function to replace exercise with alternative
-export const replaceExerciseWithAlternative = (originalExercise, alternativeExercise) => {
+const replaceExerciseWithAlternative = (originalExercise, alternativeExercise) => {
   return {
     ...originalExercise,
     name: alternativeExercise.name,
@@ -2936,7 +4817,7 @@ export const replaceExerciseWithAlternative = (originalExercise, alternativeExer
 };
 
 // Function to add alternatives to workout plan with button data
-export const addAlternativesToWorkoutPlan = (workoutPlan, preferredEquipment = null) => {
+const addAlternativesToWorkoutPlan = (workoutPlan, preferredEquipment = null) => {
   return workoutPlan.map(dayPlan => ({
     ...dayPlan,
     workouts: dayPlan.workouts.map(workout => {
@@ -2958,14 +4839,14 @@ export const addAlternativesToWorkoutPlan = (workoutPlan, preferredEquipment = n
 };
 
 // Enhanced main workout generation with medical condition support
-export const generateInitialWorkoutPlan = (userData) => {
-  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender } = userData;
+const generateInitialWorkoutPlan = (userData) => {
+  const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, age = 30 } = userData;
   
   // Check if user has medical conditions and generate medical workout plan if detected
   if (hasMedicalConditions && medicalConditions && medicalConditions.trim() !== '') {
-    const medicalPlan = generateMedicalWorkoutPlanFromText(medicalConditions, userData);
+    const medicalPlan = generateEnhancedMedicalWorkoutPlan(medicalConditions, userData);
     if (medicalPlan) {
-      return medicalPlan;
+      return addCardioAlternativesToWorkoutPlan(addAlternativesToWorkoutPlan(medicalPlan));
     }
   }
   
@@ -2976,9 +4857,9 @@ export const generateInitialWorkoutPlan = (userData) => {
 };
 
 // Enhanced progressive overload function for multi-week plans
-export const generateProgressiveWorkoutPlan = (userData, weekNumber = 1) => {
+const generateProgressiveWorkoutPlan = (userData, weekNumber = 1) => {
   const basePlan = generateNonRedundantWorkoutPlan(userData);
-  const { workoutPreference, gender } = userData;
+  const { workoutPreference, gender, age = 30 } = userData;
   
   // Apply progressive overload based on week number and gender
   return basePlan.map(dayPlan => ({
@@ -3040,7 +4921,7 @@ export const generateProgressiveWorkoutPlan = (userData, weekNumber = 1) => {
 };
 
 // Function to validate workout plan for redundancy
-export const validateWorkoutPlan = (workoutPlan) => {
+const validateWorkoutPlan = (workoutPlan) => {
   const issues = [];
   const allExercises = new Set();
   const muscleGroupFrequency = {};
@@ -3077,7 +4958,7 @@ export const validateWorkoutPlan = (workoutPlan) => {
 };
 
 // Function to get workout plan summary
-export const getWorkoutPlanSummary = (workoutPlan) => {
+const getWorkoutPlanSummary = (workoutPlan) => {
   const summary = {
     totalDays: workoutPlan.length,
     totalExercises: workoutPlan.reduce((sum, day) => sum + day.workouts.length, 0),
@@ -3095,7 +4976,10 @@ export const getWorkoutPlanSummary = (workoutPlan) => {
     backWorkoutInclusion: workoutPlan[0]?.backWorkoutInclusion || 'standard',
     hasWarmUps: workoutPlan[0]?.hasWarmUp || false,
     warmUpCount: workoutPlan[0]?.warmUpCount || 0,
-    hasCardio: workoutPlan[0]?.hasCardio || false
+    hasCardio: workoutPlan[0]?.hasCardio || false,
+    isGymSpecific: workoutPlan[0]?.isGymSpecific || false,
+    ageAdaptation: workoutPlan[0]?.ageAdaptation || 'standard',
+    ageGroup: workoutPlan[0]?.ageGroup || 'adult'
   };
   
   // Count muscle groups
@@ -3110,7 +4994,7 @@ export const getWorkoutPlanSummary = (workoutPlan) => {
 };
 
 // Function to modify workout plan based on user feedback
-export const modifyWorkoutPlanBasedOnFeedback = (originalPlan, feedback) => {
+const modifyWorkoutPlanBasedOnFeedback = (originalPlan, feedback) => {
   const { likedExercises = [], dislikedExercises = [], preferredMuscleGroups = [], difficultyFeedback } = feedback;
   
   return originalPlan.map(dayPlan => ({
@@ -3165,7 +5049,7 @@ const adjustRepsForDifficulty = (currentReps, direction) => {
 };
 
 // Function to generate workout plan for specific equipment limitations
-export const generateEquipmentSpecificPlan = (userData, availableEquipment) => {
+const generateEquipmentSpecificPlan = (userData, availableEquipment) => {
   const basePlan = generateNonRedundantWorkoutPlan(userData);
   
   return basePlan.map(dayPlan => ({
@@ -3207,7 +5091,7 @@ export const generateEquipmentSpecificPlan = (userData, availableEquipment) => {
 };
 
 // Nutrition calculation functions
-export const calculateBMR = (age, weight, height, gender) => {
+const calculateBMR = (age, weight, height, gender) => {
   if (gender === 'male') {
     return 10 * weight + 6.25 * height - 5 * age + 5;
   } else {
@@ -3215,7 +5099,7 @@ export const calculateBMR = (age, weight, height, gender) => {
   }
 };
 
-export const calculateTDEE = (BMR, activityLevel) => {
+const calculateTDEE = (BMR, activityLevel) => {
   const activityMultipliers = {
     sedentary: 1.2,
     light: 1.375,
@@ -3226,7 +5110,7 @@ export const calculateTDEE = (BMR, activityLevel) => {
   return BMR * activityMultipliers[activityLevel];
 };
 
-export const calculateCalorieIntake = (TDEE, goal) => {
+const calculateCalorieIntake = (TDEE, goal) => {
   const goalAdjustments = {
     weightLoss: -500,
     cutting: -300,
@@ -3239,7 +5123,7 @@ export const calculateCalorieIntake = (TDEE, goal) => {
   return TDEE + (goalAdjustments[goal] || 0);
 };
 
-export const calculateProteinIntake = (weight, goal) => {
+const calculateProteinIntake = (weight, goal) => {
   const proteinMultipliers = {
     weightLoss: 2.2,
     cutting: 2.0,
@@ -3253,7 +5137,7 @@ export const calculateProteinIntake = (weight, goal) => {
 };
 
 // Enhanced nutrition plan with medical considerations
-export const generateInitialNutritionPlan = (userData) => {
+const generateInitialNutritionPlan = (userData) => {
   const { age, weight, height, gender, activityLevel, fitnessGoal, hasMedicalConditions, medicalConditions } = userData;
   
   const BMR = calculateBMR(age, weight, height, gender);
@@ -3362,7 +5246,7 @@ export const generateInitialNutritionPlan = (userData) => {
 };
 
 // Function to get exercise alternatives for UI display
-export const getExerciseAlternativesForUI = (exerciseName, fitnessLevel = 'beginner', workoutPreference = 'general') => {
+const getExerciseAlternativesForUI = (exerciseName, fitnessLevel = 'beginner', workoutPreference = 'general') => {
   const alternatives = findExerciseAlternatives(exerciseName, null, fitnessLevel, workoutPreference);
   
   return {
@@ -3374,7 +5258,7 @@ export const getExerciseAlternativesForUI = (exerciseName, fitnessLevel = 'begin
 };
 
 // Function to handle alternative selection from UI
-export const selectAlternativeExercise = (originalWorkoutPlan, dayIndex, workoutIndex, alternativeIndex) => {
+const selectAlternativeExercise = (originalWorkoutPlan, dayIndex, workoutIndex, alternativeIndex) => {
   const updatedPlan = [...originalWorkoutPlan];
   const day = updatedPlan[dayIndex];
   const workout = day.workouts[workoutIndex];
@@ -3414,5 +5298,48 @@ export {
   isCompoundExercise,
   getWorkoutIntensity,
   findCardioAlternatives,
-  cardioAlternatives
+  cardioAlternatives,
+  warmUpAlternatives,
+  findWarmUpAlternatives,
+  enhancedMedicalWorkouts,
+  generateEnhancedMedicalWorkoutPlan,
+  generateNonRedundantWorkoutPlan,
+  generateInitialWorkoutPlan,
+  generateProgressiveWorkoutPlan,
+  validateWorkoutPlan,
+  getWorkoutPlanSummary,
+  modifyWorkoutPlanBasedOnFeedback,
+  generateEquipmentSpecificPlan,
+  calculateBMR,
+  calculateTDEE,
+  calculateCalorieIntake,
+  calculateProteinIntake,
+  generateInitialNutritionPlan,
+  getExerciseAlternativesForUI,
+  selectAlternativeExercise,
+  replaceExerciseWithAlternative,
+  addAlternativesToWorkoutPlan,
+  replaceCardioWithAlternative,
+  addCardioAlternativesToWorkoutPlan,
+  getCardioAlternativesForUI,
+  selectCardioAlternative,
+  detectMedicalConditions,
+  // Age-specific exports
+  seniorFriendlyExercisePools,
+  seniorWarmUpExercises,
+  adjustWorkoutForAge,
+  selectAgeAppropriateExercises,
+  selectAgeAppropriateWarmUp,
+  selectAgeAppropriateCardio,
+  getAgeAppropriateRepRange,
+  getAgeAppropriateWorkoutIntensity,
+  getExerciseSafetyScore
+};
+
+// Also export the mock data in case it's needed elsewhere
+export {
+  bodybuildingWorkouts,
+  powerliftingWorkouts,
+  calisthenicsWorkouts,
+  medicalConditionWorkouts
 };

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { generateWorkoutPlan, generateNutritionPlan } from '../Algorithms/heuristicbasedAlgorithm';
+import { db } from '../Config/firebaseconfig';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
-const UserForm = ({ onSubmit }) => {
+const UserForm = ({ onSubmit, isRegenerating = false }) => {
   const [step, setStep] = useState(1);
   const [userData, setUserData] = useState({
     age: '',
@@ -19,6 +22,7 @@ const UserForm = ({ onSubmit }) => {
   });
 
   const [animationDirection, setAnimationDirection] = useState('forward');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -79,22 +83,92 @@ const UserForm = ({ onSubmit }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (step < 3) {
       setAnimationDirection('forward');
       setStep(step + 1);
     } else {
-      // Generate workout plan using heuristic algorithm
-      const workoutPlan = generateWorkoutPlan(userData);
-      const nutritionPlan = generateNutritionPlan(userData);
+      setIsSubmitting(true);
       
-      // Pass both user data and generated plans to parent
-      onSubmit({
-        ...userData,
-        generatedWorkoutPlan: workoutPlan,
-        generatedNutritionPlan: nutritionPlan
-      });
+      try {
+        // Generate workout and nutrition plans using heuristic algorithm
+        const workoutPlan = generateWorkoutPlan(userData);
+        const nutritionPlan = generateNutritionPlan(userData);
+        
+        // Get current user
+        const auth = getAuth();
+        const user = auth.currentUser;
+        
+        if (!user) {
+          throw new Error('User not authenticated');
+        }
+
+        // Prepare complete user data
+        const completeUserData = {
+          // Personal Information
+          age: userData.age,
+          weight: userData.weight,
+          height: userData.height,
+          gender: userData.gender,
+          
+          // Fitness Stats
+          fitnessGoal: userData.fitnessGoal,
+          activityLevel: userData.activityLevel,
+          workoutPreference: userData.workoutPreference,
+          fitnessLevel: userData.fitnessLevel,
+          
+          // Medical Information
+          hasMedicalConditions: userData.hasMedicalConditions,
+          medicalConditions: userData.medicalConditions,
+          
+          // Workout Schedule
+          preferredWorkoutDays: userData.preferredWorkoutDays,
+          selectedDays: userData.selectedDays,
+          
+          // Generated Plans
+          generatedWorkoutPlan: workoutPlan,
+          generatedNutritionPlan: nutritionPlan,
+          lastWorkoutPlanUpdate: new Date().toISOString(),
+          
+          // Progress Tracking (reset for new plan if regenerating)
+          ...(isRegenerating && {
+            workoutHistory: [],
+            lastCompletedWorkout: null,
+            lastWorkoutAdjustment: null
+          }),
+          
+          // Timestamp
+          lastUpdated: new Date().toISOString()
+        };
+
+        // Save to Firestore
+        const userDocRef = doc(db, 'users', user.uid);
+        await setDoc(userDocRef, completeUserData, { merge: true });
+
+        // Save to localStorage for immediate access
+        localStorage.setItem('userFitnessProfile', JSON.stringify(completeUserData));
+
+        // Set registration date if it's the first time
+        const savedRegistrationDate = localStorage.getItem('userRegistrationDate');
+        if (!savedRegistrationDate) {
+          localStorage.setItem('userRegistrationDate', new Date().toISOString());
+        }
+
+        // Pass data to parent component
+        if (onSubmit) {
+          onSubmit(completeUserData);
+        }
+
+        console.log('User data saved successfully:', completeUserData);
+
+      } catch (error) {
+        console.error('Error saving user data:', error);
+        alert('Error saving your profile. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -481,14 +555,14 @@ const UserForm = ({ onSubmit }) => {
             </h1>
           </div>
           <p className="text-green-300 text-center text-xs md:text-sm mt-2 md:mt-3 font-bold tracking-widest bg-gradient-to-r from-green-900/50 to-black/50 p-2 rounded-lg">
-            STEP {step} OF 3 - {step === 1 ? 'PERSONAL INFO' : step === 2 ? 'PREFERENCES' : 'SCHEDULE'}
+            {isRegenerating ? 'REGENERATE WORKOUT PLAN' : `STEP ${step} OF 3 - ${step === 1 ? 'PERSONAL INFO' : step === 2 ? 'PREFERENCES' : 'SCHEDULE'}`}
           </p>
         </div>
         
         {/* Form Content */}
         <div className="px-4 md:px-8 py-6 md:py-8 bg-transparent">
           <h2 className="text-2xl md:text-3xl font-black text-center mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-r from-green-200 via-green-300 to-green-200 tracking-wide">
-            FITNESS PROFILE BUILDER
+            {isRegenerating ? 'UPDATE YOUR FITNESS PROFILE' : 'FITNESS PROFILE BUILDER'}
           </h2>
           
           <form onSubmit={handleSubmit}>
@@ -513,12 +587,22 @@ const UserForm = ({ onSubmit }) => {
               
               <button
                 type="submit"
-                className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-600 via-green-700 to-green-800 hover:from-green-700 hover:via-green-800 hover:to-green-900 text-white font-bold rounded-xl transition-all duration-300 shadow-2xl shadow-green-500/40 hover:shadow-green-500/60 hover:scale-105 flex items-center space-x-2 md:space-x-3 group border border-green-400/30"
+                disabled={isSubmitting}
+                className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-600 via-green-700 to-green-800 hover:from-green-700 hover:via-green-800 hover:to-green-900 text-white font-bold rounded-xl transition-all duration-300 shadow-2xl shadow-green-500/40 hover:shadow-green-500/60 hover:scale-105 flex items-center space-x-2 md:space-x-3 group border border-green-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className="tracking-wide text-sm md:text-base">{step === 3 ? 'GENERATE PLAN' : 'CONTINUE'}</span>
-                <span className="group-hover:translate-x-1 transition-transform duration-300 text-lg">
-                  {step === 3 ? '🎯' : '→'}
-                </span>
+                {isSubmitting ? (
+                  <>
+                    <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+                    <span className="tracking-wide text-sm md:text-base">SAVING...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="tracking-wide text-sm md:text-base">{step === 3 ? 'GENERATE PLAN' : 'CONTINUE'}</span>
+                    <span className="group-hover:translate-x-1 transition-transform duration-300 text-lg">
+                      {step === 3 ? '🎯' : '→'}
+                    </span>
+                  </>
+                )}
               </button>
             </div>
           </form>

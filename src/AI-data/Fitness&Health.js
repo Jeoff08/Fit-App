@@ -1,4 +1,4 @@
-// Comprehensive Fitness and Health Knowledge Base with Sentence Understanding and Meal Planning
+// Comprehensive Fitness and Health Knowledge Base with Exercise Guidance and Alternatives
 export const fitnessHealthData = {
   greetings: {
     patterns: [
@@ -22,6 +22,1658 @@ export const fitnessHealthData = {
       "Hello! I'm here to help with all your fitness and health questions!",
       "Hi! Excited to help you achieve your health goals today! 🌟",
       "Hey! What fitness questions can I answer for you today? 🏋️‍♂️",
+    ],
+  },
+
+  // ENHANCED: Comprehensive Chest Workout Guide with Alternatives
+  chestWorkouts: {
+    patterns: [
+      /chest workout/i,
+      /chest exercise/i,
+      /chest training/i,
+      /pectoral workout/i,
+      /bench press/i,
+      /chest day/i,
+      /workout chest/i,
+      /train chest/i,
+      /build chest/i,
+      /chest muscle/i,
+      /upper chest/i,
+      /lower chest/i,
+      /middle chest/i,
+      /inner chest/i,
+      /outer chest/i,
+      /chest development/i,
+      /chest hypertrophy/i,
+      /chest strength/i,
+      /how to work chest/i,
+      /best chest exercises/i,
+      /chest workout routine/i,
+      /chest workout plan/i,
+      /chest workout program/i,
+      
+      // Alternative exercise requests
+      /alternative.*chest/i,
+      /substitute.*chest/i,
+      /other.*chest exercise/i,
+      /different.*chest/i,
+      /replace.*chest exercise/i,
+      /instead of.*chest/i,
+      /chest exercise alternatives/i,
+      /chest workout variations/i,
+      /chest exercise options/i,
+    ],
+    responses: [
+      `**🏋️ COMPREHENSIVE CHEST WORKOUT GUIDE 🏋️**
+
+**CHEST ANATOMY & FUNCTION:**
+• **Upper Chest (Clavicular Head):** Incline movements
+• **Middle Chest (Sternal Head):** Flat bench movements  
+• **Lower Chest (Sternal Head):** Decline movements
+• **Function:** Horizontal adduction, shoulder flexion
+
+**UPPER CHEST EXERCISES:**
+**Primary:**
+• **Incline Barbell Press** - Strength focus
+• **Incline Dumbbell Press** - Better range of motion
+• **Incline Smith Machine Press** - Stability focus
+
+**Alternatives:**
+• **Low-to-High Cable Flyes** - Constant tension
+• **Incline Hammer Strength** - Machine stability
+• **Landmine Press** - Unique angle
+• **Reverse Grip Bench Press** - Upper chest emphasis
+
+**MIDDLE CHEST EXERCISES:**
+**Primary:**
+• **Flat Barbell Bench Press** - Strength standard
+• **Flat Dumbbell Press** - Balanced development
+• **Machine Chest Press** - Controlled movement
+
+**Alternatives:**
+• **Push-ups** - Bodyweight option
+• **Pec Deck Machine** - Isolation focus
+• **Cable Crossovers** - Peak contraction
+• **Floor Press** - Limited range, triceps focus
+
+**LOWER CHEST EXERCISES:**
+**Primary:**
+• **Decline Barbell Press** - Lower chest focus
+• **Decline Dumbbell Press** - Natural movement
+• **Dips** - Bodyweight strength
+
+**Alternatives:**
+• **High-to-Low Cable Flyes** - Lower chest emphasis
+• **Decline Push-ups** - Feet elevated
+• **Decline Machine Press** - Controlled movement
+
+**ISOLATION EXERCISES:**
+• **Cable Flyes** - Constant tension throughout
+• **Dumbbell Flyes** - Deep stretch
+• **Pec Deck** - Peak contraction
+• **Cable Crossovers** - Chest squeeze
+
+**BEGINNER CHEST WORKOUT:**
+• Flat Barbell Bench Press: 3x8-12
+• Incline Dumbbell Press: 3x10-12
+• Push-ups: 3x failure
+• Cable Flyes: 3x12-15
+
+**ADVANCED CHEST WORKOUT:**
+• Incline Barbell Press: 4x6-8
+• Flat Dumbbell Press: 4x8-10
+• Decline Bench Press: 3x8-10
+• Cable Crossovers: 3x12-15
+• Dips: 3x failure`,
+
+      `**🔄 CHEST EXERCISE ALTERNATIVES & SUBSTITUTIONS 🔄**
+
+**IF YOU CAN'T DO BENCH PRESS:**
+**Strength Alternatives:**
+• **Dumbbell Press** - Better range of motion
+• **Machine Chest Press** - Controlled movement
+• **Push-ups** - Bodyweight foundation
+• **Landmine Press** - Shoulder-friendly
+• **Floor Press** - Reduced range
+
+**Hypertrophy Alternatives:**
+• **Incline Dumbbell Press** - Upper chest focus
+• **Pec Deck Flyes** - Isolation work
+• **Cable Crossovers** - Constant tension
+• **Dips** - Lower chest emphasis
+
+**HOME WORKOUT ALTERNATIVES:**
+**With Dumbbells:**
+• **Dumbbell Press** - All angles
+• **Dumbbell Flyes** - Stretch and squeeze
+• **Floor Press** - Limited equipment
+• **Pullover** - Chest stretch
+
+**Bodyweight Only:**
+• **Push-ups** - Multiple variations
+• **Decline Push-ups** - Lower chest
+• **Incline Push-ups** - Upper chest
+• **Plyometric Push-ups** - Power development
+• **Archer Push-ups** - Single arm focus
+
+**FOR SHOULDER ISSUES:**
+• **Machine Chest Press** - Guided movement
+• **Cable Exercises** - Controlled tension
+• **Push-ups** - Natural movement pattern
+• **Pec Deck** - Limited shoulder involvement
+
+**EQUIPMENT-SPECIFIC ALTERNATIVES:**
+
+**Barbell Only:**
+• **Bench Press** - Flat, incline, decline
+• **Floor Press** - Reduced range
+• **Pullovers** - Chest stretch
+
+**Dumbbell Only:**
+• **Dumbbell Press** - All angles
+• **Dumbbell Flyes** - Isolation
+• **Pullovers** - Expansion
+
+**Cable Only:**
+• **Cable Crossovers** - Peak contraction
+• **Cable Press** - Constant tension
+• **Single-arm Cable Press** - Unilateral
+
+**Bodyweight Only:**
+• **Push-up Variations** - Wide, narrow, decline, incline
+• **Dips** - Between benches or bars
+• **Plyometric Push-ups** - Explosive strength`,
+
+      `**🎯 TARGETED CHEST DEVELOPMENT 🎯**
+
+**UPPER CHEST FOCUS WORKOUT:**
+• **Incline Barbell Press**: 4x6-8
+• **Incline Dumbbell Press**: 3x8-10
+• **Low-to-High Cable Flyes**: 3x12-15
+• **Landmine Press**: 3x10-12
+
+**LOWER CHEST FOCUS WORKOUT:**
+• **Decline Bench Press**: 4x6-8
+• **Dips**: 3x failure
+• **High-to-Low Cable Flyes**: 3x12-15
+• **Decline Push-ups**: 3x failure
+
+**INNER CHEST DEVELOPMENT:**
+• **Close Grip Bench Press**: 3x8-10
+• **Cable Crossovers**: 4x12-15
+• **Pec Deck**: 3x12-15
+• **Swiss Ball Squeeze**: 3x15-20
+
+**OUTER CHEST DEVELOPMENT:**
+• **Wide Grip Bench Press**: 3x8-10
+• **Dumbbell Flyes**: 3x12-15
+• **Pullovers**: 3x10-12
+
+**FULL CHEST DEVELOPMENT ROUTINE:**
+**Day 1 - Strength:**
+• Barbell Bench Press: 5x5
+• Incline Dumbbell Press: 4x8
+• Weighted Dips: 3x8
+
+**Day 2 - Hypertrophy:**
+• Incline Barbell Press: 4x10
+• Dumbbell Flyes: 3x12
+• Cable Crossovers: 3x15
+• Push-ups: 3x failure
+
+**TECHNIQUE TIPS:**
+• **Arch slightly** - Protect shoulders
+• **Retract scapula** - Better chest activation
+• **Control eccentric** - Maximize muscle damage
+• **Squeeze at top** - Peak contraction
+• **Full range** - Complete stretch and contraction`,
+
+      `**💪 CHEST WORKOUT VARIATIONS & PROGRESSIONS 💪**
+
+**BEGINNER PROGRESSION (Months 1-3):**
+**Phase 1 - Form Mastery:**
+• Push-ups: 3x failure
+• Machine Chest Press: 3x12
+• Cable Flyes: 3x15
+
+**Phase 2 - Strength Building:**
+• Barbell Bench Press: 3x8
+• Incline Dumbbell Press: 3x10
+• Push-ups: 3x failure
+
+**INTERMEDIATE PROGRESSION (Months 4-12):**
+**Strength Focus:**
+• Barbell Bench Press: 4x6
+• Incline Barbell Press: 3x8
+• Dips: 3x failure
+• Cable Crossovers: 3x12
+
+**Hypertrophy Focus:**
+• Dumbbell Press: 4x10
+• Incline Flyes: 3x12
+• Decline Press: 3x10
+• Pec Deck: 3x15
+
+**ADVANCED TECHNIQUES:**
+**Drop Sets:**
+• Perform heavy set, then immediately reduce weight
+• Example: Bench Press 225x6 → 185x8 → 135x10
+
+**Supersets:**
+• Bench Press + Cable Flyes
+• Incline Press + Push-ups
+• Dips + Pec Deck
+
+**Rest-Pause:**
+• Heavy set to failure
+• Rest 15 seconds
+• Repeat until target reps reached
+
+**FREQUENCY & RECOVERY:**
+• **Beginners:** 1-2x weekly
+• **Intermediate:** 2x weekly
+• **Advanced:** 2-3x weekly
+• **Recovery:** 48-72 hours between sessions
+
+**COMMON MISTAKES:**
+• **Flaring elbows** - Shoulder strain
+• **Bouncing bar** - Lost tension, injury risk
+• **Partial reps** - Incomplete development
+• **Too much weight** - Poor form, limited gains
+• **Neglecting upper chest** - Imbalanced development`
+    ],
+  },
+
+  // NEW: Comprehensive Exercise Alternatives System
+  exerciseAlternatives: {
+    patterns: [
+      /alternative.*exercise/i,
+      /substitute.*exercise/i,
+      /different.*exercise/i,
+      /other.*exercise/i,
+      /replace.*exercise/i,
+      /instead of.*/i,
+      /exercise alternatives/i,
+      /workout variations/i,
+      /alternative for/i,
+      /substitution for/i,
+      /can't do.*exercise/i,
+      /no.*equipment/i,
+      /home alternative/i,
+      /gym alternative/i,
+      /bodyweight alternative/i,
+      /dumbbell alternative/i,
+      /barbell alternative/i,
+      /machine alternative/i,
+      /cable alternative/i,
+      
+      // Specific exercise alternatives
+      /alternative.*squat/i,
+      /alternative.*deadlift/i,
+      /alternative.*bench press/i,
+      /alternative.*pull.?up/i,
+      /alternative.*shoulder press/i,
+      /alternative.*row/i,
+      /alternative.*curl/i,
+      /alternative.*extension/i,
+      /alternative.*lunge/i,
+      /alternative.*leg press/i,
+    ],
+    responses: [
+      `**🔄 COMPREHENSIVE EXERCISE ALTERNATIVES 🔄**
+
+**SQUAT ALTERNATIVES:**
+**Barbell Back Squat Alternatives:**
+• **Front Squats** - More quad focus, less spinal loading
+• **Goblet Squats** - Great for form, core engagement
+• **Bulgarian Split Squats** - Unilateral, balance
+• **Leg Press** - Reduced spinal loading
+• **Hack Squats** - Machine guided, quad focus
+• **Belt Squats** - Zero spinal compression
+
+**Home/No Equipment:**
+• **Bodyweight Squats** - Foundation movement
+• **Pistol Squats** - Advanced bodyweight
+• **Jump Squats** - Power development
+• **Single-leg Squats** - Balance and stability
+
+**DEADLIFT ALTERNATIVES:**
+**Conventional Deadlift Alternatives:**
+• **Romanian Deadlifts** - Hamstring focus
+• **Sumo Deadlifts** - Different leverage
+• **Trap Bar Deadlifts** - More back-friendly
+• **Rack Pulls** - Reduced range, heavier weight
+• **Good Mornings** - Spinal erector focus
+• **Hyperextensions** - Lower back isolation
+
+**Home Alternatives:**
+• **Kettlebell/Dumbbell Deadlifts** - Lighter equipment
+• **Single-leg Deadlifts** - Balance challenge
+• **Back Extensions** - Bodyweight option
+
+**BENCH PRESS ALTERNATIVES:**
+**Barbell Bench Press Alternatives:**
+• **Dumbbell Bench Press** - Better range of motion
+• **Machine Chest Press** - Controlled movement
+• **Push-ups** - Bodyweight foundation
+• **Floor Press** - Reduced range
+• **Landmine Press** - Unique angle
+• **Pec Deck** - Isolation focus
+
+**Home Alternatives:**
+• **Push-up Variations** - Wide, narrow, decline, incline
+• **Dumbbell Press** - All angles
+• **Band Press** - Resistance bands
+
+**PULL-UP ALTERNATIVES:**
+**Pull-up/Chin-up Alternatives:**
+• **Lat Pulldowns** - Machine version
+• **Inverted Rows** - Bodyweight horizontal pull
+• **Dumbbell Rows** - Unilateral focus
+• **Machine Rows** - Controlled movement
+• **Assisted Pull-ups** - Band or machine assistance
+• **Negative Pull-ups** - Eccentric focus
+
+**Home Alternatives:**
+• **Band Pulldowns** - Resistance bands
+• **Table Rows** - Under table bodyweight rows
+• **Door Frame Rows** - Using door frame`,
+
+      `**🏋️‍♂️ UPPER BODY EXERCISE ALTERNATIVES 🏋️‍♂️**
+
+**SHOULDER PRESS ALTERNATIVES:**
+**Barbell Shoulder Press Alternatives:**
+• **Dumbbell Shoulder Press** - Better range, unilateral
+• **Machine Shoulder Press** - Guided movement
+• **Arnold Press** - Rotational movement
+• **Push Press** - Leg drive assistance
+• **Landmine Press** - Unique pressing angle
+• **Handstand Push-ups** - Advanced bodyweight
+
+**Home Alternatives:**
+• **Dumbbell Press** - Seated or standing
+• **Band Press** - Resistance bands overhead
+• **Pike Push-ups** - Bodyweight shoulder focus
+
+**ROW ALTERNATIVES:**
+**Barbell Row Alternatives:**
+• **Dumbbell Rows** - Unilateral, greater range
+• **Cable Rows** - Constant tension
+• **Machine Rows** - Controlled movement
+• **T-Bar Rows** - Different angle
+• **Inverted Rows** - Bodyweight horizontal pull
+• **Face Pulls** - Rear delt focus
+
+**Home Alternatives:**
+• **Band Rows** - Resistance bands
+• **Suspension Trainer Rows** - TRX or similar
+• **Single-arm Dumbbell Rows** - Home friendly
+
+**BICEP CURL ALTERNATIVES:**
+**Barbell Curl Alternatives:**
+• **Dumbbell Curls** - Unilateral, various angles
+• **Cable Curls** - Constant tension
+• **Preacher Curls** - Isolation focus
+• **Concentration Curls** - Peak contraction
+• **Hammer Curls** - Brachialis focus
+• **Band Curls** - Home option
+
+**TRICEP EXTENSION ALTERNATIVES:**
+**Skull Crusher Alternatives:**
+• **Cable Pushdowns** - Constant tension
+• **Overhead Extensions** - Long head focus
+• **Dips** - Compound movement
+• **Close Grip Bench** - Strength focus
+• **Dumbbell Kickbacks** - Isolation
+• **Band Pushdowns** - Home option`,
+
+      `**🦵 LOWER BODY EXERCISE ALTERNATIVES 🦵**
+
+**LEG PRESS ALTERNATIVES:**
+**Leg Press Machine Alternatives:**
+• **Barbell Squats** - Free weight compound
+• **Goblet Squats** - Front-loaded variation
+• **Lunges** - Unilateral movement
+• **Step-ups** - Functional strength
+• **Belt Squats** - Zero spinal loading
+• **Hack Squats** - Similar movement pattern
+
+**Home Alternatives:**
+• **Bodyweight Squats** - Multiple variations
+• **Pistol Squats** - Advanced single-leg
+• **Bulgarian Split Squats** - Dumbbell option
+• **Jump Squats** - Power development
+
+**LEG CURL ALTERNATIVES:**
+**Machine Leg Curl Alternatives:**
+• **Romanian Deadlifts** - Hamstring focus
+• **Good Mornings** - Spinal erector and hamstrings
+• **Nordic Curls** - Advanced bodyweight
+• **Stability Ball Leg Curls** - Core integration
+• **Glute Ham Raises** - Comprehensive posterior
+• **Band Leg Curls** - Home option
+
+**LEG EXTENSION ALTERNATIVES:**
+**Machine Leg Extension Alternatives:**
+• **Squats** - Quad compound movement
+• **Lunges** - Unilateral quad focus
+• **Step-ups** - Quad dominant
+• **Pistol Squats** - Advanced single-leg
+• **Sissy Squats** - Bodyweight quad isolation
+• **Band Leg Extensions** - Home option
+
+**CALF RAISE ALTERNATIVES:**
+**Machine Calf Raise Alternatives:**
+• **Standing Barbell Calf Raises** - Free weight
+• **Dumbbell Calf Raises** - Unilateral option
+• **Bodyweight Calf Raises** - No equipment
+• **Step Calf Raises** - Increased range
+• **Farmer's Walk** - Functional calf work
+• **Jump Rope** - Dynamic calf development`,
+
+      `**🎯 EQUIPMENT-SPECIFIC ALTERNATIVES 🎯**
+
+**NO GYM EQUIPMENT ALTERNATIVES:**
+**Upper Body:**
+• **Push-ups** - Chest, shoulders, triceps
+• **Pull-ups** - Back, biceps (if bar available)
+• **Dips** - Chest, triceps (between chairs)
+• **Inverted Rows** - Back (under table)
+• **Pike Push-ups** - Shoulders
+• **Handstand Push-ups** - Advanced shoulders
+
+**Lower Body:**
+• **Squats** - All variations
+• **Lunges** - Forward, reverse, walking
+• **Pistol Squats** - Single-leg advanced
+• **Glute Bridges** - Hip extension
+• **Calf Raises** - On step for range
+• **Jump Squats** - Power development
+
+**Core:**
+• **Planks** - All variations
+• **Leg Raises** - Lower abs
+• **Russian Twists** - Obliques
+• **Mountain Climbers** - Dynamic core
+• **L-sits** - Advanced core strength
+
+**DUMBBELL-ONLY ALTERNATIVES:**
+**Compound Movements:**
+• **Goblet Squats** - Legs
+• **Dumbbell Press** - Chest
+• **Dumbbell Rows** - Back
+• **Dumbbell Shoulder Press** - Shoulders
+• **Romanian Deadlifts** - Hamstrings
+
+**Isolation Movements:**
+• **Dumbbell Curls** - Biceps
+• **Tricep Extensions** - Triceps
+• **Lateral Raises** - Shoulders
+• **Dumbbell Flyes** - Chest
+• **Calf Raises** - Calves
+
+**RESISTANCE BAND ALTERNATIVES:**
+• **Band Squats** - Legs
+• **Band Press** - Chest
+• **Band Rows** - Back
+• **Band Pull-aparts** - Shoulders
+• **Band Curls** - Biceps
+• **Band Pushdowns** - Triceps
+
+**ADAPTING FOR INJURIES:**
+**Shoulder Issues:**
+• **Machine exercises** - Guided movement
+• **Neutral grip** - Shoulder-friendly
+• **Limited range** - Avoid painful positions
+• **Cable exercises** - Controlled tension
+
+**Back Issues:**
+• **Reduced loading** - Lighter weights
+• **Machine alternatives** - Spinal support
+• **Unilateral work** - Balanced development
+• **Bodyweight progressions** - Gradual loading`
+    ],
+  },
+
+  // ENHANCED: Split Explanations with Direct "Explain What Is" Patterns
+  splitExplanations: {
+    patterns: [
+      /is ppl good for beginners/i,
+      /can beginners do ppl/i,
+      /is upper lower good for beginners/i,
+      /can beginners do upper lower/i,
+      /is bro split good for beginners/i,
+      /can beginners do bro split/i,
+      /arnold split/i,
+      /arnold schwarzenegger split/i,
+      /arnold workout split/i,
+      /classic bodybuilding split/i,
+      /explain ppl split/i,
+      /explain upper lower split/i,
+      /explain bro split/i,
+      /what is ppl split/i,
+      /what is upper lower split/i,
+      /what is bro split/i,
+      /should beginners do ppl/i,
+      /should beginners do upper lower/i,
+      /should beginners do bro split/i,
+      /best split for beginners/i,
+      /which split for beginners/i,
+      /beginner friendly split/i,
+      /easy split for beginners/i,
+      /simple split for beginners/i,
+      
+      // NEW: Direct explanation requests
+      /explain to me what is ppl/i,
+      /what is ppl/i,
+      /tell me about ppl/i,
+      /describe ppl/i,
+      /explain ppl/i,
+      /explain to me what is upper lower/i,
+      /what is upper lower/i,
+      /tell me about upper lower/i,
+      /describe upper lower/i,
+      /explain upper lower/i,
+      /explain to me what is bro split/i,
+      /what is bro split/i,
+      /tell me about bro split/i,
+      /describe bro split/i,
+      /explain bro split/i,
+      /what does ppl mean/i,
+      /what does upper lower mean/i,
+      /what does bro split mean/i,
+      /meaning of ppl/i,
+      /meaning of upper lower/i,
+      /meaning of bro split/i,
+      /can you explain ppl/i,
+      /can you explain upper lower/i,
+      /can you explain bro split/i,
+      /please explain ppl/i,
+      /please explain upper lower/i,
+      /please explain bro split/i,
+    ],
+    responses: [
+      `**🏋️‍♂️ WORKOUT SPLIT EXPLANATIONS & BEGINNER SUITABILITY 🏋️‍♂️**\n\n**PPL (Push/Pull/Legs) - Is it good for beginners?**\n✅ **YES, with modifications!**\n• **Beginner-Friendly Version:** 3 days/week, full body each session\n• **Pros:** Teaches movement patterns, balanced frequency\n• **Cons:** Standard 6-day PPL is too much for beginners\n• **Beginner Recommendation:** Start with 3-day modified PPL\n\n**Upper/Lower Split - Is it good for beginners?**\n✅ **EXCELLENT for beginners!**\n• **Beginner-Friendly Version:** 4 days/week (Upper A, Lower A, Upper B, Lower B)\n• **Pros:** Balanced approach, good frequency, teaches compound movements\n• **Cons:** None for beginners\n• **Beginner Recommendation:** Highly recommended!\n\n**Bro Split - Is it good for beginners?**\n❌ **NOT IDEAL for beginners**\n• **Why:** Only hits each muscle 1x/week, poor frequency for beginners\n• **Pros:** High volume per session\n• **Cons:** Poor frequency, not optimal for beginner gains\n• **Beginner Recommendation:** Avoid until intermediate/advanced\n\n**Arnold Split**\n❌ **NOT for beginners**\n• **Structure:** Chest+Back, Shoulders+Arms, Legs, Repeat\n• **Pros:** High frequency, great for advanced bodybuilders\n• **Cons:** Too much volume and frequency for beginners\n• **Beginner Recommendation:** Advanced lifters only!`,
+
+      `**📊 BEGINNER SPLIT RECOMMENDATIONS 📊**\n\n**Best Splits for Beginners (in order):**\n\n1. **Full Body (3 days/week)** - **BEST CHOICE**\n   • Each muscle 3x/week\n   • Perfect for learning movements\n   • Maximum frequency for growth\n\n2. **Upper/Lower (4 days/week)** - **GREAR CHOICE**\n   • Each muscle 2x/week\n   • Good balance of frequency and volume\n   • Teaches proper exercise selection\n\n3. **Modified PPL (3 days/week)** - **GOOD CHOICE**\n   • Push, Pull, Legs but full body focus\n   • Good for learning movement patterns\n   • Can progress to 6-day PPL later\n\n**Splits to AVOID as Beginner:**\n• **Bro Split** - Poor frequency\n• **Arnold Split** - Too advanced\n• **6-day PPL** - Too much volume\n• **Any split with 1x/week frequency**\n\n**Key Principle:** Beginners grow best with higher frequency (2-3x/week per muscle)!`,
+
+      `**💪 ARNOLD SPLIT DETAILED EXPLANATION 💪**\n\n**The Classic Arnold Schwarzenegger Split:**\n\n**Structure (6 days/week):**\n• **Day 1:** Chest & Back\n• **Day 2:** Shoulders & Arms\n• **Day 3:** Legs & Lower Back\n• **Day 4:** Chest & Back\n• **Day 5:** Shoulders & Arms\n• **Day 6:** Legs & Lower Back\n• **Day 7:** Rest\n\n**Why It Works (For Advanced Lifters):**\n• **High Frequency:** Each muscle 2x/week\n• **Volume:** Significant volume per session\n• **Synergistic Pairing:** Chest/Back and Shoulders/Arms work well together\n• **Recovery:** Built-in rest day\n\n**Sample Arnold Split Workout:**\n\n**Chest & Back Day:**\n• Bench Press: 5x8-12\n• Incline Dumbbell Press: 4x10-12\n• Dumbbell Flyes: 3x12-15\n• Pull-ups: 4x8-12\n• Bent Over Rows: 4x8-12\n• Lat Pulldowns: 3x10-12\n\n**Shoulders & Arms Day:**\n• Military Press: 4x8-12\n• Lateral Raises: 4x12-15\n• Rear Delt Flyes: 3x12-15\n• Barbell Curls: 4x8-12\n• Tricep Pushdowns: 4x10-12\n• Hammer Curls: 3x10-12\n\n**Legs & Lower Back Day:**\n• Squats: 5x8-12\n• Leg Press: 4x10-15\n• Leg Extensions: 3x12-15\n• Leg Curls: 3x12-15\n• Calf Raises: 5x15-20\n• Hyperextensions: 3x12-15\n\n**⚠️ WARNING: This split is for ADVANCED lifters only! Beginners will overtrain!`,
+
+      // NEW: Simple direct explanations
+      `**🤔 WHAT IS PPL? (Push/Pull/Legs)**\n\n**PPL stands for Push/Pull/Legs** - it's a workout split that groups exercises by movement patterns:\n\n**Push Days:** Exercises where you PUSH weight away from your body\n• Chest: Bench press, push-ups\n• Shoulders: Overhead press, lateral raises\n• Triceps: Tricep extensions, dips\n\n**Pull Days:** Exercises where you PULL weight toward your body\n• Back: Pull-ups, rows, lat pulldowns\n• Biceps: Curls, hammer curls\n• Rear delts: Face pulls, reverse flyes\n\n**Legs Days:** Lower body exercises\n• Quads: Squats, leg press\n• Hamstrings: Deadlifts, leg curls\n• Glutes: Hip thrusts, lunges\n• Calves: Calf raises\n\n**Schedule:** Typically 6 days per week (Push, Pull, Legs, Rest, Repeat) or 3 days per week for beginners.`,
+
+      `**🏋️ WHAT IS UPPER/LOWER SPLIT?**\n\n**Upper/Lower Split** divides your training into upper body and lower body days:\n\n**Upper Body Days:** Work all upper body muscles\n• Chest: Bench press, chest flyes\n• Back: Rows, pull-ups, lat pulldowns\n• Shoulders: Overhead press, lateral raises\n• Arms: Bicep curls, tricep extensions\n\n**Lower Body Days:** Work all lower body muscles\n• Quads: Squats, leg extensions\n• Hamstrings: Deadlifts, leg curls\n• Glutes: Hip thrusts, lunges\n• Calves: Calf raises, seated calf raises\n• Core: Planks, leg raises\n\n**Schedule:** Typically 4 days per week (Upper, Lower, Rest, Upper, Lower, Rest, Rest) - hitting each muscle group twice weekly.`,
+
+      `**💪 WHAT IS BRO SPLIT?**\n\n**Bro Split** focuses on one muscle group per day:\n\n**Typical Bro Split Schedule:**\n• **Monday:** Chest\n• **Tuesday:** Back\n• **Wednesday:** Shoulders\n• **Thursday:** Arms\n• **Friday:** Legs\n• **Weekend:** Rest or weak points\n\n**Each day focuses intensely on one muscle group:**\n• **Chest Day:** Multiple chest exercises from different angles\n• **Back Day:** Various rowing and pulling movements\n• **Shoulders Day:** Front, side, and rear delt work\n• **Arms Day:** Biceps and triceps isolation\n• **Legs Day:** Comprehensive leg training\n\n**Best for:** Advanced lifters who need high volume per muscle group and have good recovery capacity.`,
+    ],
+  },
+
+  chestWorkouts: {
+  patterns: [
+    /chest workout/i,
+    /chest exercise/i,
+    // ... keep all your existing patterns ...
+    /provide.*chest workout/i,
+    /give.*chest workout/i,
+    /show.*chest workout/i,
+    /create.*chest workout/i,
+    
+    // Alternative exercise requests
+    /alternative.*chest/i,
+    /substitute.*chest/i,
+    /other.*chest exercise/i,
+    /different.*chest/i,
+    /replace.*chest exercise/i,
+    /instead of.*chest/i,
+    /chest exercise alternatives/i,
+    /chest workout variations/i,
+    /chest exercise options/i,
+    /alternative.*exercises.*chest/i,
+    /substitute.*exercises.*chest/i,
+  ],
+  responses: [
+    `**🏋️ SIMPLE CHEST WORKOUT (3 EXERCISES) 🏋️**
+
+**1. Barbell Bench Press**
+• **Equipment:** Barbell, bench, weight plates
+• **Sets/Reps:** 3x8-12
+• **Focus:** Overall chest development
+• **Weight Recommendation:** Start with just the bar (45lbs/20kg) to learn form
+
+**2. Incline Dumbbell Press**
+• **Equipment:** Dumbbells, incline bench
+• **Sets/Reps:** 3x10-12
+• **Focus:** Upper chest development
+• **Weight Recommendation:** 20-40lbs (9-18kg) per dumbbell depending on strength
+
+**3. Cable Crossovers**
+• **Equipment:** Cable machine, handles
+• **Sets/Reps:** 3x12-15
+• **Focus:** Chest squeeze and definition
+• **Weight Recommendation:** 30-60lbs (14-27kg) per side
+
+**💡 TIPS:**
+• Rest 60-90 seconds between sets
+• Focus on controlled movements
+• Increase weight gradually each week`,
+
+    `**🔄 CHEST EXERCISE ALTERNATIVES FOR THE 3-EXERCISE WORKOUT 🔄**
+
+**Instead of Barbell Bench Press:**
+• **Dumbbell Bench Press** - Better range of motion, dumbbells required
+• **Machine Chest Press** - Safer for beginners, chest press machine
+• **Push-ups** - Bodyweight only, no equipment needed
+• **Floor Press** - Limited range, barbell/dumbbells and floor
+
+**Instead of Incline Dumbbell Press:**
+• **Incline Barbell Press** - Barbell and incline bench
+• **Low-to-High Cable Flyes** - Cable machine, constant tension
+• **Incline Machine Press** - Guided movement, incline press machine
+• **Decline Push-ups** - Bodyweight, feet elevated
+
+**Instead of Cable Crossovers:**
+• **Pec Deck Machine** - Isolation focus, pec deck machine
+• **Dumbbell Flyes** - Dumbbells and flat bench
+• **Band Chest Flyes** - Resistance bands, portable option
+• **Dips** - Parallel bars or bench, bodyweight + added weight
+
+**🔄 ALTERNATIVE 3-EXERCISE CHEST WORKOUT:**
+1. **Dumbbell Bench Press** (Dumbbells + bench)
+2. **Incline Barbell Press** (Barbell + incline bench)  
+3. **Pec Deck Flyes** (Pec deck machine)`,
+
+ ],
+},
+
+// NEW: Enhanced Nutrition Guide for Different Goals
+nutritionGoals: {
+  patterns: [
+    /food.*bulk/i,
+    /food.*cutting/i,
+    /food.*lean bulk/i,
+    /food.*toning/i,
+    /food.*maintenance/i,
+    /food.*fat loss/i,
+    /food.*muscle mass/i,
+    /diet.*bulk/i,
+    /diet.*cutting/i,
+    /diet.*lean bulk/i,
+    /diet.*toning/i,
+    /diet.*maintenance/i,
+    /diet.*fat loss/i,
+    /diet.*muscle mass/i,
+    /eat.*bulk/i,
+    /eat.*cutting/i,
+    /eat.*lean bulk/i,
+    /eat.*toning/i,
+    /eat.*maintenance/i,
+    /eat.*fat loss/i,
+    /eat.*muscle mass/i,
+    /nutrition.*bulk/i,
+    /nutrition.*cutting/i,
+    /nutrition.*lean bulk/i,
+    /nutrition.*toning/i,
+    /nutrition.*maintenance/i,
+    /nutrition.*fat loss/i,
+    /nutrition.*muscle mass/i,
+    /what.*eat.*bulk/i,
+    /what.*eat.*cutting/i,
+    /what.*eat.*lean bulk/i,
+    /what.*eat.*toning/i,
+    /what.*eat.*maintenance/i,
+    /what.*eat.*fat loss/i,
+    /what.*eat.*muscle mass/i,
+    /best.*food.*bulk/i,
+    /best.*food.*cutting/i,
+    /best.*food.*lean bulk/i,
+    /best.*food.*toning/i,
+    /best.*food.*maintenance/i,
+    /best.*food.*fat loss/i,
+    /best.*food.*muscle mass/i,
+    /meals.*bulk/i,
+    /meals.*cutting/i,
+    /meals.*lean bulk/i,
+    /meals.*toning/i,
+    /meals.*maintenance/i,
+    /meals.*fat loss/i,
+    /meals.*muscle mass/i,
+  ],
+  responses: [
+    `**🍗 FOODS FOR BULKING (MUSCLE MASS GAIN) 🍗**
+
+**High-Calorie Protein Sources:**
+• **Lean Beef** - 250+ calories per 6oz, 40g+ protein
+• **Salmon** - 350+ calories per 6oz, healthy fats + protein
+• **Whole Eggs** - 70 calories each, complete protein
+• **Chicken Thighs** - More calories than breast, great for bulking
+• **Ground Turkey** - Higher fat content for calories
+
+**Calorie-Dense Carbs:**
+• **Brown Rice** - 200+ calories per cup cooked
+• **Sweet Potatoes** - 180+ calories each, nutrient dense
+• **Oats** - 150+ calories per 1/2 cup dry
+• **Whole Grain Pasta** - 200+ calories per cup cooked
+• **Quinoa** - 220 calories per cup, complete protein
+
+**Healthy Fats for Calories:**
+• **Avocado** - 320 calories each, healthy monounsaturated fats
+• **Nuts & Nut Butters** - 180+ calories per ounce
+• **Olive Oil** - 120 calories per tablespoon
+• **Full-Fat Dairy** - Whole milk, full-fat Greek yogurt
+
+**Sample Bulking Meals:**
+• **Breakfast:** 4 eggs + 2 slices whole grain toast + avocado
+• **Lunch:** 8oz chicken + 2 cups rice + mixed vegetables
+• **Dinner:** 8oz steak + large sweet potato + broccoli
+• **Snacks:** Greek yogurt + nuts, protein shake + banana`,
+
+    `**🥦 FOODS FOR CUTTING (FAT LOSS) 🥦**
+
+**Lean Protein Sources:**
+• **Chicken Breast** - 165 calories per 6oz, 31g protein
+• **Turkey Breast** - 135 calories per 6oz, 30g protein
+• **White Fish** (Tilapia, Cod) - 100 calories per 6oz, 20g+ protein
+• **Shrimp** - 100 calories per 5oz, 24g protein
+• **Egg Whites** - 25 calories each, pure protein
+
+**Low-Calorie Vegetables:**
+• **Broccoli** - 55 calories per large serving
+• **Spinach** - 7 calories per cup, nutrient dense
+• **Cauliflower** - 25 calories per cup
+• **Bell Peppers** - 30 calories each
+• **Zucchini** - 20 calories each
+
+**Smart Carb Sources:**
+• **Vegetables** (primary carb source)
+• **Berries** - Low sugar fruits
+• **Small portions** of sweet potato, brown rice
+
+**Healthy Fats (moderate):**
+• **Avocado** (1/4 at a time)
+• **Olive Oil** (1 tsp for cooking)
+• **Nuts** (small handful)
+
+**Sample Cutting Meals:**
+• **Breakfast:** 3 egg whites + 1 whole egg + vegetables
+• **Lunch:** 6oz chicken breast + large salad
+• **Dinner:** 6oz fish + steamed vegetables
+• **Snacks:** Greek yogurt, vegetable sticks`,
+
+    `**⚖️ FOODS FOR LEAN BULKING ⚖️**
+
+**Quality Protein Sources:**
+• **Chicken Breast** - 165 calories per 6oz, 31g protein
+• **Lean Beef** (93/7) - 200 calories per 6oz
+• **Salmon** - 250 calories per 6oz, healthy fats
+• **Greek Yogurt** - 100 calories per serving, 18g protein
+• **Cottage Cheese** - 180 calories per cup, 28g protein
+
+**Complex Carbohydrates:**
+• **Sweet Potatoes** - 100 calories each medium
+• **Brown Rice** - 150 calories per 3/4 cup cooked
+• **Oats** - 150 calories per 1/2 cup dry
+• **Quinoa** - 170 calories per 3/4 cup cooked
+
+**Healthy Fats:**
+• **Avocado** (1/2 per meal)
+• **Nuts** (small handful)
+• **Olive Oil** (1 tbsp daily)
+• **Nut Butters** (1-2 tbsp)
+
+**Sample Lean Bulking Meals:**
+• **Breakfast:** 3 eggs + 1/2 cup oats + 1/2 avocado
+• **Lunch:** 6oz chicken + 3/4 cup rice + vegetables
+• **Dinner:** 6oz salmon + sweet potato + broccoli
+• **Snacks:** Greek yogurt + berries, protein shake`,
+
+    `**💪 FOODS FOR TONING & MAINTENANCE 💪**
+
+**Balanced Protein:**
+• **Chicken Breast** - Lean protein for muscle maintenance
+• **Fish** (Salmon, Tuna) - Omega-3s for recovery
+• **Eggs** - Complete protein, various nutrients
+• **Greek Yogurt** - Protein + probiotics
+• **Lean Beef** - Iron and protein
+
+**Complex Carbohydrates:**
+• **Sweet Potatoes** - Sustained energy, vitamins
+• **Brown Rice** - Fiber, steady energy
+• **Oats** - Heart health, sustained energy
+• **Quinoa** - Complete protein, fiber
+
+**Healthy Fats:**
+• **Avocado** - Monounsaturated fats
+• **Nuts & Seeds** - Omega-3s, vitamin E
+• **Olive Oil** - Heart healthy
+• **Fatty Fish** - Omega-3s
+
+**Vegetables & Fruits:**
+• **Leafy Greens** - Vitamins, minerals, fiber
+• **Berries** - Antioxidants, low sugar
+• **Cruciferous Vegetables** - Cancer-fighting compounds
+
+**Sample Maintenance Meals:**
+• **Breakfast:** 2-3 eggs + whole grain toast + avocado
+• **Lunch:** 4-6oz chicken + quinoa salad
+• **Dinner:** 5-6oz fish + sweet potato + vegetables
+• **Snacks:** Apple + almond butter, Greek yogurt`,
+
+    `**🔥 FOODS FOR FAT LOSS & MUSCLE PRESERVATION 🔥**
+
+**High-Satiety Protein:**
+• **Chicken Breast** - High protein, low calorie
+• **Turkey Breast** - Leanest poultry option
+• **White Fish** - Lowest calorie protein
+• **Egg Whites** - Pure protein, very low calorie
+• **Whey Protein** - Fast absorption, low calorie
+
+**Fiber-Rich Vegetables:**
+• **Broccoli** - High fiber, nutrient dense
+• **Spinach** - Very low calorie, high nutrients
+• **Cauliflower** - Low calorie, versatile
+• **Bell Peppers** - Vitamin C, low calorie
+• **Zucchini** - Very low calorie, high water content
+
+**Low-Calorie Fruits:**
+• **Berries** - Antioxidants, lower sugar
+• **Apples** - Fiber, satisfying
+• **Grapefruit** - May aid fat loss
+
+**Healthy Fats (limited):**
+• **Avocado** (1/4 at a time)
+• **Nuts** (small handful)
+• **Seeds** (1 tbsp)
+
+**Sample Fat Loss Meals:**
+• **Breakfast:** 3 egg whites + vegetables + 1/2 avocado
+• **Lunch:** Large salad with 4oz chicken
+• **Dinner:** 5oz fish + steamed vegetables
+• **Snacks:** Vegetable sticks, Greek yogurt`,
+
+    `**🏋️ FOODS FOR MUSCLE MASS & STRENGTH 🏋️**
+
+**Mass-Building Proteins:**
+• **Lean Red Meat** - Creatine, iron, protein
+• **Salmon** - Omega-3s, protein, calories
+• **Chicken Thighs** - More calories than breast
+• **Whole Eggs** - Cholesterol for hormone production
+• **Whey Protein** - Fast absorption post-workout
+
+**Energy-Dense Carbs:**
+• **White Rice** - Easy digestion, quick energy
+• **Potatoes** - Quick energy, potassium
+• **Oats** - Sustained energy, fiber
+• **Whole Grain Bread** - Convenient carbs
+
+**Healthy Fats for Hormones:**
+• **Avocado** - Monounsaturated fats
+• **Nuts & Seeds** - Omega-3s, vitamin E
+• **Olive Oil** - Heart healthy
+• **Egg Yolks** - Cholesterol for testosterone
+
+**Recovery Foods:**
+• **Berries** - Antioxidants for recovery
+• **Leafy Greens** - Micronutrients
+• **Beets** - Nitrates for blood flow
+
+**Sample Mass Gain Meals:**
+• **Breakfast:** 4 whole eggs + 2 slices toast + oats
+• **Lunch:** 8oz beef + 2 cups rice + vegetables
+• **Dinner:** 8oz salmon + potatoes + greens
+• **Post-Workout:** Whey protein + banana + rice cakes`
+  ],
+},
+
+  // NEW: Enhanced Back Workout Guide
+  backWorkouts: {
+    patterns: [
+      /back workout/i,
+      /back exercise/i,
+      /back training/i,
+      /lat workout/i,
+      /pull day/i,
+      /workout back/i,
+      /train back/i,
+      /build back/i,
+      /back muscle/i,
+      /lats workout/i,
+      /rhomboids/i,
+      /trapezius/i,
+      /rear delts/i,
+      /back development/i,
+      /back hypertrophy/i,
+      /back strength/i,
+      /how to work back/i,
+      /best back exercises/i,
+      /back workout routine/i,
+      /back workout plan/i,
+      /back workout program/i,
+      /pull.?up/i,
+      /chin.?up/i,
+      /row.?ing/i,
+      /lat pulldown/i,
+      /deadlift/i,
+    ],
+    responses: [
+      `**💪 COMPREHENSIVE BACK WORKOUT GUIDE 💪**
+
+**BACK ANATOMY & FUNCTION:**
+• **Lats (Latissimus Dorsi):** Wide back, pull-downs, pull-ups
+• **Rhomboids:** Between shoulder blades, retraction
+• **Trapezius:** Upper/mid back, shrugs, rows
+• **Rear Delts:** Back of shoulders, horizontal abduction
+• **Erector Spinae:** Lower back, spinal extension
+• **Teres Major/Minor:** Rotator cuff, shoulder stability
+
+**WIDTH EXERCISES (Lats Focus):**
+**Vertical Pulls:**
+• **Pull-ups/Chin-ups** - Bodyweight gold standard
+• **Lat Pulldowns** - Machine alternative
+• **Straight Arm Pulldowns** - Lat isolation
+• **Behind Neck Pulldowns** - Advanced variation
+
+**Alternatives:**
+• **Assisted Pull-ups** - Band or machine
+• **Inverted Rows** - Bodyweight horizontal
+• **Band Pulldowns** - Home option
+
+**THICKNESS EXERCISES (Mid-Back Focus):**
+**Horizontal Rows:**
+• **Barbell Rows** - Strength foundation
+• **Dumbbell Rows** - Unilateral focus
+• **T-Bar Rows** - Different angle
+• **Cable Rows** - Constant tension
+• **Machine Rows** - Controlled movement
+
+**Alternatives:**
+• **Seated Cable Rows** - Various attachments
+• **Chest Supported Rows** - Lower back relief
+• **Suspension Trainer Rows** - Bodyweight option
+
+**UPPER BACK EXERCISES:**
+• **Face Pulls** - Rear delts, rotator cuff health
+• **Shrugs** - Trapezius development
+• **Upright Rows** - Traps and shoulders
+• **High Pulls** - Power movement
+
+**LOWER BACK EXERCISES:**
+• **Deadlifts** - Comprehensive back development
+• **Hyperextensions** - Lower back isolation
+• **Good Mornings** - Hamstrings and spinal erectors
+• **Back Extensions** - Bodyweight option
+
+**BEGINNER BACK WORKOUT:**
+• Lat Pulldowns: 3x10-12
+• Seated Cable Rows: 3x10-12
+• Face Pulls: 3x15-20
+• Hyperextensions: 3x12-15
+
+**ADVANCED BACK WORKOUT:**
+• Deadlifts: 3x5-8
+• Pull-ups: 4x failure
+• Barbell Rows: 4x8-10
+• Dumbbell Rows: 3x10-12
+• Face Pulls: 3x15-20
+• Shrugs: 3x12-15`,
+
+      `**🎯 TARGETED BACK DEVELOPMENT 🎯**
+
+**WIDTH-FOCUSED WORKOUT:**
+• **Wide Grip Pull-ups**: 4x failure
+• **Lat Pulldowns**: 3x10-12
+• **Straight Arm Pulldowns**: 3x12-15
+• **Behind Neck Pulldowns**: 3x10-12
+
+**THICKNESS-FOCUSED WORKOUT:**
+• **Barbell Rows**: 4x6-8
+• **T-Bar Rows**: 3x8-10
+• **Dumbbell Rows**: 3x10-12
+• **Cable Rows**: 3x12-15
+
+**UPPER BACK FOCUS:**
+• **Face Pulls**: 4x15-20
+• **Shrugs**: 4x12-15
+• **Upright Rows**: 3x10-12
+• **High Pulls**: 3x8-10
+
+**COMPLETE BACK DEVELOPMENT:**
+**Strength Day:**
+• Deadlifts: 3x3-5
+• Weighted Pull-ups: 4x6-8
+• Barbell Rows: 4x6-8
+
+**Hypertrophy Day:**
+• Lat Pulldowns: 4x10-12
+• Dumbbell Rows: 3x10-12
+• Cable Rows: 3x12-15
+• Face Pulls: 3x15-20
+
+**TECHNIQUE TIPS:**
+• **Retract scapula** - Engage back muscles properly
+• **Full range** - Complete stretch and contraction
+• **Mind-muscle connection** - Focus on back muscles working
+• **Control eccentric** - Don't let weight control you
+• **Varied grips** - Different angles for complete development`
+    ],
+  },
+
+  // NEW: Enhanced Shoulder Workout Guide
+  shoulderWorkouts: {
+    patterns: [
+      /shoulder workout/i,
+      /shoulder exercise/i,
+      /shoulder training/i,
+      /delts workout/i,
+      /workout shoulders/i,
+      /train shoulders/i,
+      /build shoulders/i,
+      /shoulder muscle/i,
+      /deltoids/i,
+      /front delts/i,
+      /side delts/i,
+      /rear delts/i,
+      /shoulder development/i,
+      /shoulder hypertrophy/i,
+      /shoulder strength/i,
+      /how to work shoulders/i,
+      /best shoulder exercises/i,
+      /shoulder workout routine/i,
+      /shoulder workout plan/i,
+      /shoulder workout program/i,
+      /overhead press/i,
+      /military press/i,
+      /lateral raise/i,
+      /front raise/i,
+      /rear delt flye/i,
+    ],
+    responses: [
+      `**💪 COMPREHENSIVE SHOULDER WORKOUT GUIDE 💪**
+
+**SHOULDER ANATOMY & FUNCTION:**
+• **Anterior Deltoid (Front):** Shoulder flexion, horizontal adduction
+• **Lateral Deltoid (Side):** Shoulder abduction
+• **Posterior Deltoid (Rear):** Horizontal abduction, extension
+• **Rotator Cuff:** Shoulder stability, rotation
+
+**ANTERIOR DELTOID EXERCISES:**
+**Primary:**
+• **Overhead Press** - Strength foundation
+• **Front Raises** - Direct isolation
+• **Push Press** - Power development
+
+**Alternatives:**
+• **Arnold Press** - Rotational movement
+• **Landmine Press** - Unique angle
+• **Incline Bench Press** - Chest/shoulders
+
+**LATERAL DELTOID EXERCISES:**
+**Primary:**
+• **Lateral Raises** - Width development
+• **Upright Rows** - Traps and side delts
+• **Behind Neck Press** - Advanced variation
+
+**Alternatives:**
+• **Cable Lateral Raises** - Constant tension
+• **Leaning Lateral Raises** - Enhanced range
+• **Machine Lateral Raises** - Controlled movement
+
+**POSTERIOR DELTOID EXERCISES:**
+**Primary:**
+• **Rear Delt Flyes** - Direct isolation
+• **Face Pulls** - Rotator cuff health
+• **Bent Over Lateral Raises** - Free weight option
+
+**Alternatives:**
+• **Reverse Pec Deck** - Machine isolation
+• **Cable Rear Delt Flyes** - Constant tension
+• **Band Pull-aparts** - Home option
+
+**ROTATOR CUFF EXERCISES:**
+• **External Rotations** - Shoulder stability
+• **Internal Rotations** - Balanced development
+• **Scaption Raises** - Functional movement
+
+**BEGINNER SHOULDER WORKOUT:**
+• Dumbbell Shoulder Press: 3x10-12
+• Lateral Raises: 3x12-15
+• Front Raises: 3x12-15
+• Face Pulls: 3x15-20
+
+**ADVANCED SHOULDER WORKOUT:**
+• Barbell Overhead Press: 4x6-8
+• Dumbbell Lateral Raises: 4x12-15
+• Rear Delt Flyes: 3x12-15
+• Upright Rows: 3x10-12
+• Face Pulls: 3x15-20`,
+
+      `**🎯 TARGETED SHOULDER DEVELOPMENT 🎯**
+
+**WIDTH-FOCUSED WORKOUT:**
+• **Lateral Raises**: 4x12-15
+• **Upright Rows**: 3x10-12
+• **Cable Lateral Raises**: 3x15-20
+• **Behind Neck Press**: 3x8-10
+
+**STRENGTH-FOCUSED WORKOUT:**
+• **Barbell Overhead Press**: 5x5
+• **Push Press**: 4x3-5
+• **Dumbbell Press**: 3x8-10
+• **Landmine Press**: 3x10-12
+
+**REAR DELT FOCUS:**
+• **Face Pulls**: 4x15-20
+• **Rear Delt Flyes**: 3x12-15
+• **Bent Over Lateral Raises**: 3x12-15
+• **Reverse Pec Deck**: 3x15-20
+
+**COMPLETE SHOULDER DEVELOPMENT:**
+**Strength Day:**
+• Barbell Overhead Press: 4x6-8
+• Push Press: 3x5
+• Upright Rows: 3x8-10
+
+**Hypertrophy Day:**
+• Dumbbell Press: 4x10-12
+• Lateral Raises: 4x12-15
+• Rear Delt Flyes: 3x12-15
+• Face Pulls: 3x15-20
+
+**TECHNIQUE TIPS:**
+• **Control the weight** - No swinging or momentum
+• **Full range** - Complete extension and controlled lowering
+• **Mind-muscle connection** - Focus on deltoid contraction
+• **Varied angles** - Hit all three deltoid heads
+• **Rotator cuff health** - Include prehab exercises`
+    ],
+  },
+
+  // NEW: Enhanced Leg Workout Guide
+  legWorkouts: {
+    patterns: [
+      /leg workout/i,
+      /leg exercise/i,
+      /leg training/i,
+      /leg day/i,
+      /workout legs/i,
+      /train legs/i,
+      /build legs/i,
+      /leg muscle/i,
+      /quads workout/i,
+      /hamstrings workout/i,
+      /glutes workout/i,
+      /calves workout/i,
+      /leg development/i,
+      /leg hypertrophy/i,
+      /leg strength/i,
+      /how to work legs/i,
+      /best leg exercises/i,
+      /leg workout routine/i,
+      /leg workout plan/i,
+      /leg workout program/i,
+      /squat/i,
+      /deadlift/i,
+      /lunge/i,
+      /leg press/i,
+      /calf raise/i,
+    ],
+    responses: [
+      `**🦵 COMPREHENSIVE LEG WORKOUT GUIDE 🦵**
+
+**LEG ANATOMY & FUNCTION:**
+• **Quadriceps:** Knee extension, hip flexion
+• **Hamstrings:** Knee flexion, hip extension
+• **Glutes:** Hip extension, abduction, rotation
+• **Calves:** Ankle plantarflexion
+• **Adductors:** Hip adduction
+• **Abductors:** Hip abduction
+
+**QUADRICEPS EXERCISES:**
+**Primary:**
+• **Barbell Squats** - Leg development foundation
+• **Leg Press** - Reduced spinal loading
+• **Hack Squats** - Machine guided quad focus
+• **Leg Extensions** - Quad isolation
+
+**Alternatives:**
+• **Front Squats** - More quad emphasis
+• **Bulgarian Split Squats** - Unilateral development
+• **Lunges** - Functional strength
+• **Step-ups** - Single leg focus
+
+**HAMSTRING EXERCISES:**
+**Primary:**
+• **Romanian Deadlifts** - Hamstring stretch and contraction
+• **Leg Curls** - Hamstring isolation
+• **Good Mornings** - Spinal erectors and hamstrings
+• **Glute Ham Raises** - Advanced posterior chain
+
+**Alternatives:**
+• **Stiff Leg Deadlifts** - Similar to RDL
+• **Nordic Curls** - Bodyweight advanced
+• **Stability Ball Leg Curls** - Core integration
+• **Band Leg Curls** - Home option
+
+**GLUTE EXERCISES:**
+**Primary:**
+• **Hip Thrusts** - Direct glute activation
+• **Glute Bridges** - Bodyweight foundation
+• **Cable Kickbacks** - Glute isolation
+• **Frog Pumps** - Glute pump
+
+**Alternatives:**
+• **Sumo Squats** - Wide stance glute focus
+• **Deadlifts** - Glute and hamstring development
+• **Step-ups** - Glute activation
+• **Lunges** - Glute engagement
+
+**CALF EXERCISES:**
+**Primary:**
+• **Standing Calf Raises** - Gastrocnemius focus
+• **Seated Calf Raises** - Soleus focus
+• **Donkey Calf Raises** - Stretched position
+
+**Alternatives:**
+• **Leg Press Calf Raises** - Machine option
+• **Farmer's Walk** - Functional calf work
+• **Jump Rope** - Dynamic calf development
+• **Box Jumps** - Power and calf development
+
+**BEGINNER LEG WORKOUT:**
+• Barbell Squats: 3x8-12
+• Leg Press: 3x10-15
+• Leg Curls: 3x12-15
+• Calf Raises: 4x15-20
+
+**ADVANCED LEG WORKOUT:**
+• Barbell Squats: 4x6-8
+• Romanian Deadlifts: 3x8-10
+• Leg Press: 3x10-12
+• Leg Extensions: 3x12-15
+• Leg Curls: 3x12-15
+• Calf Raises: 5x15-20`,
+
+      `**🎯 TARGETED LEG DEVELOPMENT 🎯**
+
+**QUAD-FOCUSED WORKOUT:**
+• **Front Squats**: 4x6-8
+• **Leg Press**: 3x10-12
+• **Leg Extensions**: 4x12-15
+• **Bulgarian Split Squats**: 3x10-12 per leg
+
+**HAMSTRING-FOCUSED WORKOUT:**
+• **Romanian Deadlifts**: 4x8-10
+• **Leg Curls**: 4x12-15
+• **Good Mornings**: 3x10-12
+• **Glute Ham Raises**: 3x8-10
+
+**GLUTE-FOCUSED WORKOUT:**
+• **Hip Thrusts**: 4x8-12
+• **Sumo Squats**: 3x10-12
+• **Cable Kickbacks**: 3x15-20
+• **Frog Pumps**: 3x20-25
+
+**CALF-FOCUSED WORKOUT:**
+• **Standing Calf Raises**: 5x15-20
+• **Seated Calf Raises**: 5x15-20
+• **Donkey Calf Raises**: 4x20-25
+• **Jump Rope**: 5x1 minute
+
+**COMPLETE LEG DEVELOPMENT:**
+**Strength Day:**
+• Barbell Squats: 5x5
+• Romanian Deadlifts: 3x8
+• Leg Press: 3x10
+
+**Hypertrophy Day:**
+• Front Squats: 4x8-10
+• Leg Extensions: 3x12-15
+• Leg Curls: 3x12-15
+• Calf Raises: 4x15-20
+
+**TECHNIQUE TIPS:**
+• **Proper depth** - Parallel or below for squats
+• **Knee alignment** - Don't let knees cave in
+• **Spinal position** - Maintain neutral spine
+• **Controlled movement** - No bouncing at bottom
+• **Full range** - Complete extension and flexion`
+    ],
+  },
+
+  // NEW: Enhanced Arm Workout Guide
+  armWorkouts: {
+    patterns: [
+      /arm workout/i,
+      /arm exercise/i,
+      /arm training/i,
+      /arm day/i,
+      /workout arms/i,
+      /train arms/i,
+      /build arms/i,
+      /arm muscle/i,
+      /biceps workout/i,
+      /triceps workout/i,
+      /forearms workout/i,
+      /arm development/i,
+      /arm hypertrophy/i,
+      /arm strength/i,
+      /how to work arms/i,
+      /best arm exercises/i,
+      /arm workout routine/i,
+      /arm workout plan/i,
+      /arm workout program/i,
+      /bicep curl/i,
+      /tricep extension/i,
+      /forearm curl/i,
+      /hammer curl/i,
+    ],
+    responses: [
+      `**💪 COMPREHENSIVE ARM WORKOUT GUIDE 💪**
+
+**ARM ANATOMY & FUNCTION:**
+• **Biceps Brachii:** Elbow flexion, forearm supination
+• **Brachialis:** Under biceps, pure elbow flexion
+• **Triceps Brachii:** Elbow extension (3 heads)
+• **Forearms:** Wrist flexion/extension, grip strength
+
+**BICEPS EXERCISES:**
+**Primary:**
+• **Barbell Curls** - Strength foundation
+• **Dumbbell Curls** - Unilateral development
+• **Preacher Curls** - Isolation focus
+• **Concentration Curls** - Peak contraction
+
+**Alternatives:**
+• **Hammer Curls** - Brachialis focus
+• **Cable Curls** - Constant tension
+• **Incline Dumbbell Curls** - Stretched position
+• **Band Curls** - Home option
+
+**TRICEPS EXERCISES:**
+**Primary:**
+• **Close Grip Bench Press** - Strength compound
+• **Tricep Pushdowns** - Isolation foundation
+• **Overhead Extensions** - Long head focus
+• **Dips** - Bodyweight strength
+
+**Alternatives:**
+• **Skull Crushers** - Free weight isolation
+• **Dumbbell Kickbacks** - Isolation movement
+• **Cable Overhead Extensions** - Constant tension
+• **Band Pushdowns** - Home option
+
+**FOREARM EXERCISES:**
+**Primary:**
+• **Wrist Curls** - Flexor development
+• **Reverse Curls** - Extensor development
+• **Farmer's Walk** - Grip strength
+• **Plate Pinches** - Pinch grip
+
+**Alternatives:**
+• **Hammer Curls** - Forearm engagement
+• **Towel Pull-ups** - Grip challenge
+• **Dead Hangs** - Endurance grip
+• **Wrist Roller** - Comprehensive forearm work
+
+**BEGINNER ARM WORKOUT:**
+• Barbell Curls: 3x10-12
+• Tricep Pushdowns: 3x12-15
+• Hammer Curls: 3x12-15
+• Overhead Extensions: 3x12-15
+
+**ADVANCED ARM WORKOUT:**
+• Close Grip Bench Press: 4x6-8
+• Barbell Curls: 4x8-10
+• Skull Crushers: 3x10-12
+• Preacher Curls: 3x10-12
+• Dips: 3x failure
+• Concentration Curls: 3x12-15`,
+
+      `**🎯 TARGETED ARM DEVELOPMENT 🎯**
+
+**BICEPS-FOCUSED WORKOUT:**
+• **Barbell Curls**: 4x6-8
+• **Incline Dumbbell Curls**: 3x10-12
+• **Preacher Curls**: 3x10-12
+• **Concentration Curls**: 3x12-15
+
+**TRICEPS-FOCUSED WORKOUT:**
+• **Close Grip Bench Press**: 4x6-8
+• **Weighted Dips**: 3x8-10
+• **Skull Crushers**: 3x10-12
+• **Overhead Extensions**: 3x12-15
+
+**FOREARM-FOCUSED WORKOUT:**
+• **Wrist Curls**: 4x15-20
+• **Reverse Curls**: 4x12-15
+• **Farmer's Walk**: 3x failure
+• **Plate Pinches**: 3x failure
+
+**COMPLETE ARM DEVELOPMENT:**
+**Strength Day:**
+• Close Grip Bench Press: 4x6-8
+• Barbell Curls: 4x6-8
+• Weighted Dips: 3x8-10
+
+**Hypertrophy Day:**
+• Dumbbell Curls: 4x10-12
+• Tricep Pushdowns: 4x12-15
+• Hammer Curls: 3x12-15
+• Overhead Extensions: 3x12-15
+
+**TECHNIQUE TIPS:**
+• **Control the weight** - No swinging or momentum
+• **Full range** - Complete extension and flexion
+• **Mind-muscle connection** - Focus on target muscle
+• **Varied angles** - Hit all muscle heads
+• **Proper grip** - Different grips for different emphasis`
+    ],
+  },
+
+  // NEW: Enhanced Core Workout Guide
+  coreWorkouts: {
+    patterns: [
+      /core workout/i,
+      /core exercise/i,
+      /core training/i,
+      /ab workout/i,
+      /abdominal workout/i,
+      /workout core/i,
+      /train core/i,
+      /build core/i,
+      /core muscle/i,
+      /abs workout/i,
+      /obliques workout/i,
+      /core development/i,
+      /core strength/i,
+      /how to work core/i,
+      /best core exercises/i,
+      /core workout routine/i,
+      /core workout plan/i,
+      /core workout program/i,
+      /plank/i,
+      /crunch/i,
+      /leg raise/i,
+      /russian twist/i,
+    ],
+    responses: [
+      `**🔥 COMPREHENSIVE CORE WORKOUT GUIDE 🔥**
+
+**CORE ANATOMY & FUNCTION:**
+• **Rectus Abdominis:** Spinal flexion (six-pack muscle)
+• **Obliques:** Rotation, lateral flexion
+• **Transverse Abdominis:** Core stability, compression
+• **Erector Spinae:** Spinal extension
+• **Hip Flexors:** Hip flexion, core stability
+
+**UPPER ABS EXERCISES:**
+**Primary:**
+• **Crunches** - Basic spinal flexion
+• **Cable Crunches** - Resistance added
+• **Decline Bench Crunches** - Increased range
+• **Machine Crunches** - Controlled movement
+
+**Alternatives:**
+• **Stability Ball Crunches** - Unstable surface
+• **Band Crunches** - Home option
+• **Hanging Knee Raises** - Bodyweight option
+
+**LOWER ABS EXERCISES:**
+**Primary:**
+• **Leg Raises** - Lower ab focus
+• **Hanging Leg Raises** - Advanced variation
+• **Reverse Crunches** - Pelvic tilt focus
+• **Flutter Kicks** - Endurance focus
+
+**Alternatives:**
+• **Scissor Kicks** - Dynamic movement
+• **Mountain Climbers** - Cardio integration
+• **L-sits** - Advanced static hold
+
+**OBLIQUE EXERCISES:**
+**Primary:**
+• **Russian Twists** - Rotation focus
+• **Side Planks** - Isometric lateral hold
+• **Wood Choppers** - Diagonal movement
+• **Side Bends** - Lateral flexion
+
+**Alternatives:**
+• **Cable Wood Choppers** - Resistance added
+• **Bicycle Crunches** - Dynamic rotation
+• **Oblique Crunches** - Direct isolation
+
+**CORE STABILITY EXERCISES:**
+**Primary:**
+• **Planks** - Foundational stability
+• **Dead Bugs** - Anti-extension
+• **Bird Dogs** - Anti-rotation
+• **Pallof Press** - Anti-rotation resistance
+
+**Alternatives:**
+• **Stability Ball Plank** - Unstable surface
+• **Ab Rollouts** - Advanced anti-extension
+• **Farmer's Walk** - Functional core stability
+
+**BEGINNER CORE WORKOUT:**
+• Planks: 3x30-60 seconds
+• Crunches: 3x15-20
+• Leg Raises: 3x12-15
+• Russian Twists: 3x20
+
+**ADVANCED CORE WORKOUT:**
+• Hanging Leg Raises: 3x failure
+• Ab Rollouts: 3x8-12
+• Cable Crunches: 3x15-20
+• Pallof Press: 3x10-12 per side
+• L-sits: 3x failure`,
+
+      `**🎯 TARGETED CORE DEVELOPMENT 🎯**
+
+**STRENGTH-FOCUSED WORKOUT:**
+• **Ab Rollouts**: 3x8-12
+• **Hanging Leg Raises**: 3x failure
+• **Cable Crunches**: 3x15-20
+• **Weighted Russian Twists**: 3x15-20
+
+**ENDURANCE-FOCUSED WORKOUT:**
+• **Planks**: 3x60-120 seconds
+• **Flutter Kicks**: 3x60 seconds
+• **Mountain Climbers**: 3x60 seconds
+• **Bicycle Crunches**: 3x60 seconds
+
+**STABILITY-FOCUSED WORKOUT:**
+• **Pallof Press**: 3x10-12 per side
+• **Bird Dogs**: 3x10-12 per side
+• **Dead Bugs**: 3x10-12 per side
+• **Stability Ball Plank**: 3x30-60 seconds
+
+**COMPLETE CORE DEVELOPMENT:**
+**Strength Day:**
+• Ab Rollouts: 3x8-12
+• Hanging Leg Raises: 3x failure
+• Cable Crunches: 3x15-20
+
+**Endurance Day:**
+• Planks: 3x60-120 seconds
+• Flutter Kicks: 3x60 seconds
+• Russian Twists: 3x60 seconds
+
+**TECHNIQUE TIPS:**
+• **Engage core** - Don't just go through motions
+• **Proper breathing** - Exhale on exertion
+• **Controlled movement** - No momentum
+• **Full range** - Complete contraction and stretch
+• **Progressive overload** - Increase difficulty over time`
+    ],
+  },
+
+  // NEW: Enhanced Protein Powder Guide for Different Goals
+  proteinPowderGuide: {
+    patterns: [
+      /protein powder for cutting/i,
+      /protein powder for bulking/i,
+      /protein powder for leaning/i,
+      /best protein for cutting/i,
+      /best protein for bulking/i,
+      /best protein for leaning/i,
+      /whey protein for cutting/i,
+      /whey protein for bulking/i,
+      /casein protein for cutting/i,
+      /casein protein for bulking/i,
+      /when to take protein powder/i,
+      /protein timing/i,
+      /best time to take protein/i,
+      /protein powder timing/i,
+      /protein supplement timing/i,
+      /when should i take protein/i,
+      /what protein for weight loss/i,
+      /what protein for muscle gain/i,
+      /protein powder tips/i,
+      /how to use protein powder/i,
+      /protein powder guide/i,
+    ],
+    responses: [
+      `**🥛 COMPLETE PROTEIN POWDER GUIDE 🥛**\n\n**PROTEIN FOR CUTTING/FAT LOSS:**\n\n**Best Choices:**\n1. **Whey Isolate** - Lowest calories, fast absorption\n2. **Casein** - Keeps you full longer, slow digestion\n3. **Plant-Based** - Good for calorie control\n\n**Why These Work for Cutting:**\n• **Low Calories:** More protein per calorie\n• **Satiety:** Helps control hunger\n• **Muscle Preservation:** Maintains muscle while losing fat\n\n**Sample Cutting Protein Schedule:**\n• **Morning:** Whey isolate with water (low cal)\n• **Pre-workout:** BCAA's or minimal protein\n• **Post-workout:** Whey isolate (fast recovery)\n• **Bedtime:** Casein protein (overnight recovery)\n\n**PROTEIN FOR BULKING/MUSCLE GAIN:**\n\n**Best Choices:**\n1. **Whey Concentrate** - Good balance of protein/calories\n2. **Mass Gainer** - Only if struggling to eat enough\n3. **Blend (Whey + Casein)** - Sustained release\n\n**Why These Work for Bulking:**\n• **Calorie Dense:** Helps meet calorie surplus\n• **Fast Absorption:** Post-workout recovery\n• **Convenience:** Easy extra calories\n\n**Sample Bulking Protein Schedule:**\n• **Morning:** Whey concentrate with milk/oatmeal\n• **Pre-workout:** Whey + carbs 60-90min before\n• **Post-workout:** Whey + fast carbs immediately after\n• **Between Meals:** Protein shakes as snacks\n• **Bedtime:** Casein for overnight feeding`,
+
+      `**⏰ PROTEIN POWDER TIMING & TIPS ⏰**\n\n**OPTIMAL PROTEIN TIMING:**\n\n**1. Morning (Within 30min of waking):**\n• **Type:** Whey or blend\n• **Why:** Break overnight fast, stop muscle breakdown\n• **With:** Water or milk, can add fruit\n\n**2. Pre-Workout (30-60min before):**\n• **Type:** Whey isolate or minimal protein\n• **Why:** Amino acids available during workout\n• **With:** Carbs for energy\n• **Alternative:** BCAA's if sensitive to stomach\n\n**3. Post-Workout (Within 30min after):**\n• **Type:** Whey isolate (fastest absorption)\n• **Why:** Critical window for muscle repair\n• **With:** Fast carbs (dextrose, fruit juice)\n• **Dosage:** 20-40g depending on body weight\n\n**4. Between Meals (As snack):**\n• **Type:** Any protein powder\n• **Why:** Keep protein intake consistent\n• **With:** Water, milk, or in recipes\n\n**5. Bedtime (30min before sleep):**\n• **Type:** Casein (slow digestion)\n• **Why:** Overnight muscle feeding\n• **With:** Water or milk\n• **Dosage:** 20-40g\n\n**PRO TIPS:**\n• **Total Daily Protein:** 1.6-2.2g per kg bodyweight\n• **Spread Out:** 4-6 protein feedings daily\n• **Whole Foods First:** Supplements supplement food\n• **Hydration:** Drink extra water with protein\n• **Listen to Body:** Adjust based on digestion`,
+
+      `**🎯 PROTEIN POWDER SELECTION BY GOAL 🎯**\n\n**FOR CUTTING/LEANING:**\n• **Primary:** Whey Isolate (lowest fat/carbs)\n• **Secondary:** Casein (bedtime, appetite control)\n• **Avoid:** Mass gainers, high-carb proteins\n• **Mixing:** Use water instead of milk\n• **Calories:** Track protein shakes in daily total\n\n**Sample Cutting Day:**\n• Breakfast: Whey isolate + water\n• Lunch: Whole food protein\n• Pre-workout: BCAA's\n• Post-workout: Whey isolate + water\n• Dinner: Whole food protein\n• Bedtime: Casein + water\n\n**FOR BULKING:**\n• **Primary:** Whey Concentrate (cost-effective)\n• **Secondary:** Mass gainer (if needed)\n• **Timing:** Around workouts and between meals\n• **Mixing:** Use milk, add oats/peanut butter\n• **Calories:** Use to help reach surplus\n\n**Sample Bulking Day:**\n• Breakfast: Whey + oats + milk + banana\n• Snack: Mass gainer shake\n• Lunch: Whole food protein + carbs\n• Pre-workout: Whey + fruit\n• Post-workout: Whey + dextrose/maltodextrin\n• Dinner: Whole food protein + carbs\n• Bedtime: Casein + milk\n\n**FOR MAINTENANCE/LEAN GAINS:**\n• **Primary:** Whey Blend (balance of fast/slow)\n• **Secondary:** Plant-based (variety)\n• **Timing:** Post-workout most important\n• **Mixing:** Water or milk based on calorie needs\n• **Focus:** Whole foods with protein supplementation\n\n**GENERAL RULES:**\n• Don't rely solely on shakes\n• Whole food protein should be majority\n• Time protein around your workout schedule\n• Adjust based on individual digestion\n• Stay consistent with daily intake`,
+
+      `**🔬 ADVANCED PROTEIN STRATEGIES 🔬**\n\n**PROTEIN COMBINATIONS FOR OPTIMAL RESULTS:**\n\n**Cutting Stack:**\n• **Whey Isolate:** Post-workout, morning\n• **Casein:** Bedtime, between meals\n• **BCAA's:** During fasted training\n• **EAAs:** Throughout day for muscle preservation\n\n**Bulking Stack:**\n• **Whey Concentrate:** Post-workout, between meals\n• **Mass Gainer:** When struggling to eat enough\n• **Casein:** Bedtime\n• **Creatine:** Daily for strength and size\n\n**Leaning/Recomposition Stack:**\n• **Whey Isolate:** Post-workout\n• **Blend (Whey+Casein):** Other times\n• **BCAA's:** Fasted training or between meals\n• **Glutamine:** Recovery and immune support\n\n**TIMING SECRETS:**\n\n**The 4-Hour Rule:**\n• Never go more than 4 hours without protein\n• Space 4-6 protein feedings throughout day\n• Include both fast and slow proteins\n\n**Workout Nutrition Strategy:**\n• **Pre-workout (60-90min):** Whole food protein + carbs\n• **Immediately Pre (0-30min):** BCAA's or minimal protein\n• **Post-workout (0-30min):** Whey isolate + fast carbs\n• **Post-workout Meal (60-90min):** Whole food protein + carbs\n\n**Bedtime Strategy:**\n• **Casein Protein:** 30-40g before bed\n• **Why:** 7-9 hours of muscle feeding\n• **Alternative:** Greek yogurt or cottage cheese\n\n**Troubleshooting:**\n• **Bloating:** Try isolate instead of concentrate\n• **Gas:** Consider plant-based options\n• **Not Seeing Results:** Track total daily protein intake\n• **Digestion Issues:** Take with food, try different types`,
+    ],
+  },
+
+  // NEW: Enhanced Creatine Guide
+  creatineGuide: {
+    patterns: [
+      /creatine/i,
+      /creatine monohydrate/i,
+      /when to take creatine/i,
+      /creatine timing/i,
+      /how to take creatine/i,
+      /creatine dosage/i,
+      /creatine loading/i,
+      /creatine benefits/i,
+      /creatine for muscle growth/i,
+      /creatine for strength/i,
+      /best creatine/i,
+      /creatine tips/i,
+      /creatine guide/i,
+      /should i take creatine/i,
+      /is creatine safe/i,
+      /creanine side effects/i,
+      /creatine with protein/i,
+      /creatine and workout/i,
+      /when is the best time to take creatine/i,
+      /creatine before or after workout/i,
+    ],
+    responses: [
+      `**💊 COMPLETE CREATINE GUIDE 💊**\n\n**WHAT IS CREATINE?**\n• Naturally occurring compound in muscles\n• Stores energy for high-intensity exercise\n• Most researched supplement in sports science\n• Safe and effective for most people\n\n**BENEFITS OF CREATINE:**\n✅ **Strength Increase:** 5-15% strength gains\n✅ **Muscle Growth:** Increased muscle volume and size\n✅ **Performance:** Better high-intensity performance\n✅ **Recovery:** Faster recovery between sets\n✅ **Brain Health:** Cognitive benefits\n✅ **Safe:** Extensive research shows safety\n\n**DOSAGE & TIMING:**\n\n**Standard Daily Protocol:**\n• **Dosage:** 3-5g daily\n• **Timing:** Anytime (consistency matters most)\n• **Form:** Creatine Monohydrate (most researched)\n\n**Loading Phase (Optional):**\n• **Duration:** 5-7 days\n• **Dosage:** 20g daily (4x5g servings)\n• **Purpose:** Saturate muscles faster\n• **Note:** Not necessary, but works faster\n\n**WHEN TO TAKE CREATINE:**\n\n**Option 1: Post-Workout (Recommended)**\n• **When:** Within 30 minutes after workout\n• **Why:** Enhanced uptake with insulin spike\n• **With:** Protein shake + carbs\n• **Benefits:** Maximum muscle saturation\n\n**Option 2: Pre-Workout**\n• **When:** 30-60 minutes before workout\n• **Why:** Increased energy during workout\n• **With:** Pre-workout or carb source\n• **Benefits:** Immediate performance boost\n\n**Option 3: Anytime**\n• **When:** Any consistent time daily\n• **Why:** Creatine saturation takes weeks\n• **With:** Any meal or drink\n• **Benefits:** Simplest, still effective\n\n**BEST PRACTICE:** Take 5g post-workout with your protein shake and some simple carbs!`,
+
+      `**⏱️ CREATINE TIMING DEEPDIVE ⏱️**\n\n**THE SCIENCE BEHIND CREATINE TIMING:**\n\n**Post-Workout Advantage:**\n• **Insulin Sensitivity:** Muscles more receptive post-workout\n• **Nutrient Delivery:** Enhanced blood flow to muscles\n• **Glycogen Replenishment:** Works well with post-workout carbs\n• **Research:** Some studies show slight advantage post-workout\n\n**Pre-Workout Benefits:**\n• **Immediate Availability:** In system during workout\n• **Performance:** May help with workout intensity\n• **Psychological:** Knowing it's in your system\n\n**The Truth About Timing:**\n• **Consistency > Timing:** Taking it daily matters most\n• **Saturation Takes Time:** 3-4 weeks to fully saturate muscles\n• **Muscle Memory:** Once saturated, stays for weeks\n\n**OPTIMAL CREATINE PROTOCOL:**\n\n**For Maximum Results:**\n1. **Dosage:** 5g creatine monohydrate daily\n2. **Timing:** Post-workout with protein + carbs\n3. **Form:** Micronized creatine monohydrate\n4. **Liquid:** Mix with juice or carb-containing drink\n\n**Simple Effective Protocol:**\n• **Step 1:** Take 5g creatine daily\n• **Step 2:** Mix with your post-workout shake\n• **Step 3:** Add some simple carbs (juice, dextrose)\n• **Step 4:** Be consistent for 30+ days\n\n**WORKOUT DAY SCHEDULE:**\n• **Morning:** Regular routine\n• **Pre-workout:** Focus on carbs + minimal protein\n• **During workout:** Stay hydrated\n• **Post-workout:** 5g creatine + 25g protein + 40g carbs\n• **Evening:** Regular meals\n\n**NON-WORKOUT DAY SCHEDULE:**\n• **Morning or with any meal:** 5g creatine\n• **With:** Carb-containing meal or juice\n• **Consistency:** Same time daily helps remember`,
+
+      `**🚀 ADVANCED CREATINE STRATEGIES 🚀**\n\n**CREATINE STACKING & COMBINATIONS:**\n\n**With Protein Powder:**\n• **Post-workout:** Creatine + Whey Protein + Carbs\n• **Benefits:** Enhanced absorption, convenience\n• **Ratio:** 5g creatine + 25g protein + 40g carbs\n\n**With Pre-workout:**\n• **Option:** Some pre-workouts contain creatine\n• **Check dosage:** Ensure 3-5g total creatine\n• **Timing:** 30min before workout\n\n**With Other Supplements:**\n• **Beta-Alanine:** Works well together\n• **BCAA's:** Can be combined\n• **Glutamine:** No interference\n• **Citrulline:** Complementary effects\n\n**LOADING PHASE DETAILS:**\n\n**When to Load:**\n• **Beginners:** First time using creatine\n• **Returning:** After long break\n• **Competitors:** Before competition prep\n\n**Loading Protocol:**\n• **Days 1-7:** 20g daily (4 servings of 5g)\n• **Day 8+:** 3-5g daily maintenance\n• **With:** Carb-rich drinks for better absorption\n\n**No-Loading Protocol:**\n• **Days 1-30:** 5g daily\n• **Result:** Full saturation in 3-4 weeks\n• **Advantage:** Less digestive issues\n\n**TROUBLESHOOTING & SIDE EFFECTS:**\n\n**Common Concerns:**\n• **Water Retention:** Normal, intramuscular water\n• **Digestion Issues:** Take with food, try different forms\n• **Cramping:** Ensure proper hydration\n• **No Effects:** Check consistency and dosage\n\n**Solutions:**\n• **Bloating:** Switch to micronized creatine\n• **Stomach Upset:** Take with meals, split doses\n• **No Results:** Ensure 3-5g daily for 30+ days\n• **Weight Gain:** Normal water weight, indicates saturation\n\n**SPECIAL CONSIDERATIONS:**\n\n**For Cutting/Fat Loss:**\n• **Continue Creatine:** Helps maintain strength\n• **Dosage:** Same 3-5g daily\n• **Benefits:** Preserves muscle while dieting\n\n**For Bulking:**\n• **Essential:** Helps strength and size gains\n• **Timing:** Post-workout optimal\n• **Stack:** With protein and carbs\n\n**For Endurance Athletes:**\n• **Benefits:** Improved high-intensity intervals\n• **Dosage:** 3-5g daily\n• **Timing:** Anytime, consistency key\n\n**FINAL RECOMMENDATION:**\n• **Form:** Creatine Monohydrate\n• **Dosage:** 5g daily\n• **Timing:** Post-workout with carbs\n• **Duration:** Year-round\n• **Hydration:** Drink plenty of water\n• **Patience:** Full effects in 3-4 weeks`,
+
+      `**🎯 CREATINE MYTHS vs FACTS 🎯**\n\n**MYTHS BUSTED:**\n\n**❌ "Creatine is a steroid"**\n✅ **FACT:** Creatine is naturally occurring, not a hormone\n\n**❌ "Creatine causes kidney damage"**\n✅ **FACT:** Safe for healthy kidneys, extensive research\n\n**❌ "You must cycle creatine"**\n✅ **FACT:** No need to cycle, can use year-round\n\n**❌ "Creatine causes dehydration/cramps"**\n✅ **FACT:** Actually may improve hydration in muscles\n\n**❌ "Only men should use creatine"**\n✅ **FACT:** Benefits both men and women\n\n**❌ "Loading phase is mandatory"**\n✅ **FACT:** Optional, both methods work\n\n**PROVEN FACTS:**\n• **Safety:** Most researched supplement\n• **Effectiveness:** Works for 80% of people\n• **Forms:** Monohydrate is best researched\n• **Timing:** Consistency > precise timing\n• **Responders:** Some people are non-responders\n\n**WHO SHOULD USE CREATINE:**\n• Strength athletes\n• Bodybuilders\n• Team sport athletes\n• Anyone doing high-intensity training\n• Most healthy adults\n\n**WHO SHOULD CONSULT DOCTOR FIRST:**\n• People with kidney issues\n• Those with diabetes\n• Anyone on medication\n• Pregnant/nursing women\n• Children/teens\n\n**FINAL TIPS:**\n1. Start with 5g daily\n2. Take post-workout with carbs\n3. Use micronized monohydrate\n4. Stay consistent for 30 days\n5. Drink plenty of water\n6. Be patient - full effects take weeks`,
     ],
   },
 
@@ -568,7 +2220,7 @@ export const fitnessHealthData = {
     ],
   },
 
-  // ENHANCED: Pre-Workout Nutrition with alternative phrasing
+  // ENHANCED: Pre-Workout Nutrition with specific food recommendations
   preWorkoutNutrition: {
     patterns: [
       /eat before workout/i,
@@ -606,15 +2258,34 @@ export const fitnessHealthData = {
       /before.*workout.*eat/i,
       /before.*gym.*eat/i,
       /before.*training.*eat/i,
+      
+      // NEW: More specific pre-workout food patterns
+      /what should I eat before workout/i,
+      /what food to eat before gym/i,
+      /best food before training/i,
+      /what to eat pre workout/i,
+      /pre workout food suggestions/i,
+      /food before exercise/i,
+      /eating before gym session/i,
+      /what to consume before workout/i,
+      /pre workout meal ideas/i,
+      /nutrition before gym/i,
+      /fuel before workout/i,
+      /what should I have before workout/i,
+      /recommend food before workout/i,
+      /suggest food before gym/i,
+      /ideal pre workout meal/i,
     ],
     responses: [
-      `**Pre-Workout Nutrition Guide** 🍌\n\n**2-3 Hours Before Workout (Full Meal):**\n• Complex carbs + lean protein + healthy fats\n• Examples:\n  - Chicken breast with brown rice and vegetables\n  - Oatmeal with protein powder and nuts\n  - Sweet potato with grilled fish and avocado\n  - Whole grain toast with eggs and avocado\n\n**30-60 Minutes Before Workout (Light Snack):**\n• Fast-digesting carbs + small protein\n• Examples:\n  - Banana with almond butter\n  - Greek yogurt with berries\n  - Rice cakes with honey\n  - Protein shake with fruit\n  - Energy bar\n\n**Key Principles:**\n• Carbs provide energy for your workout\n• Protein helps prevent muscle breakdown\n• Avoid heavy fats that slow digestion\n• Stay hydrated with water\n• Time your meal based on your digestion\n\n**Sample Pre-Workout Meals:**\n• **Strength Training:** Oats + whey protein + banana\n• **Cardio:** Toast + honey + small protein shake\n• **Endurance:** Sweet potato + chicken + light vegetables`,
+      `**🍌 PRECISE PRE-WORKOUT NUTRITION GUIDE**\n\n**IMMEDIATE ENERGY (30-60 minutes before workout):**\n\n**Quick Digestion Options:**\n• **Banana** - Fast carbs, potassium for muscle function\n• **Rice cakes with honey** - Pure fast-digesting carbs\n• **Dates** - Natural sugar for quick energy\n• **Energy gel** - Concentrated simple carbs\n• **Small fruit juice** - Liquid carbs, easy digestion\n\n**PROTEIN + CARBS (1-2 hours before workout):**\n\n**Balanced Pre-Workout Meals:**\n• **Greek yogurt with berries** - Protein + fast carbs\n• **Oatmeal with protein powder** - Sustained energy + muscle protection\n• **Apple with almond butter** - Carbs + healthy fats\n• **Rice with small chicken portion** - Carbs + lean protein\n• **Whole grain toast with peanut butter** - Complex carbs + protein/fat\n\n**TIMING-BASED RECOMMENDATIONS:**\n\n**If eating 2-3 hours before:**\n• Chicken breast + brown rice + vegetables\n• Salmon + sweet potato + greens\n• Lean beef + quinoa + mixed veggies\n\n**If eating 30-60 minutes before:**\n• Banana or apple\n• Protein shake (small serving)\n• Handful of dried fruits\n• Rice cakes with jam\n\n**AVOID BEFORE WORKOUT:**\n• High-fat foods (slow digestion)\n• High-fiber vegetables (gas/bloating)\n• Spicy foods (stomach discomfort)\n• Large portions (feeling heavy)\n• Sugary junk food (energy crash)`,
 
-      `**Optimal Pre-Workout Nutrition Timing** ⏰\n\n**Large Meal (3-4 hours before):**\n• Balanced meal with carbs, protein, and fats\n• Gives time for proper digestion\n• Sustained energy release\n\n**Medium Meal (2-3 hours before):**\n• Moderate portion size\n• Focus on carbs and protein\n• Example: Turkey sandwich on whole grain\n\n**Small Snack (30-60 minutes before):**\n• Easily digestible carbs\n• Minimal fat and fiber\n• Example: Banana or energy gel\n\n**Immediately Before (0-30 minutes):**\n• Liquid nutrition only\n• Fast-absorbing carbs\n• Example: Sports drink or BCAA's\n\n**Foods to Avoid Before Training:**\n• High-fat foods (slow digestion)\n• High-fiber foods (gas/bloating)\n• Spicy foods (stomach discomfort)\n• Large amounts of protein (heavy digestion)\n• Sugary junk food (energy crash)`,
+      `**⏰ PRE-WORKOUT TIMING & SPECIFIC FOODS**\n\n**30 MINUTES BEFORE (Quick Energy):**\n• **Banana** - Perfect quick energy source\n• **Dates (2-3 pieces)** - Natural sugar boost\n• **BCAA drink** - Muscle protection without digestion\n• **Small coffee** - Energy + focus (if caffeine tolerant)\n\n**1 HOUR BEFORE (Light Meal):**\n• **Greek yogurt (100-150g)** - Protein + some carbs\n• **Oatmeal (1/2 cup)** - Sustained energy release\n• **Apple with almond butter** - Balanced energy\n• **Rice cakes (2-3)** with honey - Pure carb fuel\n\n**2 HOURS BEFORE (Proper Meal):**\n• **Chicken (100g) + rice (1/2 cup)** - Balanced protein + carbs\n• **Salmon (100g) + sweet potato (small)** - Quality nutrients\n• **Eggs (2-3) + whole grain toast** - Protein + complex carbs\n• **Tuna sandwich** - Lean protein + carbs\n\n**3 HOURS BEFORE (Full Meal):**\n• **Lean meat + complex carbs + vegetables** - Complete nutrition\n• **Fish + quinoa + salad** - Balanced meal\n• **Turkey + brown rice + steamed veggies** - Optimal fueling\n\n**LIQUID OPTIONS (15-30 minutes before):**\n• **Black coffee** - Energy + performance\n• **Green tea** - Gentle energy + antioxidants\n• **BCAA drink** - Muscle amino acids\n• **Electrolyte drink** - Hydration + minerals`,
+
+      `**Pre-Workout Nutrition Guide** 🍌\n\n**2-3 Hours Before Workout (Full Meal):**\n• Complex carbs + lean protein + healthy fats\n• Examples:\n  - Chicken breast with brown rice and vegetables\n  - Oatmeal with protein powder and nuts\n  - Sweet potato with grilled fish and avocado\n  - Whole grain toast with eggs and avocado\n\n**30-60 Minutes Before Workout (Light Snack):**\n• Fast-digesting carbs + small protein\n• Examples:\n  - Banana with almond butter\n  - Greek yogurt with berries\n  - Rice cakes with honey\n  - Protein shake with fruit\n  - Energy bar\n\n**Key Principles:**\n• Carbs provide energy for your workout\n• Protein helps prevent muscle breakdown\n• Avoid heavy fats that slow digestion\n• Stay hydrated with water\n• Time your meal based on your digestion\n\n**Sample Pre-Workout Meals:**\n• **Strength Training:** Oats + whey protein + banana\n• **Cardio:** Toast + honey + small protein shake\n• **Endurance:** Sweet potato + chicken + light vegetables`,
     ],
   },
 
-  // ENHANCED: Post-Workout Nutrition with alternative phrasing
+  // ENHANCED: Post-Workout Nutrition with specific food and drink recommendations
   postWorkoutNutrition: {
     patterns: [
       /eat after workout/i,
@@ -654,11 +2325,33 @@ export const fitnessHealthData = {
       /after.*training.*eat/i,
       /recovery meal/i,
       /recovery food/i,
+      
+      // NEW: More specific post-workout patterns
+      /what should I eat after workout/i,
+      /what food to eat after gym/i,
+      /best food after training/i,
+      /what to eat post workout/i,
+      /post workout food suggestions/i,
+      /food after exercise/i,
+      /eating after gym session/i,
+      /what to consume after workout/i,
+      /post workout meal ideas/i,
+      /recovery nutrition/i,
+      /what should I have after workout/i,
+      /recommend food after workout/i,
+      /suggest food after gym/i,
+      /ideal post workout meal/i,
+      /what to drink after workout/i,
+      /best drinks after gym/i,
+      /post workout drinks/i,
+      /recovery drinks/i,
     ],
     responses: [
-      `**Post-Workout Nutrition Guide** 🥗\n\n**The Anabolic Window (30-60 minutes post-workout):**\n• Fast-digesting protein + simple carbs\n• Critical for muscle recovery and growth\n• Examples:\n  - Whey protein shake with dextrose/maltodextrin\n  - Chocolate milk (excellent recovery drink)\n  - Greek yogurt with honey and fruit\n  - Rice cakes with jam and protein powder\n\n**Full Meal (1-2 hours after workout):**\n• Balanced meal with protein + complex carbs\n• Replenishes glycogen stores\n• Supports muscle repair\n• Examples:\n  - Grilled chicken with quinoa and roasted vegetables\n  - Salmon with sweet potato and asparagus\n  - Lean steak with brown rice and broccoli\n  - Tofu stir-fry with brown rice\n\n**Key Nutrients for Recovery:**\n• **Protein:** 20-40g for muscle repair\n• **Carbs:** 0.5-0.7g per kg bodyweight for glycogen\n• **Fats:** Small amount of healthy fats\n• **Hydration:** Water + electrolytes\n\n**Sample Post-Workout Combinations:**\n• **Mass Building:** Chicken + rice + vegetables\n• **Fat Loss:** Fish + sweet potato + greens\n• **Vegetarian:** Tofu + quinoa + mixed vegetables\n• **Quick Option:** Protein shake + banana + nuts`,
+      `**🥛 PRECISE POST-WORKOUT NUTRITION GUIDE**\n\n**IMMEDIATE RECOVERY (Within 30 minutes):**\n\n**Fast-Absorbing Options:**\n• **Whey protein shake** - Quick muscle repair\n• **Chocolate milk** - Perfect protein:carb ratio\n• **BCAA drink** - Muscle recovery aminos\n• **Fruit smoothie** - Carbs + hydration\n• **Recovery drink** - Electrolytes + nutrients\n\n**SOLID FOOD OPTIONS (Within 1 hour):**\n\n**Protein + Fast Carb Combinations:**\n• **Greek yogurt + honey + banana** - Protein + simple carbs\n• **Cottage cheese + pineapple** - Casein protein + fruit sugar\n• **Tuna + rice cakes** - Lean protein + quick carbs\n• **Egg whites + sweet potato** - Quality protein + complex carbs\n• **Protein bar** - Convenient balanced nutrition\n\n**FULL RECOVERY MEALS (1-2 hours after):**\n\n**Complete Meal Options:**\n• **Chicken breast (150g) + white rice (1 cup) + vegetables**\n• **Salmon (150g) + quinoa (1 cup) + roasted veggies**\n• **Lean steak (150g) + potato + green beans**\n• **Tofu stir-fry with rice + mixed vegetables**\n• **Turkey + pasta + tomato sauce**\n\n**POST-WORKOUT DRINKS:**\n• **Water** - Essential hydration\n• **Electrolyte drink** - Replenish minerals\n• **Protein shake** - Muscle repair\n• **Chocolate milk** - Research-backed recovery\n• **Fruit juice + protein** - Quick glycogen replenishment`,
 
-      `**Post-Workout Recovery Nutrition** 💪\n\n**Immediate Recovery (0-30 minutes):**\n• Liquid nutrition is optimal\n• Fast-absorbing protein (whey)\n• Simple carbs to spike insulin\n• Rehydration with electrolytes\n\n**Solid Meal (1-2 hours):**\n• Whole food protein source\n• Complex carbohydrates\n• Vegetables for micronutrients\n• Healthy fats in moderation\n\n**Ideal Protein Sources:**\n• Whey protein (fast absorption)\n• Chicken breast or turkey\n• Fish (salmon, tuna)\n• Eggs or egg whites\n• Greek yogurt or cottage cheese\n• Lean red meat\n\n**Ideal Carb Sources:**\n• Sweet potatoes\n• Brown rice or quinoa\n• Oats\n• Whole grain bread/pasta\n• Fruits (bananas, berries)\n• Potatoes\n\n**Recovery Tips:**\n• Eat within 2 hours of training\n• Include anti-inflammatory foods\n• Stay hydrated\n• Consider BCAA's if training fasted\n• Get adequate sleep for optimal recovery`,
+      `**💧 POST-WORKOUT DRINKS & SPECIFIC FOODS**\n\n**IMMEDIATE HYDRATION (0-15 minutes after):**\n• **Water** - 16-20 oz immediately\n• **Electrolyte drink** - If sweated heavily\n• **BCAA drink** - Muscle recovery support\n• **Coconut water** - Natural electrolytes\n\n**RECOVERY DRINKS (15-30 minutes after):**\n• **Whey protein shake** - 25-30g protein\n• **Chocolate milk** - 8-16 oz\n• **Fruit smoothie** - Banana + berries + protein\n• **Recovery shake** - Commercial recovery product\n\n**SPECIFIC FOOD COMBINATIONS:**\n\n**For Muscle Growth:**\n• **Chicken + white rice + broccoli** - Classic mass building\n• **Salmon + sweet potato + asparagus** - Quality nutrients\n• **Lean beef + potato + green beans** - Strength recovery\n• **Eggs + oatmeal + fruit** - Balanced recovery\n\n**For Fat Loss:**\n• **Tuna + quinoa + mixed greens** - Lean protein + fiber\n• **Turkey + brown rice + vegetables** - Lower calorie option\n• **Cottage cheese + apple + almonds** - Protein + healthy fats\n• **Protein shake + small banana** - Controlled calories\n\n**QUICK OPTIONS (No cooking):**\n• **Greek yogurt + berries + honey**\n• **Canned tuna + whole grain crackers**\n• **Protein bar + banana**\n• **Cottage cheese + peach slices**\n• **Hard-boiled eggs + apple**\n\n**TIMING MATTERS:**\n• **0-30 min:** Liquid nutrition best\n• **30-60 min:** Light solid foods\n• **1-2 hours:** Full balanced meal\n• **Don't wait more than 2 hours to eat!**`,
+
+      `**Post-Workout Nutrition Guide** 🥗\n\n**The Anabolic Window (30-60 minutes post-workout):**\n• Fast-digesting protein + simple carbs\n• Critical for muscle recovery and growth\n• Examples:\n  - Whey protein shake with dextrose/maltodextrin\n  - Chocolate milk (excellent recovery drink)\n  - Greek yogurt with honey and fruit\n  - Rice cakes with jam and protein powder\n\n**Full Meal (1-2 hours after workout):**\n• Balanced meal with protein + complex carbs\n• Replenishes glycogen stores\n• Supports muscle repair\n• Examples:\n  - Grilled chicken with quinoa and roasted vegetables\n  - Salmon with sweet potato and asparagus\n  - Lean steak with brown rice and broccoli\n  - Tofu stir-fry with brown rice\n\n**Key Nutrients for Recovery:**\n• **Protein:** 20-40g for muscle repair\n• **Carbs:** 0.5-0.7g per kg bodyweight for glycogen\n• **Fats:** Small amount of healthy fats\n• **Hydration:** Water + electrolytes\n\n**Sample Post-Workout Combinations:**\n• **Mass Building:** Chicken + rice + vegetables\n• **Fat Loss:** Fish + sweet potato + greens\n• **Vegetarian:** Tofu + quinoa + mixed vegetables\n• **Quick Option:** Protein shake + banana + nuts`,
     ],
   },
 
@@ -2300,7 +3993,7 @@ const generateWeeklyMealPlan = (dailyCalories, dailyProtein, mealsPerDay) => {
     const dayPlan = generateDailyMealPlan(dailyTargets, mealsPerDay);
     dayPlan.meals.forEach((meal, index) => {
       plan += `• **Meal ${index + 1}:** ${meal.description} (${
-        meal.calories
+              meal.calories
       } cal, ${meal.protein}g protein)\n`;
     });
     plan += `\n`;
@@ -2584,7 +4277,46 @@ const calculatePatternScore = (pattern, message) => {
 // Enhanced keyword-based response system
 const getKeywordBasedResponse = (message) => {
   const keywords = {
-    // Workout and exercise keywords
+    // NEW: Split explanation keywords
+    ppl: [
+      "PPL is great for intermediate lifters! Beginners should start with full body or upper/lower splits.",
+      "Push/Pull/Legs split hits each muscle 2x/week - perfect for balanced development.",
+    ],
+    "upper lower": [
+      "Upper/Lower split is excellent for beginners - good frequency and balanced approach!",
+      "4-day Upper/Lower split provides great frequency for muscle growth.",
+    ],
+    "bro split": [
+      "Bro splits work best for advanced lifters who need high volume per session.",
+      "Beginners should avoid bro splits - the frequency is too low for optimal growth.",
+    ],
+    "arnold split": [
+      "The Arnold split is advanced - 6 days/week hitting muscles 2x with high volume.",
+      "Only experienced bodybuilders should attempt the classic Arnold split routine.",
+    ],
+
+    // NEW: Protein powder keywords
+    "protein powder": [
+      "Protein powder timing depends on your goals - post-workout is usually best!",
+      "Whey isolate for cutting, whey concentrate for bulking, casein for bedtime.",
+    ],
+    "whey protein": [
+      "Whey protein is fast-absorbing - perfect for post-workout recovery!",
+      "Whey isolate has fewer calories, making it great for cutting phases.",
+    ],
+    casein: [
+      "Casein protein digests slowly - ideal for bedtime or between meals.",
+      "Use casein when you need sustained protein release over several hours.",
+    ],
+
+    // NEW: Creatine keywords
+    creatine: [
+      "Take creatine post-workout with carbs for best absorption!",
+      "5g of creatine monohydrate daily is the proven effective dosage.",
+      "Creatine works best when taken consistently for 3-4 weeks.",
+    ],
+
+    // ... your existing keywords remain the same
     workout: [
       "Try focusing on compound movements like squats, bench press, and deadlifts for maximum efficiency.",
       "Remember to warm up properly and cool down after your workouts!",
@@ -2597,8 +4329,6 @@ const getKeywordBasedResponse = (message) => {
       "Make the most of your gym time by having a plan before you go.",
       "Don't be afraid to ask gym staff for help with equipment or form!",
     ],
-
-    // Nutrition keywords
     food: [
       "Focus on whole, unprocessed foods for optimal nutrition.",
       "Balance your plate with protein, complex carbs, and healthy fats at each meal.",
@@ -2611,8 +4341,6 @@ const getKeywordBasedResponse = (message) => {
       "The best diet is one you can maintain long-term - focus on sustainable habits.",
       "Include foods you enjoy in moderation for better adherence to your nutrition plan.",
     ],
-
-    // Health and wellness keywords
     health: [
       "Remember that health includes physical, mental, and emotional wellbeing.",
       "Small, consistent healthy choices lead to big results over time.",
@@ -2625,8 +4353,6 @@ const getKeywordBasedResponse = (message) => {
       "Manage stress through exercise, meditation, and proper work-life balance.",
       "Chronic stress can impact both physical and mental health - prioritize stress management.",
     ],
-
-    // Goal-specific keywords
     weight: [
       "Sustainable weight management focuses on long-term habits, not quick fixes.",
       "Combine proper nutrition with consistent exercise for best weight management results.",
@@ -2639,8 +4365,6 @@ const getKeywordBasedResponse = (message) => {
       "Focus on compound lifts and progressive overload for strength gains.",
       "Proper form is more important than heavy weights for long-term strength development.",
     ],
-
-    // Recovery keywords
     recovery: [
       "Active recovery like walking or light stretching can enhance recovery.",
       "Nutrition, hydration, and sleep are crucial components of recovery.",

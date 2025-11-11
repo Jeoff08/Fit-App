@@ -48,6 +48,7 @@ const getWorkoutImage = (exerciseName) => {
     'pec deck machine': '/WorkoutsImage/pec deck machine.gif',
     'butterfly machine': '/WorkoutsImage/pec-deck-butterfly-exercice-musculation.webp',
     'push ups': '/GIF/push ups.gif',
+    'push-up prep': '/GIF/push ups.gif',
 
 
     // Shoulder exercises
@@ -56,6 +57,7 @@ const getWorkoutImage = (exerciseName) => {
     'light dumbbell shrugs': '/WorkoutsImage/dumbbell-shrug.gif',
     'seated face pull': '/WorkoutsImage/seated face pull.gif',
     'Arnold press': '/GIF/arnold-presses.gif',
+    'Dumbbell Warm-up Flow': '/GIF/SEAT_DB_SHD_PRESS (1).gif', 
     'dumbbell shoulder press': '/GIF/SEAT_DB_SHD_PRESS (1).gif',
     'dumbbell reverse fly': '/GIF/dumbbell-reverse-fly.gif',
     'overhead press': '/WorkoutsImage/Overhead-Press.webp',
@@ -67,6 +69,7 @@ const getWorkoutImage = (exerciseName) => {
     'front raise': '/WorkoutsImage/front raises.gif',
     'rear delt fly': '/GIF/seated-reverse-fly.gif',
     'machine lateral raises': '/WorkoutsImage/machine lateral.gif',
+    'Cable Activation Circuit': '/WorkoutsImage/Animation-FP-stehend-beiarmig.gif',
     'face pull': '/WorkoutsImage/Animation-FP-stehend-beiarmig.gif',
     'cable lateral raises': '/WorkoutsImage/CABLE_LAT_RAISE.gif',
     'front cable raises': '/WorkoutsImage/cable-front-raise-movement.gif',
@@ -132,6 +135,7 @@ const getWorkoutImage = (exerciseName) => {
     
     
     // Leg exercises
+    'glute activation': 'public/GIF2.0/Banded-Glute-Kickbacks.gif',
     'glute bridge': '/GIF2.0/elevated-glute-bridge.gif',
     'glute ham raise': '/GIF2.0/Glute-Ham-Raise.gif',
     'leg press calf raise': '/GIF2.0/leg-press-calf-raise.gif',
@@ -260,12 +264,17 @@ const getWorkoutImage = (exerciseName) => {
     'burpees': '',
     'jump rope': '/GIF2.0/JUMP_ROPE.gif',
     'lower body dynamic': '/GIF2.0/lower body dynamic.gif',
-    'elliptical': '',
+    'cardio: elliptical trainer': '/GIF/Elliptical-Machine.gif',
     'dynamic stretching': '/GIF2.0/Seated-Hamstring-Stretch.gif',
     'donkey kicks': '/GIF2.0/Donkey-Kick-on-Leg-Extension-Machine.gif',
     'hamstring curl': '/WorkoutsImage/Lying-leg-curl-gif.gif',
     
     // Full body/Compound exercises
+    'stair climber': 'public/GIF2.0/Walking-on-Stepmill.gif',
+    'mountain climbers': 'public/GIF2.0/Cross-Body-Mountain-Climber.gif',
+    'rowing machine': 'public/GIF2.0/Rowing-Machine.gif',
+    '': '',
+    'treadmill': '/GIF2.0/walking treadmill.gif',
     'cat-cow stretch': '/GIF2.0/cats crow.gif',
     'pelvic tilts': '/GIF2.0/pelvic tilts.gif',
     'bird-dog': '/GIF2.0/bird dog.gif',
@@ -275,6 +284,7 @@ const getWorkoutImage = (exerciseName) => {
     
     // Machine exercises
     'chest press machine': '/GIF/DEC_CHEST_MAC.gif',
+    'machine-based activation': '/GIF/DEC_CHEST_MAC.gif',
     'machine chest press (light)': '/GIF/Chest-Press-Machine.gif',
     'incline machine chest press': '/WorkoutsImage/Incline-Chest-Press-Machine.gif',
     'shoulder press machine': '',
