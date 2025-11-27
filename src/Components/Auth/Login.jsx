@@ -1,5 +1,5 @@
 // Login.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../Config/firebaseconfig';
@@ -11,19 +11,18 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showPointerAnimation, setShowPointerAnimation] = useState(true);
+  
+  const warningButtonRef = useRef(null);
 
-  // Show warning modal when component mounts
   useEffect(() => {
-    const hasSeenWarning = localStorage.getItem('ashfit-warning-seen');
-    if (!hasSeenWarning) {
-      setTimeout(() => setShowWarningModal(true), 1000);
-    }
-  }, []);
+    // Show pointer animation only for first 10 seconds
+    const timer = setTimeout(() => {
+      setShowPointerAnimation(false);
+    }, 10000);
 
-  const handleAcceptWarning = () => {
-    localStorage.setItem('ashfit-warning-seen', 'true');
-    setShowWarningModal(false);
-  };
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,6 +45,16 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
     setTimeout(() => {
       onToggleAuthMode();
     }, 2000);
+  };
+
+  const handleShowWarning = () => {
+    setShowWarningModal(true);
+    setShowPointerAnimation(false); // Stop animation when user clicks the button
+  };
+
+  const handleAcceptWarning = () => {
+    localStorage.setItem('ashfit-warning-seen', 'true');
+    setShowWarningModal(false);
   };
 
   // Framer Motion variants for compact modal
@@ -141,6 +150,57 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
     }
   };
 
+  // Pointer animation variants
+  const pointerVariants = {
+    initial: { 
+      x: -100, 
+      y: -50,
+      opacity: 0,
+      scale: 0.8
+    },
+    animate: {
+      x: 0,
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 20,
+        duration: 0.8
+      }
+    },
+    exit: {
+      x: 100,
+      y: -50,
+      opacity: 0,
+      scale: 0.8,
+      transition: {
+        duration: 0.5
+      }
+    },
+    pulse: {
+      x: [0, -10, 0],
+      y: [0, -5, 0],
+      transition: {
+        duration: 1.5,
+        repeat: Infinity,
+        repeatType: "reverse"
+      }
+    }
+  };
+
+  const handVariants = {
+    wave: {
+      rotate: [0, 15, -10, 15, 0],
+      transition: {
+        duration: 1.2,
+        repeat: Infinity,
+        repeatType: "reverse"
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative font-sans text-white">
       {/* Dynamic Cinematic Background */}
@@ -153,6 +213,97 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-green-900 opacity-90 backdrop-filter backdrop-blur-sm"></div>
       </div>
       
+      {/* Animated Pointer to Important Information Button */}
+      <AnimatePresence>
+        {showPointerAnimation && (
+          <motion.div
+            className="fixed z-40 pointer-events-none"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: 'translate(100px, -150px)'
+            }}
+            variants={pointerVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            {/* Pointer Container */}
+            <motion.div 
+              className="relative"
+              variants={pointerVariants}
+              animate="pulse"
+            >
+              {/* Speech Bubble */}
+              <motion.div 
+                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl rounded-bl-none shadow-2xl shadow-amber-500/30 mb-2 relative min-w-[180px]"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+              >
+                <div className="flex items-center space-x-2">
+                  <motion.i 
+                    className="fas fa-exclamation-circle text-sm"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                  <span>Important App Information!</span>
+                </div>
+                {/* Speech bubble tail */}
+                <div className="absolute -bottom-2 left-4 w-4 h-4 bg-amber-500 transform rotate-45"></div>
+              </motion.div>
+
+              {/* Animated Hand Pointer */}
+              <motion.div
+                className="flex items-center justify-center space-x-2"
+              >
+                <motion.div
+                  variants={handVariants}
+                  animate="wave"
+                  className="text-2xl text-amber-400"
+                >
+                  👆
+                </motion.div>
+                <motion.div
+                  className="w-12 h-1 bg-gradient-to-r from-amber-400 to-transparent rounded-full"
+                  animate={{
+                    scaleX: [1, 1.5, 1],
+                    opacity: [1, 0.7, 1]
+                  }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }}
+                />
+              </motion.div>
+
+              {/* Floating particles */}
+              {[1, 2, 3].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-amber-400 rounded-full"
+                  style={{
+                    left: `${10 + i * 15}px`,
+                    top: `${-5 - i * 8}px`
+                  }}
+                  animate={{
+                    y: [0, -10, 0],
+                    opacity: [0.7, 1, 0.7],
+                    scale: [1, 1.3, 1]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.3
+                  }}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Compact Warning Modal Popup - Smaller size */}
       <AnimatePresence>
         {showWarningModal && (
@@ -212,6 +363,11 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                 <div className="space-y-3 text-amber-300">
                   {[
                     {
+                      title: "SAFETY REMINDER",
+                      content: "All content is personalized based on your profile data. Consult healthcare professionals before starting new fitness programs. You are responsible for your health and safety during workouts.",
+                      icon: "fa-exclamation-triangle"
+                    },
+                    {
                       title: "PERSONALIZED CONTENT",
                       content: "All fitness recommendations, workout plans, and nutritional guidance provided in this app are based on your profile data and information. The content is tailored specifically for you.",
                       icon: "fa-user-circle"
@@ -259,14 +415,14 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
               >
                 <div className="flex flex-col gap-2">
                   <motion.button
-                    onClick={() => window.close()}
+                    onClick={() => setShowWarningModal(false)}
                     variants={buttonHoverVariants}
                     whileHover="hover"
                     whileTap="tap"
                     className="w-full px-3 py-2 bg-gray-600/50 text-gray-300 rounded-lg border border-gray-500/30 text-xs font-semibold"
                   >
                     <i className="fas fa-times mr-1"></i>
-                    Exit Application
+                    Close
                   </motion.button>
                   <motion.button
                     onClick={handleAcceptWarning}
@@ -402,25 +558,60 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
             
           </motion.p>
         </motion.div>
-        
-        {/* System Reminder Section (Smaller version) */}
+
+        {/* Important Information Button with Enhanced Animation */}
         <motion.div 
-          className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/30 rounded-xl p-4 mb-4 sm:mb-6"
+          className="mb-6 sm:mb-8 relative"
           variants={itemVariants}
+          ref={warningButtonRef}
         >
-          <div className="flex items-start space-x-3">
+          <motion.button
+            onClick={handleShowWarning}
+            variants={buttonHoverVariants}
+            whileHover="hover"
+            whileTap="tap"
+            className="w-full bg-gradient-to-r from-amber-500/20 to-amber-600/10 border-2 border-amber-500/40 text-amber-300 font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 group relative overflow-hidden sm:py-4 sm:text-sm"
+            animate={showPointerAnimation ? {
+              scale: [1, 1.05, 1],
+              boxShadow: [
+                '0 0 20px rgba(245, 158, 11, 0.1)',
+                '0 0 40px rgba(245, 158, 11, 0.3)',
+                '0 0 20px rgba(245, 158, 11, 0.1)'
+              ]
+            } : {}}
+            transition={{
+              duration: 2,
+              repeat: showPointerAnimation ? Infinity : 0
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
             <motion.i 
-              className="fas fa-exclamation-triangle text-yellow-400 text-sm mt-0.5 flex-shrink-0 sm:text-base"
-              animate={{ rotate: [0, -5, 5, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              className="fas fa-exclamation-triangle mr-2 text-amber-400 group-hover:animate-pulse relative z-10 sm:mr-3"
+              animate={showPointerAnimation ? {
+                rotate: [0, -10, 10, 0],
+                scale: [1, 1.2, 1]
+              } : {}}
+              transition={{
+                duration: 1.5,
+                repeat: showPointerAnimation ? Infinity : 0
+              }}
             />
-            <div>
-              <h4 className="text-yellow-400 font-bold text-xs mb-1 uppercase tracking-wide sm:text-sm">Safety Reminder</h4>
-              <p className="text-yellow-300 text-xs leading-relaxed sm:text-sm">
-                All content is personalized based on your profile data. Consult healthcare professionals before starting new fitness programs.
-              </p>
-            </div>
-          </div>
+            <span className="relative z-10">Important App Information</span>
+            
+            {/* Additional glow effect when pointer is active */}
+            {showPointerAnimation && (
+              <motion.div
+                className="absolute inset-0 rounded-xl border-2 border-amber-400/50"
+                animate={{
+                  opacity: [0.3, 0.8, 0.3],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity
+                }}
+              />
+            )}
+          </motion.button>
         </motion.div>
         
         {/* Form Section */}
