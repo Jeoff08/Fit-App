@@ -1,5 +1,6 @@
 // Login.jsx
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../Config/firebaseconfig';
 
@@ -15,7 +16,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
   useEffect(() => {
     const hasSeenWarning = localStorage.getItem('ashfit-warning-seen');
     if (!hasSeenWarning) {
-      setShowWarningModal(true);
+      setTimeout(() => setShowWarningModal(true), 1000);
     }
   }, []);
 
@@ -47,103 +48,324 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
     }, 2000);
   };
 
+  // Framer Motion variants
+  const modalBackdropVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { duration: 0.4 }
+    },
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.3 }
+    }
+  };
+
+  const modalContentVariants = {
+    hidden: { 
+      opacity: 0,
+      scale: 0.8,
+      y: -50,
+      rotateX: 15
+    },
+    visible: { 
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      rotateX: 0,
+      transition: {
+        type: "spring",
+        damping: 25,
+        stiffness: 300,
+        duration: 0.6
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      y: 30,
+      transition: { duration: 0.3 }
+    }
+  };
+
+  const warningIconVariants = {
+    initial: { scale: 1, rotate: 0 },
+    pulse: {
+      scale: [1, 1.1, 1],
+      rotate: [0, -5, 5, 0],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        repeatType: "reverse"
+      }
+    }
+  };
+
+  const sectionVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.5
+      }
+    })
+  };
+
+  const buttonHoverVariants = {
+    hover: {
+      scale: 1.05,
+      boxShadow: "0 10px 25px rgba(245, 158, 11, 0.3)",
+      transition: { type: "spring", stiffness: 400, damping: 17 }
+    },
+    tap: { scale: 0.95 }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative font-sans text-white">
-      {/* Warning Modal Popup */}
-      {showWarningModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
-          <div className="w-full max-w-2xl rounded-2xl border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 backdrop-filter backdrop-blur-xl shadow-2xl overflow-hidden animate-modal-appear">
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-yellow-600/20 to-yellow-500/10 border-b border-yellow-500/30 p-6">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center border border-yellow-500/30">
-                  <i className="fas fa-exclamation-triangle text-yellow-400 text-2xl"></i>
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-400 uppercase tracking-wider">
-                    ⚠️ IMPORTANT SYSTEM WARNING
-                  </h2>
-                  <p className="text-yellow-300 text-sm mt-1">
-                    Please read this disclaimer carefully before proceeding
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6 max-h-96 overflow-y-auto">
-              <div className="space-y-4 text-yellow-300">
-                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
-                  <h3 className="text-yellow-400 font-bold text-lg mb-2">MEDICAL DISCLAIMER</h3>
-                  <p className="text-sm leading-relaxed">
-                    ASH-FIT provides fitness recommendations for informational and educational purposes only. 
-                    <strong> This is not medical advice.</strong> Always consult with qualified healthcare professionals, 
-                    physicians, or certified fitness trainers before starting any new fitness program, 
-                    especially if you have pre-existing health conditions, injuries, or concerns.
-                  </p>
-                </div>
-
-                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
-                  <h3 className="text-yellow-400 font-bold text-lg mb-2">USER RESPONSIBILITY</h3>
-                  <p className="text-sm leading-relaxed">
-                    You are solely responsible for your health, safety, and well-being during workouts. 
-                    Listen to your body and stop immediately if you experience any pain, dizziness, shortness of breath, 
-                    or discomfort. Proper form and technique are essential to prevent injuries.
-                  </p>
-                </div>
-
-                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
-                  <h3 className="text-yellow-400 font-bold text-lg mb-2">SYSTEM LIMITATIONS</h3>
-                  <p className="text-sm leading-relaxed">
-                    Fitness recommendations are generated algorithmically and may not account for individual 
-                    physical conditions, limitations, or specific health requirements. Use professional guidance 
-                    for personalized fitness plans tailored to your unique needs.
-                  </p>
-                </div>
-
-                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
-                  <h3 className="text-yellow-400 font-bold text-lg mb-2">ACKNOWLEDGEMENT & CONSENT</h3>
-                  <p className="text-sm leading-relaxed font-semibold">
-                    By clicking "I UNDERSTAND & ACCEPT", you acknowledge that you have read, understood, 
-                    and agree to these terms. You accept full responsibility for your fitness journey and 
-                    release ASH-FIT from any liability related to your use of this application.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="bg-gradient-to-r from-yellow-600/10 to-yellow-500/5 border-t border-yellow-500/30 p-6">
-              <div className="flex flex-col sm:flex-row gap-4 justify-end">
-                <button
-                  onClick={() => window.close()}
-                  className="px-6 py-3 bg-gray-600/50 text-gray-300 rounded-xl border border-gray-500/30 hover:bg-gray-600/70 transition-all duration-300 font-semibold text-sm uppercase tracking-wide"
-                >
-                  <i className="fas fa-times mr-2"></i>
-                  Exit Application
-                </button>
-                <button
-                  onClick={handleAcceptWarning}
-                  className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl border border-yellow-500/30 hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 font-bold text-sm uppercase tracking-wide shadow-lg shadow-yellow-500/20 flex items-center justify-center"
-                >
-                  <i className="fas fa-check-circle mr-2"></i>
-                  I Understand & Accept
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Dynamic Cinematic Background */}
       <div className="fixed inset-0 z-0">
         <img 
           src="/images/Kyrie-fitness gym.jpg" 
           className="w-full h-full object-cover"
+          alt="Gym Background"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-green-900 opacity-90 backdrop-filter backdrop-blur-sm"></div>
       </div>
       
+      {/* Enhanced Warning Modal Popup with Framer Motion */}
+      <AnimatePresence>
+        {showWarningModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            variants={modalBackdropVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            {/* Enhanced Blurry Background with gradient */}
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-br from-black/80 via-amber-900/20 to-black/80 backdrop-blur-xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            
+            {/* Animated Border Effect */}
+            <motion.div
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="absolute inset-2 border-2 border-amber-500/30 rounded-2xl blur-sm"></div>
+              <div className="absolute inset-4 border border-amber-400/20 rounded-xl"></div>
+            </motion.div>
+
+            {/* Modal Content */}
+            <motion.div
+              className="relative w-full max-w-4xl rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-900/10 via-black to-amber-800/5 backdrop-filter backdrop-blur-xl shadow-2xl overflow-hidden z-50"
+              variants={modalContentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/10 to-transparent animate-pulse"></div>
+                <div className="absolute top-0 left-0 w-32 h-32 bg-amber-400/5 rounded-full blur-xl"></div>
+                <div className="absolute bottom-0 right-0 w-40 h-40 bg-amber-600/5 rounded-full blur-xl"></div>
+              </div>
+
+              {/* Modal Header */}
+              <motion.div 
+                className="bg-gradient-to-r from-amber-600/20 via-amber-500/15 to-amber-600/20 border-b border-amber-500/30 p-6 relative overflow-hidden"
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, type: "spring" }}
+              >
+                {/* Animated header background */}
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5"
+                  animate={{
+                    background: [
+                      "linear-gradient(90deg, rgba(245,158,11,0.05) 0%, rgba(0,0,0,0) 50%, rgba(245,158,11,0.05) 100%)",
+                      "linear-gradient(90deg, rgba(245,158,11,0.1) 0%, rgba(245,158,11,0.05) 50%, rgba(245,158,11,0.1) 100%)",
+                      "linear-gradient(90deg, rgba(245,158,11,0.05) 0%, rgba(0,0,0,0) 50%, rgba(245,158,11,0.05) 100%)"
+                    ]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+                
+                <div className="flex items-center space-x-4 relative z-10">
+                  <motion.div
+                    variants={warningIconVariants}
+                    initial="initial"
+                    animate="pulse"
+                    className="flex-shrink-0 w-14 h-14 bg-amber-500/20 rounded-full flex items-center justify-center border-2 border-amber-500/40 shadow-lg"
+                  >
+                    <motion.i 
+                      className="fas fa-exclamation-triangle text-amber-400 text-2xl"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <h2 className="text-2xl font-bold text-amber-400 uppercase tracking-wider drop-shadow-lg">
+                      ⚠️ CRITICAL SYSTEM WARNING
+                    </h2>
+                    <p className="text-amber-300 text-sm mt-1 font-light">
+                      Your safety is our priority - Please read carefully
+                    </p>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Modal Content */}
+              <motion.div 
+                className="p-6 max-h-96 overflow-y-auto relative"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <motion.div 
+                  className="space-y-4 text-amber-300"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  {[
+                    {
+                      title: "MEDICAL DISCLAIMER",
+                      content: "ASH-FIT provides fitness recommendations for informational and educational purposes only. This is not medical advice. Always consult with qualified healthcare professionals, physicians, or certified fitness trainers before starting any new fitness program, especially if you have pre-existing health conditions, injuries, or concerns.",
+                      icon: "fa-heart-pulse"
+                    },
+                    {
+                      title: "USER RESPONSIBILITY",
+                      content: "You are solely responsible for your health, safety, and well-being during workouts. Listen to your body and stop immediately if you experience any pain, dizziness, shortness of breath, or discomfort. Proper form and technique are essential to prevent injuries.",
+                      icon: "fa-user-shield"
+                    },
+                    {
+                      title: "SYSTEM LIMITATIONS",
+                      content: "Fitness recommendations are generated algorithmically and may not account for individual physical conditions, limitations, or specific health requirements. Use professional guidance for personalized fitness plans tailored to your unique needs.",
+                      icon: "fa-robot"
+                    },
+                    {
+                      title: "ACKNOWLEDGEMENT & CONSENT",
+                      content: "By clicking 'I UNDERSTAND & ACCEPT', you acknowledge that you have read, understood, and agree to these terms. You accept full responsibility for your fitness journey and release ASH-FIT from any liability related to your use of this application.",
+                      icon: "fa-signature"
+                    }
+                  ].map((section, index) => (
+                    <motion.div
+                      key={section.title}
+                      custom={index}
+                      variants={sectionVariants}
+                      className="bg-amber-500/10 rounded-xl p-4 border border-amber-500/20 backdrop-blur-sm hover:bg-amber-500/15 transition-all duration-300"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <motion.i 
+                          className={`fas ${section.icon} text-amber-400 text-lg mt-1 flex-shrink-0`}
+                          whileHover={{ scale: 1.2, rotate: 5 }}
+                        />
+                        <div>
+                          <h3 className="text-amber-400 font-bold text-lg mb-2 flex items-center">
+                            {section.title}
+                            <motion.div
+                              className="ml-2 w-2 h-2 bg-amber-400 rounded-full"
+                              animate={{ opacity: [1, 0.3, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: index * 0.2 }}
+                            />
+                          </h3>
+                          <p className="text-sm leading-relaxed font-light">
+                            {section.content}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+
+              {/* Modal Footer */}
+              <motion.div 
+                className="bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-amber-600/10 border-t border-amber-500/30 p-6 relative overflow-hidden"
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                {/* Animated footer background */}
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-amber-500/3 via-transparent to-amber-500/3"
+                  animate={{
+                    x: [-100, 100],
+                    opacity: [0, 1, 0]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, repeatType: "loop" }}
+                />
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-end relative z-10">
+                  <motion.button
+                    onClick={() => window.close()}
+                    variants={buttonHoverVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="px-6 py-3 bg-gray-600/50 text-gray-300 rounded-xl border border-gray-500/30 hover:bg-gray-600/70 transition-all duration-300 font-semibold text-sm uppercase tracking-wide flex items-center justify-center min-w-[160px]"
+                  >
+                    <i className="fas fa-times mr-2"></i>
+                    Exit Application
+                  </motion.button>
+                  <motion.button
+                    onClick={handleAcceptWarning}
+                    variants={buttonHoverVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl border border-amber-500/30 hover:from-amber-600 hover:to-amber-700 transition-all duration-300 font-bold text-sm uppercase tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center min-w-[160px] relative overflow-hidden"
+                  >
+                    {/* Button shine effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12"
+                      initial={{ x: "-100%" }}
+                      whileHover={{ x: "100%" }}
+                      transition={{ duration: 0.8 }}
+                    />
+                    <i className="fas fa-check-circle mr-2 relative z-10"></i>
+                    <span className="relative z-10">I Understand & Accept</span>
+                  </motion.button>
+                </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Enhanced Gym-Themed Transition Overlay */}
       {isTransitioning && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-green-900">
@@ -211,16 +433,33 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
       )}
       
       {/* Login Container with Enhanced Glassmorphism Effect */}
-      <div className={`w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-green-500/30 backdrop-filter backdrop-blur-xl bg-gradient-to-br from-gray-900/80 to-black/90 z-20 transition-all duration-500 hover:scale-[1.01] overflow-hidden sm:max-w-md sm:p-8 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+      <motion.div 
+        className={`w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-green-500/30 backdrop-filter backdrop-blur-xl bg-gradient-to-br from-gray-900/80 to-black/90 z-20 transition-all duration-500 hover:scale-[1.01] overflow-hidden sm:max-w-md sm:p-8 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         
         {/* Top Gradient Overlay */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-slide-glow"></div>
 
         {/* Header with Enhanced Animated Logo */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-3 sm:space-x-3 sm:mb-4">
+        <motion.div 
+          className="text-center mb-6 sm:mb-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div 
+            className="flex items-center justify-center space-x-2 mb-3 sm:space-x-3 sm:mb-4"
+            variants={itemVariants}
+          >
             <div className="flex items-center justify-center space-x-2 sm:space-x-3">
-              <div className="bg-gradient-to-br from-green-500 to-green-700 p-3 rounded-full shadow-2xl shadow-green-400/30 transform hover:rotate-12 transition-transform duration-300 animate-float-slow sm:p-4">
+              <motion.div 
+                className="bg-gradient-to-br from-green-500 to-green-700 p-3 rounded-full shadow-2xl shadow-green-400/30 transform hover:rotate-12 transition-transform duration-300 animate-float-slow sm:p-4"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <div className="bg-black p-1.5 rounded-full sm:p-2">
                   <img 
                     src="/images/Kyrie-fitness gym.jpg" 
@@ -228,21 +467,34 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                     className="w-12 h-12 rounded-full object-cover border-2 border-green-400 sm:w-16 sm:h-16"
                   />
                 </div>
-              </div>
-              <h1 className="text-3xl font-bold text-white tracking-widest uppercase animate-text-glow-slow sm:text-5xl">
+              </motion.div>
+              <motion.h1 
+                className="text-3xl font-bold text-white tracking-widest uppercase animate-text-glow-slow sm:text-5xl"
+                variants={itemVariants}
+              >
                 ASH-<span className="text-transparent bg-gradient-to-r from-green-400 to-green-600 bg-clip-text">FIT</span>
-              </h1>
+              </motion.h1>
             </div>
-          </div>
-          <p className="text-gray-300 text-xs mt-1 font-light tracking-wide animate-fade-in-slow sm:text-sm sm:mt-2">
+          </motion.div>
+          <motion.p 
+            className="text-gray-300 text-xs mt-1 font-light tracking-wide animate-fade-in-slow sm:text-sm sm:mt-2"
+            variants={itemVariants}
+          >
             
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
         
         {/* System Reminder Section (Smaller version) */}
-        <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/30 rounded-xl p-4 mb-4 sm:mb-6">
+        <motion.div 
+          className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/30 rounded-xl p-4 mb-4 sm:mb-6"
+          variants={itemVariants}
+        >
           <div className="flex items-start space-x-3">
-            <i className="fas fa-exclamation-triangle text-yellow-400 text-sm mt-0.5 flex-shrink-0 sm:text-base"></i>
+            <motion.i 
+              className="fas fa-exclamation-triangle text-yellow-400 text-sm mt-0.5 flex-shrink-0 sm:text-base"
+              animate={{ rotate: [0, -5, 5, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
             <div>
               <h4 className="text-yellow-400 font-bold text-xs mb-1 uppercase tracking-wide sm:text-sm">Safety Reminder</h4>
               <p className="text-yellow-300 text-xs leading-relaxed sm:text-sm">
@@ -250,19 +502,27 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
         
         {/* Form Section */}
-        <div className="space-y-4 sm:space-y-6">
+        <motion.div 
+          className="space-y-4 sm:space-y-6"
+          variants={containerVariants}
+        >
           {error && (
-            <div className="p-3 bg-red-600/20 text-red-300 rounded-xl border border-red-600/50 text-xs flex items-center animate-fade-in sm:p-4 sm:text-sm">
+            <motion.div 
+              className="p-3 bg-red-600/20 text-red-300 rounded-xl border border-red-600/50 text-xs flex items-center animate-fade-in sm:p-4 sm:text-sm"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring" }}
+            >
               <i className="fas fa-exclamation-triangle mr-2 text-red-400 text-sm sm:mr-3 sm:text-lg"></i>
               <span>{error}</span>
-            </div>
+            </motion.div>
           )}
           
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-            <div>
+            <motion.div variants={itemVariants}>
               <label className="block text-xs font-semibold text-green-400 mb-1 uppercase tracking-wider sm:text-sm sm:mb-2">
                 <i className="fas fa-envelope mr-1 sm:mr-2"></i>
                 Email
@@ -271,18 +531,19 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none sm:pl-4">
                   <i className="fas fa-user text-green-400 text-xs sm:text-sm"></i>
                 </div>
-                <input
+                <motion.input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-gray-800/80 border-2 border-gray-700/60 text-white rounded-xl pl-10 pr-3 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all duration-300 hover:border-green-400/50 backdrop-blur-sm sm:pl-12 sm:pr-4 sm:py-4 sm:text-sm"
                   placeholder="Email"
                   required
+                  whileFocus={{ scale: 1.02 }}
                 />
               </div>
-            </div>
+            </motion.div>
             
-            <div>
+            <motion.div variants={itemVariants}>
               <label className="block text-xs font-semibold text-green-400 mb-1 uppercase tracking-wider sm:text-sm sm:mb-2">
                 <i className="fas fa-lock mr-1 sm:mr-2"></i>
                 Password
@@ -291,29 +552,37 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none sm:pl-4">
                   <i className="fas fa-key text-green-400 text-xs sm:text-sm"></i>
                 </div>
-                <input
+                <motion.input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-gray-800/80 border-2 border-gray-700/60 text-white rounded-xl pl-10 pr-3 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all duration-300 hover:border-green-400/50 backdrop-blur-sm sm:pl-12 sm:pr-4 sm:py-4 sm:text-sm"
                   placeholder="••••••••"
                   required
+                  whileFocus={{ scale: 1.02 }}
                 />
               </div>
-            </div>
+            </motion.div>
             
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
               className="w-full bg-gradient-to-r from-green-500 via-green-600 to-green-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider hover:from-green-600 hover:via-green-700 hover:to-green-800 transition-all duration-300 disabled:opacity-50 flex items-center justify-center shadow-2xl shadow-green-500/40 mt-4 animate-pulse-soft group relative overflow-hidden sm:py-4 sm:text-sm sm:mt-6"
+              whileHover={{ scale: loading ? 1 : 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              variants={itemVariants}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
               {loading ? (
                 <>
                   <div className="flex items-center space-x-2 relative z-10 sm:space-x-3">
-                    <span className="relative inline-flex items-center justify-center h-5 w-5 animate-spin sm:h-6 sm:w-6">
+                    <motion.span 
+                      className="relative inline-flex items-center justify-center h-5 w-5 sm:h-6 sm:w-6"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
                       <i className="fas fa-dumbbell text-white text-sm sm:text-lg"></i>
-                    </span>
+                    </motion.span>
                     <span className="text-xs tracking-wide font-semibold sm:text-sm">ENTERING...</span>
                   </div>
                 </>
@@ -323,42 +592,58 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                   <span className="relative z-10">ENTER GYM</span>
                 </>
               )}
-            </button>
+            </motion.button>
           </form>
           
-          <div className="mt-6 text-center sm:mt-8">
+          <motion.div 
+            className="mt-6 text-center sm:mt-8"
+            variants={itemVariants}
+          >
             <p className="text-gray-400 text-xs sm:text-sm">
               Don't have an account?{' '}
-              <button
+              <motion.button
                 onClick={handleToggleAuthMode}
                 disabled={isTransitioning}
                 className="text-green-400 font-bold hover:text-green-300 transition-all duration-300 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden px-3 py-1.5 rounded-lg bg-green-400/10 hover:bg-green-400/20 sm:px-4 sm:py-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <span className="relative z-10 flex items-center text-xs sm:text-sm">
                   SIGN UP
                   <i className="fas fa-dumbbell ml-2 text-xs group-hover:animate-pulse transition-transform duration-300 sm:ml-3 sm:text-sm"></i>
                 </span>
                 <span className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></span>
-              </button>
+              </motion.button>
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         
         {/* Enhanced Footer with Security Message */}
-        <div className="px-6 py-4 bg-gradient-to-r from-gray-900/80 to-black/90 border-t border-green-500/20 mt-6 -mx-6 -mb-6 rounded-b-2xl sm:px-8 sm:py-6 sm:mt-8 sm:-mx-8 sm:-mb-8">
+        <motion.div 
+          className="px-6 py-4 bg-gradient-to-r from-gray-900/80 to-black/90 border-t border-green-500/20 mt-6 -mx-6 -mb-6 rounded-b-2xl sm:px-8 sm:py-6 sm:mt-8 sm:-mx-8 sm:-mb-8"
+          variants={itemVariants}
+        >
           <div className="flex items-center justify-center space-x-3 sm:space-x-4">
             <div className="flex items-center text-green-400">
-              <i className="fas fa-shield-alt text-sm animate-pulse mr-1 sm:text-lg sm:mr-2"></i>
+              <motion.i 
+                className="fas fa-shield-alt text-sm animate-pulse mr-1 sm:text-lg sm:mr-2"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
               <span className="text-xs uppercase tracking-widest font-semibold sm:text-sm">Secure Login</span>
             </div>
-            <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping sm:w-2 sm:h-2"></div>
+            <motion.div 
+              className="w-1.5 h-1.5 bg-green-400 rounded-full sm:w-2 sm:h-2"
+              animate={{ scale: [1, 2, 1], opacity: [1, 0.5, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
             <div className="flex items-center text-gray-400">
               <i className="fas fa-bolt text-xs mr-1 sm:text-sm sm:mr-2"></i>
               <span className="text-xs uppercase tracking-widest sm:text-sm">24/7 Access</span>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       <style jsx>{`
         @keyframes modal-appear {

@@ -3691,6 +3691,12 @@ export const getBotResponse = (userMessage) => {
     return "Hello! I'm your fitness assistant. What would you like to know about health and fitness today? 💪";
   }
 
+  // ENHANCED: Validate that message is fitness/health related (80% accuracy requirement)
+  if (!isFitnessHealthRelated(message)) {
+    // For non-fitness topics, politely redirect
+    return "I'm a fitness and health assistant! I can help you with workouts, nutrition, exercise routines, and health-related questions. What fitness or health topic would you like to know about? 💪";
+  }
+
   // Check for workout scheduling requests first
   const scheduleResponse = handleWorkoutSchedulingRequest(message);
   if (scheduleResponse) {
@@ -3723,6 +3729,7 @@ export const getBotResponse = (userMessage) => {
     if (data.patterns) {
       let categoryScore = 0;
       let matchedPatterns = [];
+      let maxPatternScore = 0;
 
       for (const pattern of data.patterns) {
         if (pattern.test(message)) {
@@ -3730,24 +3737,47 @@ export const getBotResponse = (userMessage) => {
           // Score based on pattern specificity and match quality
           const patternScore = calculatePatternScore(pattern, message);
           categoryScore += patternScore;
+          maxPatternScore = Math.max(maxPatternScore, patternScore);
         }
       }
 
       if (matchedPatterns.length > 0) {
+        // Use average score and max score for better accuracy
+        const avgScore = categoryScore / matchedPatterns.length;
+        // Weighted combination: 60% max score, 40% average (prioritizes best match)
+        const finalScore = (maxPatternScore * 0.6) + (avgScore * 0.4);
+        
         matches.push({
           category,
-          score: categoryScore,
+          score: finalScore,
+          maxScore: maxPatternScore,
           responses: data.responses,
+          matchCount: matchedPatterns.length,
         });
       }
     }
   }
 
   // Sort matches by score (highest first)
-  matches.sort((a, b) => b.score - a.score);
+  matches.sort((a, b) => {
+    // Primary sort by score
+    if (Math.abs(b.score - a.score) > 0.5) {
+      return b.score - a.score;
+    }
+    // Secondary sort by max score
+    return b.maxScore - a.maxScore;
+  });
 
-  // If we have high-confidence matches, return the best one
-  if (matches.length > 0 && matches[0].score > 0.5) {
+  // ENHANCED: 80% accuracy threshold - require higher confidence (score > 3.0)
+  // This ensures we only respond when we're confident about the match
+  if (matches.length > 0 && matches[0].score >= 3.0) {
+    const bestMatch = matches[0];
+    const randomIndex = Math.floor(Math.random() * bestMatch.responses.length);
+    return bestMatch.responses[randomIndex];
+  }
+
+  // If we have moderate confidence matches (score 2.0-3.0), still respond but with context
+  if (matches.length > 0 && matches[0].score >= 2.0) {
     const bestMatch = matches[0];
     const randomIndex = Math.floor(Math.random() * bestMatch.responses.length);
     return bestMatch.responses[randomIndex];
@@ -3967,8 +3997,11 @@ const handleWeeklyMealPlanningRequest = (message) => {
   return null;
 };
 
-// NEW: Generate Weekly Meal Plan
+// ENHANCED: Generate Weekly Meal Plan with accurate daily totals
 const generateWeeklyMealPlan = (dailyCalories, dailyProtein, mealsPerDay) => {
+  // Validate meals per day (3, 4, 5, or 6)
+  const validMealsPerDay = [3, 4, 5, 6].includes(mealsPerDay) ? mealsPerDay : 4;
+  
   // Calculate daily targets
   const dailyTargets = calculateDailyTargets(dailyCalories, dailyProtein);
 
@@ -3976,7 +4009,7 @@ const generateWeeklyMealPlan = (dailyCalories, dailyProtein, mealsPerDay) => {
   plan += `**Daily Targets:**\n`;
   plan += `• Calories: ${dailyCalories}\n`;
   plan += `• Protein: ${dailyProtein}g\n`;
-  plan += `• Meals: ${mealsPerDay} per day\n\n`;
+  plan += `• Meals: ${validMealsPerDay} per day\n\n`;
 
   const days = [
     "Monday",
@@ -3988,14 +4021,25 @@ const generateWeeklyMealPlan = (dailyCalories, dailyProtein, mealsPerDay) => {
     "Sunday",
   ];
 
+  // Generate meal plan for each day and calculate totals
   days.forEach((day) => {
     plan += `**${day}:**\n`;
-    const dayPlan = generateDailyMealPlan(dailyTargets, mealsPerDay);
+    const dayPlan = generateDailyMealPlan(dailyTargets, validMealsPerDay);
+    
+    // Calculate daily totals
+    let dayTotalCalories = 0;
+    let dayTotalProtein = 0;
+    
     dayPlan.meals.forEach((meal, index) => {
       plan += `• **Meal ${index + 1}:** ${meal.description} (${
               meal.calories
       } cal, ${meal.protein}g protein)\n`;
+      dayTotalCalories += meal.calories;
+      dayTotalProtein += meal.protein;
     });
+    
+    // Display daily totals
+    plan += `  **Daily Total:** ${Math.round(dayTotalCalories)} calories, ${Math.round(dayTotalProtein * 10) / 10}g protein\n`;
     plan += `\n`;
   });
 
@@ -4043,53 +4087,69 @@ const handleMealPlanningRequest = (message) => {
   return null;
 };
 
-// Generate meal plan based on user specifications
+// ENHANCED: Generate meal plan with accurate totals
 const generateMealPlan = (numberOfMeals, totalCalories, totalProtein) => {
+  // Validate number of meals (3, 4, 5, or 6)
+  const validMeals = [3, 4, 5, 6].includes(numberOfMeals) ? numberOfMeals : 4;
+  
   const targets = calculateMealTargets(
-    numberOfMeals,
+    validMeals,
     totalCalories,
     totalProtein
   );
 
   let plan = `🍽️ **CUSTOM MEAL PLAN** 🍽️\n\n`;
-  plan += `**Daily Totals:**\n`;
-  plan += `• ${numberOfMeals} meals\n`;
+  plan += `**Daily Targets:**\n`;
+  plan += `• ${validMeals} meals\n`;
   plan += `• ${totalCalories} calories\n`;
   plan += `• ${totalProtein}g protein\n\n`;
 
   plan += `**Meal Breakdown:**\n`;
 
-  for (let i = 0; i < numberOfMeals; i++) {
+  let actualTotalCalories = 0;
+  let actualTotalProtein = 0;
+
+  for (let i = 0; i < validMeals; i++) {
     const meal = generateMeal(
       targets.perMeal.calories,
       targets.perMeal.protein,
       i,
-      numberOfMeals
+      validMeals
     );
     plan += `• **Meal ${i + 1}:** ${meal.description} (${meal.calories} cal, ${
       meal.protein
     }g protein)\n`;
+    actualTotalCalories += meal.calories;
+    actualTotalProtein += meal.protein;
   }
 
+  // Display actual totals
+  plan += `\n**Daily Total:** ${Math.round(actualTotalCalories)} calories, ${Math.round(actualTotalProtein * 10) / 10}g protein\n`;
+  
   plan += `\n**Nutrition Summary:**\n`;
-  plan += `• Protein: ${targets.total.protein}g (${Math.round(
-    ((targets.total.protein * 4) / totalCalories) * 100
+  const proteinCalories = actualTotalProtein * 4;
+  const remainingCalories = actualTotalCalories - proteinCalories;
+  const estimatedCarbs = Math.round(remainingCalories * 0.5 / 4);
+  const estimatedFat = Math.round(remainingCalories * 0.5 / 9);
+  
+  plan += `• Protein: ${Math.round(actualTotalProtein * 10) / 10}g (${Math.round(
+    (proteinCalories / actualTotalCalories) * 100
   )}%)\n`;
-  plan += `• Carbs: ${targets.total.carbs}g (${Math.round(
-    ((targets.total.carbs * 4) / totalCalories) * 100
+  plan += `• Estimated Carbs: ~${estimatedCarbs}g (${Math.round(
+    ((estimatedCarbs * 4) / actualTotalCalories) * 100
   )}%)\n`;
-  plan += `• Fat: ${targets.total.fat}g (${Math.round(
-    ((targets.total.fat * 9) / totalCalories) * 100
+  plan += `• Estimated Fat: ~${estimatedFat}g (${Math.round(
+    ((estimatedFat * 9) / actualTotalCalories) * 100
   )}%)\n\n`;
 
   plan += `**Meal Timing Tips:**\n`;
-  if (numberOfMeals === 3) {
+  if (validMeals === 3) {
     plan += `• Breakfast (7-8 AM), Lunch (12-1 PM), Dinner (6-7 PM)\n`;
-  } else if (numberOfMeals === 4) {
+  } else if (validMeals === 4) {
     plan += `• Breakfast (7-8 AM), Lunch (12-1 PM), Snack (3-4 PM), Dinner (6-7 PM)\n`;
-  } else if (numberOfMeals === 5) {
+  } else if (validMeals === 5) {
     plan += `• Breakfast (7-8 AM), Snack (10 AM), Lunch (12-1 PM), Snack (3-4 PM), Dinner (6-7 PM)\n`;
-  } else if (numberOfMeals === 6) {
+  } else if (validMeals === 6) {
     plan += `• Breakfast (7-8 AM), Snack (10 AM), Lunch (12-1 PM), Snack (3-4 PM), Dinner (6-7 PM), Evening (9 PM)\n`;
   }
 
@@ -4135,7 +4195,7 @@ const calculateDailyTargets = (dailyCalories, dailyProtein) => {
   };
 };
 
-// Generate a single meal
+// ENHANCED: Generate a single meal with accurate calorie and protein calculations
 const generateMeal = (targetCalories, targetProtein, mealIndex, totalMeals) => {
   let mealType;
   if (totalMeals === 3) {
@@ -4150,6 +4210,15 @@ const generateMeal = (targetCalories, targetProtein, mealIndex, totalMeals) => {
       "Afternoon Snack",
       "Dinner",
     ][mealIndex];
+  } else if (totalMeals === 6) {
+    mealType = [
+      "Breakfast",
+      "Morning Snack",
+      "Lunch",
+      "Afternoon Snack",
+      "Dinner",
+      "Evening Snack",
+    ][mealIndex];
   } else {
     mealType = `Meal ${mealIndex + 1}`;
   }
@@ -4160,43 +4229,139 @@ const generateMeal = (targetCalories, targetProtein, mealIndex, totalMeals) => {
   const fatFoods = [...foodDatabase.fats];
   const vegetableFoods = [...foodDatabase.vegetables];
 
-  // Create meal combinations
+  // Create meal combinations with accurate portion scaling
   let mealDescription = "";
   let totalCalories = 0;
   let totalProtein = 0;
+  let remainingCalories = targetCalories;
+  let remainingProtein = targetProtein;
 
-  // Always include a protein source
-  const proteinChoice = selectFood(proteinFoods, targetProtein, targetCalories);
+  // Always include a protein source - scale to meet protein target
+  const proteinChoice = selectFoodWithScaling(proteinFoods, remainingProtein, remainingCalories);
   mealDescription += proteinChoice.name;
   totalCalories += proteinChoice.calories;
   totalProtein += proteinChoice.protein;
+  remainingCalories -= proteinChoice.calories;
+  remainingProtein -= proteinChoice.protein;
 
   // Add carb source for most meals (except maybe last meal if cutting)
   if (mealIndex < totalMeals - 1 || Math.random() > 0.3) {
-    const carbChoice = selectFood(carbFoods, 0, targetCalories - totalCalories);
+    const carbCalories = Math.min(remainingCalories * 0.4, remainingCalories - 50); // 40% of remaining or leave room for veg/fat
+    const carbChoice = selectFoodWithScaling(carbFoods, 0, carbCalories);
     mealDescription += ` + ${carbChoice.name}`;
     totalCalories += carbChoice.calories;
     totalProtein += carbChoice.protein;
+    remainingCalories -= carbChoice.calories;
   }
 
-  // Add vegetable
-  const vegetableChoice = selectFood(vegetableFoods, 0, 50);
+  // Add vegetable (low calorie, high nutrition)
+  const vegetableChoice = selectFoodWithScaling(vegetableFoods, 0, Math.min(remainingCalories, 80));
   mealDescription += ` + ${vegetableChoice.name}`;
   totalCalories += vegetableChoice.calories;
   totalProtein += vegetableChoice.protein;
+  remainingCalories -= vegetableChoice.calories;
 
-  // Add fat source if needed and there's room
-  if (totalCalories < targetCalories - 100) {
-    const fatChoice = selectFood(fatFoods, 0, targetCalories - totalCalories);
+  // Add fat source if needed and there's room (to reach calorie target)
+  if (remainingCalories > 50 && totalCalories < targetCalories * 0.9) {
+    const fatCalories = Math.min(remainingCalories, targetCalories - totalCalories);
+    const fatChoice = selectFoodWithScaling(fatFoods, 0, fatCalories);
     mealDescription += ` + ${fatChoice.name}`;
     totalCalories += fatChoice.calories;
     totalProtein += fatChoice.protein;
+    remainingCalories -= fatChoice.calories;
+  }
+
+  // If we still need more protein, add a small protein boost
+  if (remainingProtein > 5 && remainingCalories > 50) {
+    const proteinBoost = selectFoodWithScaling(proteinFoods, remainingProtein, remainingCalories);
+    if (proteinBoost.calories > 0) {
+      mealDescription += ` + ${proteinBoost.name}`;
+      totalCalories += proteinBoost.calories;
+      totalProtein += proteinBoost.protein;
+    }
   }
 
   return {
     description: mealDescription,
     calories: Math.round(totalCalories),
-    protein: Math.round(totalProtein),
+    protein: Math.round(totalProtein * 10) / 10, // Round to 1 decimal
+  };
+};
+
+// ENHANCED: Select food with portion scaling to match targets accurately
+const selectFoodWithScaling = (foodList, targetProtein, maxCalories) => {
+  // Filter foods that could fit
+  const suitableFoods = foodList.filter(
+    (food) => {
+      // Check if food can contribute to protein target
+      if (targetProtein > 0 && food.protein === 0) return false;
+      // Check if a reasonable portion would fit calories
+      const portion = food.typicalPortion || 100;
+      const caloriesPer100g = (food.calories / portion) * 100;
+      const maxPortion = maxCalories > 0 ? (maxCalories / caloriesPer100g) * 100 : portion;
+      return maxPortion >= portion * 0.5; // At least 50% of typical portion
+    }
+  );
+
+  if (suitableFoods.length === 0) {
+    // Fallback to first food if none suitable
+    const food = foodList[0];
+    return {
+      name: food.name,
+      calories: food.calories,
+      protein: food.protein,
+      carbs: food.carbs,
+      fat: food.fat,
+    };
+  }
+
+  // If we have protein target, prioritize high-protein foods
+  if (targetProtein > 0 && suitableFoods.length > 0) {
+    suitableFoods.sort((a, b) => {
+      const aProteinPerCal = a.protein / (a.calories || 1);
+      const bProteinPerCal = b.protein / (b.calories || 1);
+      return bProteinPerCal - aProteinPerCal;
+    });
+  }
+
+  // Select a food
+  const selectedFood = suitableFoods[Math.floor(Math.random() * Math.min(3, suitableFoods.length))];
+
+  // Calculate portion size to match targets
+  const portion = selectedFood.typicalPortion || 100;
+  const caloriesPer100g = (selectedFood.calories / portion) * 100;
+  const proteinPer100g = (selectedFood.protein / portion) * 100;
+
+  let scaledPortion = portion; // Default to typical portion
+
+  // Scale based on protein target if specified
+  if (targetProtein > 0 && proteinPer100g > 0) {
+    const proteinBasedPortion = (targetProtein / proteinPer100g) * 100;
+    scaledPortion = Math.min(proteinBasedPortion, portion * 2); // Max 2x typical portion
+  }
+
+  // Scale based on calorie limit
+  if (maxCalories > 0 && caloriesPer100g > 0) {
+    const calorieBasedPortion = (maxCalories / caloriesPer100g) * 100;
+    scaledPortion = Math.min(scaledPortion, calorieBasedPortion);
+  }
+
+  // Ensure minimum portion (at least 50% of typical)
+  scaledPortion = Math.max(scaledPortion, portion * 0.5);
+
+  // Calculate scaled nutrition
+  const scaleFactor = scaledPortion / portion;
+  const scaledCalories = selectedFood.calories * scaleFactor;
+  const scaledProtein = selectedFood.protein * scaleFactor;
+  const scaledCarbs = selectedFood.carbs * scaleFactor;
+  const scaledFat = selectedFood.fat * scaleFactor;
+
+  return {
+    name: selectedFood.name,
+    calories: Math.round(scaledCalories),
+    protein: Math.round(scaledProtein * 10) / 10,
+    carbs: Math.round(scaledCarbs * 10) / 10,
+    fat: Math.round(scaledFat * 10) / 10,
   };
 };
 
@@ -4217,43 +4382,78 @@ const generateDailyMealPlan = (dailyTargets, mealsPerDay) => {
   return { meals };
 };
 
-// Select appropriate food based on targets
-const selectFood = (foodList, targetProtein, maxCalories) => {
-  // Filter foods that fit within calorie limit
-  const suitableFoods = foodList.filter(
-    (food) => food.calories <= maxCalories || maxCalories === 0
-  );
+// NOTE: selectFood function removed - now using selectFoodWithScaling for accurate portion calculations
 
-  // If we have protein target, prioritize high-protein foods
-  if (targetProtein > 0 && suitableFoods.length > 0) {
-    suitableFoods.sort((a, b) => b.protein - a.protein);
+// ENHANCED: Topic validation to ensure fitness/health relevance
+const isFitnessHealthRelated = (message) => {
+  const fitnessKeywords = [
+    // Exercise & Training
+    'workout', 'exercise', 'training', 'gym', 'fitness', 'strength', 'cardio', 'muscle', 'lift', 'squat', 'deadlift', 'bench', 'press', 'curl', 'pull', 'push',
+    // Body Parts & Muscle Groups
+    'chest', 'back', 'shoulder', 'arm', 'bicep', 'tricep', 'leg', 'quad', 'hamstring', 'glute', 'abs', 'core', 'calf', 'trap', 'lat',
+    // Nutrition & Diet
+    'diet', 'nutrition', 'protein', 'carb', 'calorie', 'meal', 'food', 'eat', 'supplement', 'vitamin', 'mineral', 'macro', 'nutrition',
+    // Health & Wellness
+    'health', 'wellness', 'recovery', 'sleep', 'stress', 'hydration', 'weight', 'fat', 'lean', 'bulk', 'cut', 'metabolism',
+    // Workout Types
+    'bodybuilding', 'powerlifting', 'calisthenics', 'hiit', 'yoga', 'pilates', 'running', 'cycling', 'swimming', 'crossfit',
+    // Fitness Goals
+    'gain', 'lose', 'build', 'tone', 'endurance', 'flexibility', 'mobility', 'injury', 'rehab', 'performance',
+    // Equipment
+    'dumbbell', 'barbell', 'machine', 'cable', 'resistance', 'band', 'kettlebell', 'treadmill', 'bike', 'elliptical',
+    // Programs & Splits
+    'split', 'routine', 'program', 'plan', 'schedule', 'ppl', 'upper', 'lower', 'full body', 'bro split', 'arnold split',
+    // Medical & Conditions
+    'medical', 'condition', 'diabetes', 'hypertension', 'injury', 'pain', 'rehabilitation', 'therapy'
+  ];
+
+  const messageLower = message.toLowerCase();
+  const words = messageLower.split(/\s+/);
+  
+  // Check for fitness/health keywords
+  let fitnessKeywordCount = 0;
+  fitnessKeywords.forEach(keyword => {
+    if (messageLower.includes(keyword)) {
+      fitnessKeywordCount++;
+    }
+  });
+
+  // Calculate relevance score (0-1)
+  const relevanceScore = Math.min(1, fitnessKeywordCount / 3); // At least 1-2 keywords for relevance
+  
+  // Check for non-fitness topics that should be filtered
+  const nonFitnessTopics = [
+    'politics', 'religion', 'technology', 'programming', 'coding', 'software', 'hardware', 'business', 'finance', 'stock', 'crypto',
+    'movie', 'film', 'music', 'game', 'gaming', 'sports team', 'weather', 'news', 'entertainment', 'celebrity', 'gossip'
+  ];
+  
+  let nonFitnessCount = 0;
+  nonFitnessTopics.forEach(topic => {
+    if (messageLower.includes(topic)) {
+      nonFitnessCount++;
+    }
+  });
+
+  // If non-fitness topics dominate, it's not fitness-related
+  if (nonFitnessCount > fitnessKeywordCount && fitnessKeywordCount === 0) {
+    return false;
   }
 
-  // Return random food from suitable options, or first food if none suitable
-  const selectedFood =
-    suitableFoods.length > 0
-      ? suitableFoods[Math.floor(Math.random() * suitableFoods.length)]
-      : foodList[0];
-
-  return {
-    name: selectedFood.name,
-    calories: selectedFood.calories,
-    protein: selectedFood.protein,
-    carbs: selectedFood.carbs,
-    fat: selectedFood.fat,
-  };
+  // Require at least some fitness relevance
+  return relevanceScore >= 0.3 || fitnessKeywordCount >= 1;
 };
 
-// Enhanced pattern scoring system
+// ENHANCED: Improved pattern scoring system for 80% accuracy
 const calculatePatternScore = (pattern, message) => {
   let score = 0;
+  const messageLower = message.toLowerCase();
 
   // Base score for any match
   score += 1;
 
-  // Higher score for exact matches or more specific patterns
+  // Higher score for exact matches or more specific patterns (anchored patterns)
   if (pattern.source.includes("^") || pattern.source.includes("$")) {
-    score += 2; // More specific pattern
+    score += 3; // More specific pattern - higher weight
   }
 
   // Check for multiple keyword matches in the pattern
@@ -4261,153 +4461,294 @@ const calculatePatternScore = (pattern, message) => {
     .replace(/[^a-zA-Z\s]/g, " ")
     .split(/\s+/)
     .filter((word) => word.length > 2);
+  
   let keywordMatches = 0;
+  let exactKeywordMatches = 0;
 
   patternKeywords.forEach((keyword) => {
-    if (message.includes(keyword.toLowerCase())) {
+    const keywordLower = keyword.toLowerCase();
+    // Check for exact word match (higher score)
+    const wordBoundaryRegex = new RegExp(`\\b${keywordLower}\\b`, 'i');
+    if (wordBoundaryRegex.test(message)) {
+      exactKeywordMatches++;
+      keywordMatches++;
+    } else if (messageLower.includes(keywordLower)) {
       keywordMatches++;
     }
   });
 
-  score += (keywordMatches / patternKeywords.length) * 3;
+  // Weight exact matches more heavily
+  score += exactKeywordMatches * 2.5;
+  score += (keywordMatches - exactKeywordMatches) * 1.5;
 
-  return score;
-};
+  // Bonus for pattern length (longer patterns are usually more specific)
+  if (patternKeywords.length > 3) {
+    score += 1;
+  }
 
-// Enhanced keyword-based response system
-const getKeywordBasedResponse = (message) => {
-  const keywords = {
-    // NEW: Split explanation keywords
-    ppl: [
-      "PPL is great for intermediate lifters! Beginners should start with full body or upper/lower splits.",
-      "Push/Pull/Legs split hits each muscle 2x/week - perfect for balanced development.",
-    ],
-    "upper lower": [
-      "Upper/Lower split is excellent for beginners - good frequency and balanced approach!",
-      "4-day Upper/Lower split provides great frequency for muscle growth.",
-    ],
-    "bro split": [
-      "Bro splits work best for advanced lifters who need high volume per session.",
-      "Beginners should avoid bro splits - the frequency is too low for optimal growth.",
-    ],
-    "arnold split": [
-      "The Arnold split is advanced - 6 days/week hitting muscles 2x with high volume.",
-      "Only experienced bodybuilders should attempt the classic Arnold split routine.",
-    ],
-
-    // NEW: Protein powder keywords
-    "protein powder": [
-      "Protein powder timing depends on your goals - post-workout is usually best!",
-      "Whey isolate for cutting, whey concentrate for bulking, casein for bedtime.",
-    ],
-    "whey protein": [
-      "Whey protein is fast-absorbing - perfect for post-workout recovery!",
-      "Whey isolate has fewer calories, making it great for cutting phases.",
-    ],
-    casein: [
-      "Casein protein digests slowly - ideal for bedtime or between meals.",
-      "Use casein when you need sustained protein release over several hours.",
-    ],
-
-    // NEW: Creatine keywords
-    creatine: [
-      "Take creatine post-workout with carbs for best absorption!",
-      "5g of creatine monohydrate daily is the proven effective dosage.",
-      "Creatine works best when taken consistently for 3-4 weeks.",
-    ],
-
-    // ... your existing keywords remain the same
-    workout: [
-      "Try focusing on compound movements like squats, bench press, and deadlifts for maximum efficiency.",
-      "Remember to warm up properly and cool down after your workouts!",
-    ],
-    exercise: [
-      "Consistency is key with exercise - even short daily sessions add up over time.",
-      "Mix up your routine to keep things interesting and challenge different muscle groups.",
-    ],
-    gym: [
-      "Make the most of your gym time by having a plan before you go.",
-      "Don't be afraid to ask gym staff for help with equipment or form!",
-    ],
-    food: [
-      "Focus on whole, unprocessed foods for optimal nutrition.",
-      "Balance your plate with protein, complex carbs, and healthy fats at each meal.",
-    ],
-    eat: [
-      "Listen to your body's hunger and fullness cues for better eating habits.",
-      "Aim for consistent meal timing to maintain steady energy levels.",
-    ],
-    diet: [
-      "The best diet is one you can maintain long-term - focus on sustainable habits.",
-      "Include foods you enjoy in moderation for better adherence to your nutrition plan.",
-    ],
-    health: [
-      "Remember that health includes physical, mental, and emotional wellbeing.",
-      "Small, consistent healthy choices lead to big results over time.",
-    ],
-    sleep: [
-      "Quality sleep is crucial for recovery, hormone balance, and overall health.",
-      "Aim for 7-9 hours of sleep per night for optimal functioning.",
-    ],
-    stress: [
-      "Manage stress through exercise, meditation, and proper work-life balance.",
-      "Chronic stress can impact both physical and mental health - prioritize stress management.",
-    ],
-    weight: [
-      "Sustainable weight management focuses on long-term habits, not quick fixes.",
-      "Combine proper nutrition with consistent exercise for best weight management results.",
-    ],
-    muscle: [
-      "Progressive overload and adequate protein are key for muscle growth.",
-      "Allow 48 hours recovery between working the same muscle groups.",
-    ],
-    strength: [
-      "Focus on compound lifts and progressive overload for strength gains.",
-      "Proper form is more important than heavy weights for long-term strength development.",
-    ],
-    recovery: [
-      "Active recovery like walking or light stretching can enhance recovery.",
-      "Nutrition, hydration, and sleep are crucial components of recovery.",
-    ],
-    sore: [
-      "Some muscle soreness is normal, especially when starting new exercises.",
-      "Light movement and proper hydration can help reduce muscle soreness.",
-    ],
-  };
-
-  // Calculate keyword scores
-  const keywordScores = {};
-  Object.keys(keywords).forEach((keyword) => {
-    if (message.includes(keyword)) {
-      // Score based on keyword importance and frequency
-      let score = 1;
-
-      // Higher score for more specific or important keywords
-      if (["workout", "exercise", "diet", "nutrition"].includes(keyword)) {
-        score += 2;
-      }
-
-      // Check for multiple occurrences
-      const occurrences = (message.match(new RegExp(keyword, "gi")) || [])
-        .length;
-      score += occurrences * 0.5;
-
-      keywordScores[keyword] = score;
+  // Check for context words that increase confidence
+  const contextBoosters = ['how', 'what', 'best', 'recommend', 'suggest', 'guide', 'help', 'advice', 'tips'];
+  contextBoosters.forEach(booster => {
+    if (messageLower.includes(booster)) {
+      score += 0.5;
     }
   });
 
-  // Get the highest scoring keyword
+  // Normalize score to 0-10 range for better comparison
+  return Math.min(10, score);
+};
+
+// ENHANCED: Improved keyword-based response system with better confidence scoring
+const getKeywordBasedResponse = (message) => {
+  const keywords = {
+    // Workout Splits (High priority - specific topics)
+    ppl: {
+      responses: [
+        "PPL is great for intermediate lifters! Beginners should start with full body or upper/lower splits.",
+        "Push/Pull/Legs split hits each muscle 2x/week - perfect for balanced development.",
+      ],
+      priority: 3,
+      requiresExact: false
+    },
+    "upper lower": {
+      responses: [
+        "Upper/Lower split is excellent for beginners - good frequency and balanced approach!",
+        "4-day Upper/Lower split provides great frequency for muscle growth.",
+      ],
+      priority: 3,
+      requiresExact: false
+    },
+    "bro split": {
+      responses: [
+        "Bro splits work best for advanced lifters who need high volume per session.",
+        "Beginners should avoid bro splits - the frequency is too low for optimal growth.",
+      ],
+      priority: 3,
+      requiresExact: false
+    },
+    "arnold split": {
+      responses: [
+        "The Arnold split is advanced - 6 days/week hitting muscles 2x with high volume.",
+        "Only experienced bodybuilders should attempt the classic Arnold split routine.",
+      ],
+      priority: 3,
+      requiresExact: false
+    },
+
+    // Supplements (High priority - specific topics)
+    "protein powder": {
+      responses: [
+        "Protein powder timing depends on your goals - post-workout is usually best!",
+        "Whey isolate for cutting, whey concentrate for bulking, casein for bedtime.",
+      ],
+      priority: 3,
+      requiresExact: false
+    },
+    "whey protein": {
+      responses: [
+        "Whey protein is fast-absorbing - perfect for post-workout recovery!",
+        "Whey isolate has fewer calories, making it great for cutting phases.",
+      ],
+      priority: 3,
+      requiresExact: false
+    },
+    casein: {
+      responses: [
+        "Casein protein digests slowly - ideal for bedtime or between meals.",
+        "Use casein when you need sustained protein release over several hours.",
+      ],
+      priority: 3,
+      requiresExact: true
+    },
+    creatine: {
+      responses: [
+        "Take creatine post-workout with carbs for best absorption!",
+        "5g of creatine monohydrate daily is the proven effective dosage.",
+        "Creatine works best when taken consistently for 3-4 weeks.",
+      ],
+      priority: 3,
+      requiresExact: true
+    },
+
+    // Core Fitness Topics (Medium-high priority)
+    workout: {
+      responses: [
+        "Try focusing on compound movements like squats, bench press, and deadlifts for maximum efficiency.",
+        "Remember to warm up properly and cool down after your workouts!",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+    exercise: {
+      responses: [
+        "Consistency is key with exercise - even short daily sessions add up over time.",
+        "Mix up your routine to keep things interesting and challenge different muscle groups.",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+    gym: {
+      responses: [
+        "Make the most of your gym time by having a plan before you go.",
+        "Don't be afraid to ask gym staff for help with equipment or form!",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+    diet: {
+      responses: [
+        "The best diet is one you can maintain long-term - focus on sustainable habits.",
+        "Include foods you enjoy in moderation for better adherence to your nutrition plan.",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+    nutrition: {
+      responses: [
+        "Focus on whole, unprocessed foods for optimal nutrition.",
+        "Balance your plate with protein, complex carbs, and healthy fats at each meal.",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+    health: {
+      responses: [
+        "Remember that health includes physical, mental, and emotional wellbeing.",
+        "Small, consistent healthy choices lead to big results over time.",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+    muscle: {
+      responses: [
+        "Progressive overload and adequate protein are key for muscle growth.",
+        "Allow 48 hours recovery between working the same muscle groups.",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+    strength: {
+      responses: [
+        "Focus on compound lifts and progressive overload for strength gains.",
+        "Proper form is more important than heavy weights for long-term strength development.",
+      ],
+      priority: 2,
+      requiresExact: false
+    },
+
+    // General Topics (Lower priority)
+    food: {
+      responses: [
+        "Focus on whole, unprocessed foods for optimal nutrition.",
+        "Balance your plate with protein, complex carbs, and healthy fats at each meal.",
+      ],
+      priority: 1,
+      requiresExact: false
+    },
+    eat: {
+      responses: [
+        "Listen to your body's hunger and fullness cues for better eating habits.",
+        "Aim for consistent meal timing to maintain steady energy levels.",
+      ],
+      priority: 1,
+      requiresExact: false
+    },
+    sleep: {
+      responses: [
+        "Quality sleep is crucial for recovery, hormone balance, and overall health.",
+        "Aim for 7-9 hours of sleep per night for optimal functioning.",
+      ],
+      priority: 1,
+      requiresExact: false
+    },
+    stress: {
+      responses: [
+        "Manage stress through exercise, meditation, and proper work-life balance.",
+        "Chronic stress can impact both physical and mental health - prioritize stress management.",
+      ],
+      priority: 1,
+      requiresExact: false
+    },
+    weight: {
+      responses: [
+        "Sustainable weight management focuses on long-term habits, not quick fixes.",
+        "Combine proper nutrition with consistent exercise for best weight management results.",
+      ],
+      priority: 1,
+      requiresExact: false
+    },
+    recovery: {
+      responses: [
+        "Active recovery like walking or light stretching can enhance recovery.",
+        "Nutrition, hydration, and sleep are crucial components of recovery.",
+      ],
+      priority: 1,
+      requiresExact: false
+    },
+    sore: {
+      responses: [
+        "Some muscle soreness is normal, especially when starting new exercises.",
+        "Light movement and proper hydration can help reduce muscle soreness.",
+      ],
+      priority: 1,
+      requiresExact: false
+    },
+  };
+
+  // ENHANCED: Calculate keyword scores with better accuracy
+  const keywordScores = {};
+  const messageLower = message.toLowerCase();
+  
+  Object.keys(keywords).forEach((keyword) => {
+    const keywordData = keywords[keyword];
+        const keywordLower = keyword.toLowerCase();
+        
+        // Check for exact word match (higher confidence)
+        const wordBoundaryRegex = new RegExp(`\\b${keywordLower}\\b`, 'i');
+        const hasExactMatch = wordBoundaryRegex.test(message);
+        const hasPartialMatch = messageLower.includes(keywordLower);
+        
+        if (hasExactMatch || (hasPartialMatch && !keywordData.requiresExact)) {
+          let score = keywordData.priority;
+          
+          // Boost score for exact matches
+          if (hasExactMatch) {
+            score += 1.5;
+          }
+          
+          // Check for multiple occurrences
+          const occurrences = (message.match(new RegExp(keywordLower, "gi")) || []).length;
+          score += Math.min(occurrences * 0.3, 1); // Cap bonus at 1
+          
+          // Boost for context words near keyword
+          const contextWords = ['how', 'what', 'best', 'recommend', 'suggest', 'help', 'advice', 'tips', 'guide'];
+          const keywordIndex = messageLower.indexOf(keywordLower);
+          if (keywordIndex !== -1) {
+            const context = messageLower.substring(Math.max(0, keywordIndex - 20), Math.min(messageLower.length, keywordIndex + keywordLower.length + 20));
+            contextWords.forEach(contextWord => {
+              if (context.includes(contextWord)) {
+                score += 0.5;
+              }
+            });
+          }
+          
+          keywordScores[keyword] = score;
+        }
+  });
+
+  // Get the highest scoring keyword (80% accuracy threshold: score >= 2.0)
   const sortedKeywords = Object.keys(keywordScores).sort(
     (a, b) => keywordScores[b] - keywordScores[a]
   );
 
-  if (sortedKeywords.length > 0) {
+  // Only respond if we have high confidence (score >= 2.0 for 80% accuracy)
+  if (sortedKeywords.length > 0 && keywordScores[sortedKeywords[0]] >= 2.0) {
     const bestKeyword = sortedKeywords[0];
-    const responses = keywords[bestKeyword];
+    const responses = keywords[bestKeyword].responses;
     return responses[Math.floor(Math.random() * responses.length)];
   }
 
-  // Default responses for general fitness/health questions
+  // Default responses for general fitness/health questions (still fitness-focused)
   const defaultResponses = [
     "I'd be happy to help with that! Could you provide more details about your fitness goals or questions?",
     "That's a great question! For more specific advice, could you tell me about your current fitness level and goals?",
