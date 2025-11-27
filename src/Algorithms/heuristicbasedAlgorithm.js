@@ -5,6 +5,7 @@ import {
   calisthenicsWorkouts,
   medicalConditionWorkouts 
 } from '../Data/workouts';
+import { generateEnhancedMedicalWorkoutPlan } from './rulebasedAlgorithms';
 
 // Enhanced warm-up exercises database with muscle group specificity
 const warmUpExercises = {
@@ -1044,7 +1045,15 @@ const generateNewWorkoutPlan = (userData) => {
 export const generateWorkoutPlan = (userData, currentPlan = null, userProgress = null) => {
   const { fitnessGoal, workoutPreference, fitnessLevel, selectedDays, weight, hasMedicalConditions, medicalConditions, gender, preferredWorkoutDays, userId, age } = userData;
   
-  // Check if user has medical conditions
+  // Check if user has medical conditions - use rule-based algorithm for medical plans
+  if (hasMedicalConditions && medicalConditions && medicalConditions.trim() !== '') {
+    const medicalPlan = generateEnhancedMedicalWorkoutPlan(medicalConditions, userData);
+    if (medicalPlan) {
+      return medicalPlan;
+    }
+  }
+  
+  // Check if user has medical conditions (fallback to old method if rule-based fails)
   const detectedConditions = hasMedicalConditions ? detectMedicalConditions(medicalConditions) : [];
   
   // If medical conditions are detected, prioritize medical workouts

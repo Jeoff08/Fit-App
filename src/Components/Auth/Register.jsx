@@ -11,9 +11,17 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!agreedToTerms) {
+      setError('You must agree to the terms and conditions to register');
+      return;
+    }
+    
     setLoading(true);
     setError('');
 
@@ -27,12 +35,14 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
         displayName: displayName
       });
 
-      // Create user document in Firestore
+      // Create user document in Firestore with terms acceptance
       await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
         displayName,
         email,
         createdAt: new Date(),
+        agreedToTerms: true,
+        termsAcceptedAt: new Date(),
         fitnessData: null
       });
 
@@ -46,6 +56,11 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
   };
 
   const handleToggleAuthMode = () => {
+    if (!agreedToTerms) {
+      setError('Please agree to the terms and conditions before proceeding');
+      return;
+    }
+    
     setIsTransitioning(true);
     setTimeout(() => {
       onToggleAuthMode();
@@ -130,6 +145,135 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
         </div>
       )}
       
+      {/* Terms and Conditions Modal */}
+      {showTerms && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="w-full max-w-2xl mx-auto bg-gradient-to-br from-gray-900 to-black border border-green-500/30 rounded-2xl p-6 shadow-2xl max-h-[90vh] overflow-hidden flex flex-col sm:p-8">
+            {/* Header */}
+            <div className="text-center mb-6 flex-shrink-0">
+              <div className="flex items-center justify-center mb-4">
+                <i className="fas fa-file-contract text-green-400 text-2xl mr-3"></i>
+                <h3 className="text-xl font-bold text-white">Terms & Conditions</h3>
+              </div>
+            </div>
+            
+            {/* Terms Content */}
+            <div className="bg-gray-800/50 p-4 rounded-xl border border-green-500/30 flex-1 overflow-y-auto mb-6">
+              <div className="text-gray-300 text-sm leading-relaxed space-y-4">
+                <div>
+                  <h4 className="text-green-400 font-bold text-lg mb-2">IMPORTANT LEGAL DISCLAIMER</h4>
+                  <p className="mb-3">
+                    <strong>Please read these terms and conditions carefully before using ASH-FIT.</strong> By creating an account, you acknowledge that you have read, understood, and agree to be bound by all terms outlined below.
+                  </p>
+                </div>
+
+                <div>
+                  <h5 className="text-green-300 font-semibold mb-2">1. User Responsibility & Accuracy of Information</h5>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>You are solely responsible for the accuracy and completeness of all personal information, health data, fitness levels, and medical history provided to ASH-FIT</li>
+                    <li>All fitness recommendations, workout plans, nutritional guidance, and health suggestions are generated based EXCLUSIVELY on the information you provide</li>
+                    <li>Any misrepresentation, omission, or false information provided by you may result in inappropriate, ineffective, or potentially harmful recommendations</li>
+                    <li>ASH-FIT cannot be held responsible for outcomes resulting from inaccurate or incomplete user-provided information</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="text-green-300 font-semibold mb-2">2. Medical Disclaimer</h5>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>ASH-FIT is NOT a medical service, healthcare provider, or substitute for professional medical advice</li>
+                    <li>You MUST consult with qualified healthcare professionals before starting any fitness or nutrition program</li>
+                    <li>If you have pre-existing medical conditions, injuries, or concerns, you are required to obtain medical clearance before using our services</li>
+                    <li>Stop exercising immediately and seek medical attention if you experience pain, dizziness, shortness of breath, or any unusual symptoms</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="text-green-300 font-semibold mb-2">3. Assumption of Risk</h5>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>You voluntarily assume all risks and dangers associated with physical exercise and dietary changes</li>
+                    <li>You accept full responsibility for any injury, loss, or damage that may occur during or as a result of using ASH-FIT recommendations</li>
+                    <li>You understand that results vary based on individual factors including genetics, commitment, and adherence to programs</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="text-green-300 font-semibold mb-2">4. System Output Disclaimer</h5>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>All recommendations, workout plans, nutritional advice, fitness assessments, and health guidance provided by ASH-FIT are generated SOLELY based on the personal information you input into the system</li>
+                    <li>The quality, accuracy, safety, and effectiveness of ASH-FIT's output is DIRECTLY DEPENDENT on the accuracy, completeness, and truthfulness of the information you provide</li>
+                    <li>ASH-FIT functions as an information processing system - it cannot verify, validate, or confirm the truthfulness of user-provided data</li>
+                    <li>You acknowledge that the system's recommendations are only as reliable as the data you supply, and any false information will produce correspondingly unreliable results</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="text-green-300 font-semibold mb-2">5. Liability Limitation</h5>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>ASH-FIT, its developers, and affiliates shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from your use of the application</li>
+                    <li>This includes but is not limited to personal injury, property damage, financial loss, or any other damages arising from reliance on our recommendations</li>
+                    <li>You agree to indemnify and hold harmless ASH-FIT from any claims resulting from your use of the service or violation of these terms</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="text-green-300 font-semibold mb-2">6. Age Requirement</h5>
+                  <p>You must be at least 18 years old to use ASH-FIT. Users under 18 require parental consent and supervision.</p>
+                </div>
+
+                <div>
+                  <h5 className="text-green-300 font-semibold mb-2">7. Data Accuracy Acknowledgement</h5>
+                  <p className="bg-yellow-500/20 p-3 rounded-lg border border-yellow-500/30">
+                    <strong>SPECIFIC ACKNOWLEDGEMENT:</strong> I understand that by providing inaccurate health information or lying about my medical conditions, fitness level, or capabilities, I assume full responsibility for any negative consequences. ASH-FIT's recommendations are only as accurate as the information I provide. The system outputs exactly what it calculates from my inputs, and I accept complete responsibility for ensuring my inputs are truthful and accurate.
+                  </p>
+                </div>
+
+                <div className="text-xs text-gray-400 mt-6">
+                  <p>Last updated: {new Date().toLocaleDateString()}</p>
+                  <p>By checking the agreement box, you confirm your understanding and acceptance of these terms.</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Agreement Checkbox */}
+            <div className="flex items-start mb-6 p-3 bg-gray-800/30 rounded-lg border border-green-500/20 flex-shrink-0">
+              <input
+                type="checkbox"
+                id="termsAgree"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="w-4 h-4 text-green-500 bg-gray-700 border-gray-600 rounded focus:ring-green-500 focus:ring-2 mt-1 flex-shrink-0"
+              />
+              <label htmlFor="termsAgree" className="ml-3 text-sm text-gray-300">
+                I have read, understood, and agree to all terms and conditions outlined above. I accept full responsibility for my health and fitness journey and acknowledge that ASH-FIT's recommendations are based solely on the accuracy of my provided information. I understand that the system outputs exactly what it calculates from my inputs, and I am solely responsible for ensuring my information is truthful and complete.
+              </label>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex space-x-3 flex-shrink-0">
+              <button
+                onClick={() => setShowTerms(false)}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl font-semibold transition-all duration-300"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  if (agreedToTerms) {
+                    setShowTerms(false);
+                  } else {
+                    setError('Please agree to the terms to continue');
+                  }
+                }}
+                className="flex-1 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
+                disabled={!agreedToTerms}
+              >
+                Accept & Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Register Container with Enhanced Glassmorphism Effect */}
       <div className={`w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-green-500/30 backdrop-filter backdrop-blur-xl bg-gradient-to-br from-gray-900/80 to-black/90 z-20 transition-all duration-500 hover:scale-[1.01] overflow-hidden sm:max-w-md sm:p-8 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
         
@@ -159,6 +303,15 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
           </p>
         </div>
         
+        {/* System Disclaimer Banner */}
+        <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-center">
+          <div className="flex items-center justify-center space-x-2 text-blue-400 text-xs">
+            <i className="fas fa-info-circle"></i>
+            <span className="font-semibold">SYSTEM DISCLAIMER:</span>
+            <span>All recommendations are based solely on your provided information</span>
+          </div>
+        </div>
+        
         {/* Form Section */}
         <div className="space-y-4 sm:space-y-6">
           {error && (
@@ -167,6 +320,33 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
               <span>{error}</span>
             </div>
           )}
+          
+          {/* Terms Agreement Section */}
+          <div className="bg-gray-800/30 p-4 rounded-xl border border-green-500/20">
+            <div className="flex items-start space-x-3">
+              <input
+                type="checkbox"
+                id="registerAgree"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="w-4 h-4 text-green-500 bg-gray-700 border-gray-600 rounded focus:ring-green-500 focus:ring-2 mt-1 flex-shrink-0"
+              />
+              <div>
+                <label htmlFor="registerAgree" className="text-xs text-gray-300 cursor-pointer sm:text-sm">
+                  I agree to the ASH-FIT Terms & Conditions and acknowledge that I am solely responsible for the accuracy of my health information. 
+                  <button 
+                    onClick={() => setShowTerms(true)}
+                    className="text-green-400 hover:text-green-300 underline ml-1 font-semibold"
+                  >
+                    View Full Terms
+                  </button>
+                </label>
+                <p className="text-xs text-gray-400 mt-1">
+                  You must agree to continue with registration
+                </p>
+              </div>
+            </div>
+          </div>
           
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
@@ -232,7 +412,7 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
             
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !agreedToTerms}
               className="w-full bg-gradient-to-r from-green-500 via-green-600 to-green-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider hover:from-green-600 hover:via-green-700 hover:to-green-800 transition-all duration-300 disabled:opacity-50 flex items-center justify-center shadow-2xl shadow-green-500/40 mt-4 animate-pulse-soft group relative overflow-hidden sm:py-4 sm:text-sm sm:mt-6"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
@@ -259,7 +439,7 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
               Already have an account?{' '}
               <button
                 onClick={handleToggleAuthMode}
-                disabled={isTransitioning}
+                disabled={isTransitioning || !agreedToTerms}
                 className="text-green-400 font-bold hover:text-green-300 transition-all duration-300 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden px-3 py-1.5 rounded-lg bg-green-400/10 hover:bg-green-400/20 sm:px-4 sm:py-2"
               >
                 <span className="relative z-10 flex items-center text-xs sm:text-sm">
@@ -284,6 +464,11 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
               <i className="fas fa-bolt text-xs mr-1 sm:text-sm sm:mr-2"></i>
               <span className="text-xs uppercase tracking-widest sm:text-sm">Encrypted</span>
             </div>
+          </div>
+          <div className="mt-2 text-center">
+            <p className="text-gray-500 text-xs">
+              All system outputs are based solely on your provided information
+            </p>
           </div>
         </div>
       </div>

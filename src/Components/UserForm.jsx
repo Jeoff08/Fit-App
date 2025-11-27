@@ -32,6 +32,46 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
     { value: 'female', label: 'Female', icon: '♀', description: 'Female' },
   ];
 
+  // Check if user is in restricted age group
+  const isRestrictedAgeGroup = () => {
+    const age = parseInt(userData.age);
+    if (!age) return false;
+    
+    // Both males and females are restricted at 40+ years old
+    if (age >= 40) return true;
+    
+    // Females are restricted at 35+ years old
+    if (userData.gender === 'female' && age >= 35) return true;
+    
+    return false;
+  };
+
+  // Check for specific medical conditions
+  const hasSeriousMedicalConditions = () => {
+    if (!userData.hasMedicalConditions || !userData.medicalConditions) return false;
+    
+    const conditions = userData.medicalConditions.toLowerCase();
+    const seriousConditions = ['diabetes', 'hypertension', 'arthritis', 'heart disease', 'heart condition'];
+    
+    return seriousConditions.some(condition => conditions.includes(condition));
+  };
+
+  const hasJointProblems = () => {
+    if (!userData.hasMedicalConditions || !userData.medicalConditions) return false;
+    
+    const conditions = userData.medicalConditions.toLowerCase();
+    const jointConditions = ['knee', 'knee problems', 'joint pain'];
+    
+    return jointConditions.some(condition => conditions.includes(condition));
+  };
+
+  const hasBackPain = () => {
+    if (!userData.hasMedicalConditions || !userData.medicalConditions) return false;
+    
+    const conditions = userData.medicalConditions.toLowerCase();
+    return conditions.includes('back pain') || conditions.includes('back problems');
+  };
+
   const fitnessGoalOptions = [
     { value: 'weightLoss', label: 'Fat Loss', icon: '🔥', description: 'Burn fat and reduce body weight' },
     { value: 'cutting', label: 'Cutting Phase', icon: '✂️', description: 'Maintain muscle while losing fat' },
@@ -42,6 +82,44 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
     { value: 'maintenance', label: 'Maintenance', icon: '⚖️', description: 'Maintain current fitness level' },
     { value: 'performance', label: 'Athletic Performance', icon: '🏃', description: 'Improve sports performance' }
   ];
+
+  // Filter fitness goals based on medical conditions and age
+  const getFilteredFitnessGoals = () => {
+    const seriousMedicalConditions = hasSeriousMedicalConditions();
+    const jointProblems = hasJointProblems();
+    const backPain = hasBackPain();
+    const ageRestricted = isRestrictedAgeGroup();
+
+    // If serious medical conditions (diabetes, hypertension, arthritis, heart disease)
+    if (seriousMedicalConditions) {
+      return fitnessGoalOptions.filter(goal => 
+        ['weightLoss', 'muscleTone', 'maintenance', 'cutting'].includes(goal.value)
+      );
+    }
+    
+    // If back pain specifically - exclude athletic performance only
+    if (backPain) {
+      return fitnessGoalOptions.filter(goal => 
+        goal.value !== 'performance'
+      );
+    }
+    
+    // If other joint problems (knee, joint pain) - exclude athletic performance
+    if (jointProblems && !backPain) {
+      return fitnessGoalOptions.filter(goal => 
+        goal.value !== 'performance'
+      );
+    }
+    
+    // If age restricted
+    if (ageRestricted) {
+      return fitnessGoalOptions.filter(goal => 
+        ['weightLoss', 'muscleTone', 'maintenance'].includes(goal.value)
+      );
+    }
+    
+    return fitnessGoalOptions;
+  };
 
   const activityLevelOptions = [
     { value: 'sedentary', label: 'Desk Job', icon: '💺', description: 'Mostly sitting, little exercise' },
@@ -54,7 +132,18 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
     { value: 'bodybuilding', label: 'Bodybuilding', icon: '🏋️', description: 'Aesthetic muscle development' },
     { value: 'powerlifting', label: 'Powerlifting', icon: '💪', description: 'Focus on strength and power' },
     { value: 'calisthenics', label: 'Calisthenics', icon: '🤸', description: 'Bodyweight exercises' },
+    { value: 'healthMaintenance', label: 'Maintaining Health', icon: '❤️', description: 'Focus on overall health and wellness' },
   ];
+
+  // Filter workout preferences for restricted age group
+  const getFilteredWorkoutPreferences = () => {
+    if (isRestrictedAgeGroup()) {
+      return workoutPreferenceOptions.filter(pref => 
+        pref.value === 'healthMaintenance'
+      );
+    }
+    return workoutPreferenceOptions;
+  };
 
   const fitnessLevelOptions = [
     { value: 'beginner', label: 'New Starter', icon: '🌱', description: 'Less than 6 months experience' },
@@ -65,10 +154,43 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setUserData(prevData => ({
-      ...prevData,
+    const newData = {
+      ...userData,
       [name]: type === 'checkbox' ? checked : value
-    }));
+    };
+
+    // Auto-adjust fitness goal and workout preference if age restriction applies
+    if ((name === 'age' || name === 'gender') && value) {
+      const age = parseInt(newData.age);
+      if (age) {
+        if (age >= 40 || (newData.gender === 'female' && age >= 35)) {
+          // Reset to allowed values for restricted age group
+          if (!['weightLoss', 'muscleTone', 'maintenance'].includes(newData.fitnessGoal)) {
+            newData.fitnessGoal = 'maintenance';
+          }
+          if (newData.workoutPreference !== 'healthMaintenance') {
+            newData.workoutPreference = 'healthMaintenance';
+          }
+        }
+      }
+    }
+
+    // Auto-adjust fitness goal if medical conditions are specified
+    if (name === 'medicalConditions' || (name === 'hasMedicalConditions' && checked)) {
+      const conditions = newData.medicalConditions.toLowerCase();
+      const seriousConditions = ['diabetes', 'hypertension', 'arthritis', 'heart disease', 'heart condition'];
+      const hasSerious = seriousConditions.some(condition => conditions.includes(condition));
+      const hasBackPain = conditions.includes('back pain') || conditions.includes('back problems');
+      const hasJointProblems = conditions.includes('knee') || conditions.includes('knee problems') || conditions.includes('joint pain');
+      
+      if (hasSerious && !['weightLoss', 'muscleTone', 'maintenance', 'cutting'].includes(newData.fitnessGoal)) {
+        newData.fitnessGoal = 'maintenance';
+      } else if ((hasBackPain || hasJointProblems) && newData.fitnessGoal === 'performance') {
+        newData.fitnessGoal = 'muscleGain';
+      }
+    }
+
+    setUserData(newData);
   };
 
   const handleDaySelection = (day) => {
@@ -284,14 +406,95 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
         </div>
       </div>
 
+      {/* Medical Conditions Button */}
+      <div className="transform hover:scale-105 transition-transform duration-300">
+        <label className="flex items-center cursor-pointer p-4 bg-gradient-to-b from-gray-900 to-black rounded-xl border-2 border-green-600/50 hover:border-green-500/60 transition-all duration-300">
+          <input
+            type="checkbox"
+            name="hasMedicalConditions"
+            checked={userData.hasMedicalConditions}
+            onChange={handleChange}
+            className="mr-3 accent-green-500 cursor-pointer h-5 w-5"
+          />
+          <span className="text-sm font-bold text-green-200 tracking-wide flex items-center">
+            <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">🏥</span>
+            MEDICAL CONDITIONS
+          </span>
+        </label>
+        {userData.hasMedicalConditions && (
+          <div className="mt-4 relative animate-fade-in">
+            <div className="absolute inset-y-0 left-0 pl-3 pt-3 pointer-events-none">
+              <span className="text-green-400 text-lg">💊</span>
+            </div>
+            <textarea
+              name="medicalConditions"
+              value={userData.medicalConditions}
+              onChange={handleChange}
+              placeholder='Describe your medical conditions'
+              className="w-full bg-gradient-to-b from-gray-900 to-black border-2 border-green-600/50 text-white rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/30 transition-all duration-300 resize-none"
+              rows="3"
+            />
+          </div>
+        )}
+      </div>
+
       {/* Fitness Goal Select */}
       <div className="transform hover:scale-105 transition-transform duration-300">
         <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
           <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">🎯</span>
           FITNESS GOAL
+          {(isRestrictedAgeGroup() || hasSeriousMedicalConditions() || hasJointProblems() || hasBackPain()) && (
+            <span className="ml-2 text-xs bg-yellow-500 text-black px-2 py-1 rounded-full font-bold">
+              {hasSeriousMedicalConditions() ? 'MEDICAL RESTRICTION' : 
+               hasBackPain() ? 'BACK SAFETY' :
+               hasJointProblems() ? 'JOINT SAFETY' : 
+               'AGE RESTRICTED'}
+            </span>
+          )}
         </label>
+        
+        {/* Medical Conditions Warning */}
+        {hasSeriousMedicalConditions() && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
+            <p className="text-red-300 text-sm font-bold text-center">
+              🛡️ For your safety with conditions like diabetes, hypertension, arthritis, or heart disease, 
+              we recommend focusing on Fat Loss, Toning, Maintenance, or Cutting Phase goals only.
+            </p>
+          </div>
+        )}
+        
+        {/* Back Pain Warning */}
+        {hasBackPain() && !hasSeriousMedicalConditions() && (
+          <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+            <p className="text-yellow-300 text-sm font-bold text-center">
+              🛡️ For your back safety, we recommend avoiding Athletic Performance training. All other fitness goals are suitable with proper form and modifications.
+            </p>
+          </div>
+        )}
+        
+        {/* Joint Problems Warning */}
+        {hasJointProblems() && !hasSeriousMedicalConditions() && !hasBackPain() && (
+          <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+            <p className="text-yellow-300 text-sm font-bold text-center">
+              🛡️ For your joint safety with knee problems, we recommend avoiding Athletic Performance training.
+            </p>
+          </div>
+        )}
+        
+        {/* Age Restriction Warning */}
+        {isRestrictedAgeGroup() && !hasSeriousMedicalConditions() && !hasJointProblems() && !hasBackPain() && (
+          <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+            <p className="text-yellow-300 text-sm font-bold text-center">
+              {userData.gender === 'female' && parseInt(userData.age) >= 35 
+                ? '🛡️ For women 35 years and older, we recommend focusing on health maintenance and sustainable fitness goals'
+                : '🛡️ For users 40 years and older, we recommend focusing on health maintenance and sustainable fitness goals'
+              }
+            </p>
+          </div>
+        )}
+        
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
-          {fitnessGoalOptions.map((option) => (
+          {getFilteredFitnessGoals().map((option) => (
             <button
               key={option.value}
               type="button"
@@ -360,9 +563,24 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
         <label className="block text-sm font-bold text-green-200 mb-3 tracking-wide flex items-center">
           <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">💪</span>
           TRAINING STYLE
+          {isRestrictedAgeGroup() && (
+            <span className="ml-2 text-xs bg-yellow-500 text-black px-2 py-1 rounded-full font-bold">
+              HEALTH FOCUS
+            </span>
+          )}
         </label>
+        {isRestrictedAgeGroup() && (
+          <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+            <p className="text-yellow-300 text-sm font-bold text-center">
+              {userData.gender === 'female' && parseInt(userData.age) >= 35 
+                ? '🛡️ For your safety and long-term health, we recommend the "Maintaining Health" training style for women 35 years and older'
+                : '🛡️ For your safety and long-term health, we recommend the "Maintaining Health" training style for users 40 years and older'
+              }
+            </p>
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
-          {workoutPreferenceOptions.map((option) => (
+          {getFilteredWorkoutPreferences().map((option) => (
             <button
               key={option.value}
               type="button"
@@ -371,7 +589,7 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
                 userData.workoutPreference === option.value
                   ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 text-white shadow-lg shadow-green-500/30'
                   : 'bg-gradient-to-b from-gray-900 to-black border-green-600/50 text-green-200 hover:border-green-500/80 hover:bg-gradient-to-br hover:from-green-900/30 hover:to-black'
-              }`}
+              } ${isRestrictedAgeGroup() && option.value !== 'healthMaintenance' ? 'hidden' : ''}`}
             >
               <div className="text-center">
                 <div className="text-lg mb-1">{option.icon}</div>
@@ -474,38 +692,6 @@ const UserForm = ({ onSubmit, isRegenerating = false }) => {
         <p className="text-sm text-green-300/80 text-center mt-4 font-bold bg-gradient-to-r from-green-900/50 to-black/50 p-2 rounded-lg">
           SELECTED: {userData.selectedDays.length}/{userData.preferredWorkoutDays} DAYS
         </p>
-      </div>
-
-      {/* Medical Conditions */}
-      <div className="transform hover:scale-105 transition-transform duration-300">
-        <label className="flex items-center cursor-pointer p-3 md:p-4 bg-gradient-to-b from-gray-900 to-black rounded-xl border-2 border-green-600/50 hover:border-green-500/60 transition-all duration-300">
-          <input
-            type="checkbox"
-            name="hasMedicalConditions"
-            checked={userData.hasMedicalConditions}
-            onChange={handleChange}
-            className="mr-3 accent-green-500 cursor-pointer h-5 w-5"
-          />
-          <span className="text-sm font-bold text-green-200 tracking-wide flex items-center">
-            <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-2">🏥</span>
-            MEDICAL CONDITIONS OR INJURIES?
-          </span>
-        </label>
-        {userData.hasMedicalConditions && (
-          <div className="mt-4 relative animate-fade-in">
-            <div className="absolute inset-y-0 left-0 pl-3 pt-3 pointer-events-none">
-              <span className="text-green-400 text-lg">💊</span>
-            </div>
-            <textarea
-              name="medicalConditions"
-              value={userData.medicalConditions}
-              onChange={handleChange}
-              placeholder="Please describe any medical conditions, injuries, or limitations we should know about..."
-              className="w-full bg-gradient-to-b from-gray-900 to-black border-2 border-green-600/50 text-white rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:border-green-500 focus:shadow-lg focus:shadow-green-500/30 transition-all duration-300 resize-none"
-              rows="3"
-            />
-          </div>
-        )}
       </div>
     </div>
   );

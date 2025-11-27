@@ -135,7 +135,7 @@ const getWorkoutImage = (exerciseName) => {
     
     
     // Leg exercises
-    'glute activation': 'public/GIF2.0/Banded-Glute-Kickbacks.gif',
+    'glute activation': '/GIF2.0/Banded-Glute-Kickbacks.gif',
     'glute bridge': '/GIF2.0/elevated-glute-bridge.gif',
     'glute ham raise': '/GIF2.0/Glute-Ham-Raise.gif',
     'leg press calf raise': '/GIF2.0/leg-press-calf-raise.gif',
@@ -270,9 +270,9 @@ const getWorkoutImage = (exerciseName) => {
     'hamstring curl': '/WorkoutsImage/Lying-leg-curl-gif.gif',
     
     // Full body/Compound exercises
-    'stair climber': 'public/GIF2.0/Walking-on-Stepmill.gif',
-    'mountain climbers': 'public/GIF2.0/Cross-Body-Mountain-Climber.gif',
-    'rowing machine': 'public/GIF2.0/Rowing-Machine.gif',
+    'stair climber': '/GIF2.0/Walking-on-Stepmill.gif',
+    'mountain climbers': '/GIF2.0/Cross-Body-Mountain-Climber.gif',
+    'rowing machine': '/GIF2.0/Rowing-Machine.gif',
     '': '',
     'treadmill': '/GIF2.0/walking treadmill.gif',
     'cat-cow stretch': '/GIF2.0/cats crow.gif',
@@ -282,6 +282,17 @@ const getWorkoutImage = (exerciseName) => {
     'walking': '/GIF2.0/walking.gif',
     'medicine ball slam': '',
     
+    // Resistance band exercises
+    'band chest press': '/GIF2.0/band chest press.gif',
+    'band rows': '/GIF2.0/Seated-Resistance-Band-Row-1.webp',
+    'band squats': '/GIF2.0/resistance-band-squat.gif',
+    'band shoulder press': '/GIF2.0/Resistance-Band-Seated-Shoulder-Press.gif',
+    '': '',
+    '': '',
+    '': '',
+    '': '',
+
+
     // Machine exercises
     'chest press machine': '/GIF/DEC_CHEST_MAC.gif',
     'machine-based activation': '/GIF/DEC_CHEST_MAC.gif',

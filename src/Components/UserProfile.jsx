@@ -8,6 +8,7 @@ const UserProfile = ({ userData }) => {
   const [profileData, setProfileData] = useState(null);
   const [registrationDate, setRegistrationDate] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [termsData, setTermsData] = useState(null);
 
   // Initialize auth and listen for user
   useEffect(() => {
@@ -21,6 +22,14 @@ const UserProfile = ({ userData }) => {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  // Load terms acceptance data from localStorage
+  useEffect(() => {
+    const savedTermsData = localStorage.getItem('userTermsAcceptance');
+    if (savedTermsData) {
+      setTermsData(JSON.parse(savedTermsData));
+    }
   }, []);
 
   // Listen to real-time Firestore updates
@@ -46,6 +55,18 @@ const UserProfile = ({ userData }) => {
           setRegistrationDate(currentDate);
         } else {
           setRegistrationDate(savedRegistrationDate);
+        }
+
+        // Check for terms data in Firestore and update localStorage
+        if (userData.agreedToTerms) {
+          const firestoreTermsData = {
+            agreedToTerms: userData.agreedToTerms,
+            termsAcceptedAt: userData.termsAcceptedAt || new Date().toISOString(),
+            disclaimerAccepted: userData.disclaimerAccepted || true,
+            disclaimerAcceptedAt: userData.disclaimerAcceptedAt || new Date().toISOString()
+          };
+          localStorage.setItem('userTermsAcceptance', JSON.stringify(firestoreTermsData));
+          setTermsData(firestoreTermsData);
         }
       }
     });
@@ -92,6 +113,9 @@ const UserProfile = ({ userData }) => {
       if (e.key === "userFitnessProfile" && e.newValue) {
         setProfileData(JSON.parse(e.newValue));
       }
+      if (e.key === "userTermsAcceptance" && e.newValue) {
+        setTermsData(JSON.parse(e.newValue));
+      }
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -110,6 +134,34 @@ const UserProfile = ({ userData }) => {
       year: "numeric",
       month: "long",
       day: "numeric",
+    });
+  };
+
+  // Format terms acceptance date
+  const formatTermsDate = () => {
+    if (!termsData || !termsData.termsAcceptedAt) {
+      return "Not accepted";
+    }
+    return new Date(termsData.termsAcceptedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Format disclaimer acceptance date
+  const formatDisclaimerDate = () => {
+    if (!termsData || !termsData.disclaimerAcceptedAt) {
+      return "Not accepted";
+    }
+    return new Date(termsData.disclaimerAcceptedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -381,7 +433,7 @@ const UserProfile = ({ userData }) => {
             </div>
           </div>
 
-          {/* Right Column - Medical Information */}
+          {/* Right Column - Medical Information & Terms */}
           <div className="space-y-6">
             {/* Medical Information Card */}
             <div className="bg-gradient-to-br from-gray-900/95 to-black/95 rounded-2xl p-6 border border-green-500/30 shadow-xl">
@@ -417,6 +469,65 @@ const UserProfile = ({ userData }) => {
                       </div>
                     </div>
                   )}
+              </div>
+            </div>
+
+            {/* Terms & Agreements Card */}
+            <div className="bg-gradient-to-br from-gray-900/95 to-black/95 rounded-2xl p-6 border border-green-500/30 shadow-xl">
+              <h2 className="text-xl font-bold text-green-300 mb-4 flex items-center">
+                <span className="bg-gradient-to-r from-green-500 to-green-700 p-1 rounded-lg mr-3">
+                  📝
+                </span>
+                TERMS & AGREEMENTS
+              </h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-green-500/20">
+                  <span className="text-green-200 font-semibold text-sm">
+                    Terms & Conditions
+                  </span>
+                  <span className="text-white font-bold">
+                    {termsData && termsData.agreedToTerms ? (
+                      <span className="text-green-400">Accepted ✅</span>
+                    ) : (
+                      <span className="text-red-400">Not Accepted ❌</span>
+                    )}
+                  </span>
+                </div>
+
+                
+                <div className="flex justify-between items-center py-2 border-b border-green-500/20">
+                  <span className="text-green-200 font-semibold text-sm">
+                    Disclaimer
+                  </span>
+                  <span className="text-white font-bold">
+                    {termsData && termsData.disclaimerAccepted ? (
+                      <span className="text-green-400">Accepted ✅</span>
+                    ) : (
+                      <span className="text-red-400">Not Accepted ❌</span>
+                    )}
+                  </span>
+                </div>
+
+                {termsData && termsData.disclaimerAccepted && (
+                  <div className="flex justify-between items-center py-2 border-b border-green-500/20">
+                    <span className="text-green-200 font-semibold text-sm">
+                      Accepted On
+                    </span>
+                    <span className="text-white font-bold text-sm">
+                      {formatDisclaimerDate()}
+                    </span>
+                  </div>
+                )}
+
+                <div className="mt-4 p-3 bg-green-900/20 rounded-lg border border-green-500/30">
+                  <p className="text-green-200 text-xs text-center">
+                    {termsData ? (
+                      "All agreements are properly recorded and stored"
+                    ) : (
+                      "No agreement data found. Please accept terms during registration/login."
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
 

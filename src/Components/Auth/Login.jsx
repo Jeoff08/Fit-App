@@ -1,5 +1,5 @@
 // Login.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../Config/firebaseconfig';
 
@@ -9,9 +9,24 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+
+  // Show warning modal when component mounts
+  useEffect(() => {
+    const hasSeenWarning = localStorage.getItem('ashfit-warning-seen');
+    if (!hasSeenWarning) {
+      setShowWarningModal(true);
+    }
+  }, []);
+
+  const handleAcceptWarning = () => {
+    localStorage.setItem('ashfit-warning-seen', 'true');
+    setShowWarningModal(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     setLoading(true);
     setError('');
 
@@ -34,6 +49,92 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-black overflow-hidden relative font-sans text-white">
+      {/* Warning Modal Popup */}
+      {showWarningModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+          <div className="w-full max-w-2xl rounded-2xl border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 backdrop-filter backdrop-blur-xl shadow-2xl overflow-hidden animate-modal-appear">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-yellow-600/20 to-yellow-500/10 border-b border-yellow-500/30 p-6">
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center border border-yellow-500/30">
+                  <i className="fas fa-exclamation-triangle text-yellow-400 text-2xl"></i>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-yellow-400 uppercase tracking-wider">
+                    ⚠️ IMPORTANT SYSTEM WARNING
+                  </h2>
+                  <p className="text-yellow-300 text-sm mt-1">
+                    Please read this disclaimer carefully before proceeding
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 max-h-96 overflow-y-auto">
+              <div className="space-y-4 text-yellow-300">
+                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                  <h3 className="text-yellow-400 font-bold text-lg mb-2">MEDICAL DISCLAIMER</h3>
+                  <p className="text-sm leading-relaxed">
+                    ASH-FIT provides fitness recommendations for informational and educational purposes only. 
+                    <strong> This is not medical advice.</strong> Always consult with qualified healthcare professionals, 
+                    physicians, or certified fitness trainers before starting any new fitness program, 
+                    especially if you have pre-existing health conditions, injuries, or concerns.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                  <h3 className="text-yellow-400 font-bold text-lg mb-2">USER RESPONSIBILITY</h3>
+                  <p className="text-sm leading-relaxed">
+                    You are solely responsible for your health, safety, and well-being during workouts. 
+                    Listen to your body and stop immediately if you experience any pain, dizziness, shortness of breath, 
+                    or discomfort. Proper form and technique are essential to prevent injuries.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                  <h3 className="text-yellow-400 font-bold text-lg mb-2">SYSTEM LIMITATIONS</h3>
+                  <p className="text-sm leading-relaxed">
+                    Fitness recommendations are generated algorithmically and may not account for individual 
+                    physical conditions, limitations, or specific health requirements. Use professional guidance 
+                    for personalized fitness plans tailored to your unique needs.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                  <h3 className="text-yellow-400 font-bold text-lg mb-2">ACKNOWLEDGEMENT & CONSENT</h3>
+                  <p className="text-sm leading-relaxed font-semibold">
+                    By clicking "I UNDERSTAND & ACCEPT", you acknowledge that you have read, understood, 
+                    and agree to these terms. You accept full responsibility for your fitness journey and 
+                    release ASH-FIT from any liability related to your use of this application.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gradient-to-r from-yellow-600/10 to-yellow-500/5 border-t border-yellow-500/30 p-6">
+              <div className="flex flex-col sm:flex-row gap-4 justify-end">
+                <button
+                  onClick={() => window.close()}
+                  className="px-6 py-3 bg-gray-600/50 text-gray-300 rounded-xl border border-gray-500/30 hover:bg-gray-600/70 transition-all duration-300 font-semibold text-sm uppercase tracking-wide"
+                >
+                  <i className="fas fa-times mr-2"></i>
+                  Exit Application
+                </button>
+                <button
+                  onClick={handleAcceptWarning}
+                  className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl border border-yellow-500/30 hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 font-bold text-sm uppercase tracking-wide shadow-lg shadow-yellow-500/20 flex items-center justify-center"
+                >
+                  <i className="fas fa-check-circle mr-2"></i>
+                  I Understand & Accept
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Dynamic Cinematic Background */}
       <div className="fixed inset-0 z-0">
         <img 
@@ -136,6 +237,19 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
           <p className="text-gray-300 text-xs mt-1 font-light tracking-wide animate-fade-in-slow sm:text-sm sm:mt-2">
             
           </p>
+        </div>
+        
+        {/* System Reminder Section (Smaller version) */}
+        <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/30 rounded-xl p-4 mb-4 sm:mb-6">
+          <div className="flex items-start space-x-3">
+            <i className="fas fa-exclamation-triangle text-yellow-400 text-sm mt-0.5 flex-shrink-0 sm:text-base"></i>
+            <div>
+              <h4 className="text-yellow-400 font-bold text-xs mb-1 uppercase tracking-wide sm:text-sm">Safety Reminder</h4>
+              <p className="text-yellow-300 text-xs leading-relaxed sm:text-sm">
+                Consult healthcare professionals before starting new fitness programs. You are responsible for your health and safety.
+              </p>
+            </div>
+          </div>
         </div>
         
         {/* Form Section */}
@@ -247,6 +361,17 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
       </div>
 
       <style jsx>{`
+        @keyframes modal-appear {
+          0% {
+            opacity: 0;
+            transform: scale(0.8) translateY(-20px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
         @keyframes barbell-rotate {
           0%, 100% { transform: translateY(-50%) rotate(0deg); }
           25% { transform: translateY(-60%) rotate(-5deg); }
@@ -347,6 +472,10 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
         @keyframes pulse-soft {
           0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
           50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
+        }
+
+        .animate-modal-appear {
+          animation: modal-appear 0.5s ease-out forwards;
         }
         
         .animate-barbell-rotate {
