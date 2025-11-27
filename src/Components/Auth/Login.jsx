@@ -48,16 +48,16 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
     }, 2000);
   };
 
-  // Framer Motion variants
+  // Framer Motion variants for mobile-optimized modal
   const modalBackdropVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
-      transition: { duration: 0.4 }
+      transition: { duration: 0.3 }
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.2 }
     }
   };
 
@@ -65,19 +65,17 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
     hidden: { 
       opacity: 0,
       scale: 0.8,
-      y: -50,
-      rotateX: 15
+      y: 50,
     },
     visible: { 
       opacity: 1,
       scale: 1,
       y: 0,
-      rotateX: 0,
       transition: {
         type: "spring",
         damping: 25,
         stiffness: 300,
-        duration: 0.6
+        duration: 0.5
       }
     },
     exit: {
@@ -89,7 +87,6 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
   };
 
   const warningIconVariants = {
-    initial: { scale: 1, rotate: 0 },
     pulse: {
       scale: [1, 1.1, 1],
       rotate: [0, -5, 5, 0],
@@ -102,24 +99,23 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
   };
 
   const sectionVariants = {
-    hidden: { opacity: 0, x: -20 },
+    hidden: { opacity: 0, x: -10 },
     visible: (i) => ({
       opacity: 1,
       x: 0,
       transition: {
         delay: i * 0.1,
-        duration: 0.5
+        duration: 0.4
       }
     })
   };
 
   const buttonHoverVariants = {
     hover: {
-      scale: 1.05,
-      boxShadow: "0 10px 25px rgba(245, 158, 11, 0.3)",
+      scale: 1.02,
       transition: { type: "spring", stiffness: 400, damping: 17 }
     },
-    tap: { scale: 0.95 }
+    tap: { scale: 0.98 }
   };
 
   const containerVariants = {
@@ -157,7 +153,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-green-900 opacity-90 backdrop-filter backdrop-blur-sm"></div>
       </div>
       
-      {/* Enhanced Warning Modal Popup with Framer Motion */}
+      {/* Mobile-Optimized Warning Modal Popup */}
       <AnimatePresence>
         {showWarningModal && (
           <motion.div
@@ -167,120 +163,66 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
             animate="visible"
             exit="exit"
           >
-            {/* Enhanced Blurry Background with gradient */}
+            {/* Blurry Background */}
             <motion.div 
-              className="absolute inset-0 bg-gradient-to-br from-black/80 via-amber-900/20 to-black/80 backdrop-blur-xl"
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
-            
-            {/* Animated Border Effect */}
-            <motion.div
-              className="absolute inset-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="absolute inset-2 border-2 border-amber-500/30 rounded-2xl blur-sm"></div>
-              <div className="absolute inset-4 border border-amber-400/20 rounded-xl"></div>
-            </motion.div>
 
-            {/* Modal Content */}
+            {/* Compact Modal Content */}
             <motion.div
-              className="relative w-full max-w-4xl rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-900/10 via-black to-amber-800/5 backdrop-filter backdrop-blur-xl shadow-2xl overflow-hidden z-50"
+              className="relative w-full max-w-xs mx-auto rounded-xl border border-amber-500/40 bg-gray-900/95 backdrop-filter backdrop-blur-sm shadow-2xl overflow-hidden z-50 max-h-[80vh] flex flex-col"
               variants={modalContentVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              {/* Animated Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/10 to-transparent animate-pulse"></div>
-                <div className="absolute top-0 left-0 w-32 h-32 bg-amber-400/5 rounded-full blur-xl"></div>
-                <div className="absolute bottom-0 right-0 w-40 h-40 bg-amber-600/5 rounded-full blur-xl"></div>
-              </div>
-
               {/* Modal Header */}
               <motion.div 
-                className="bg-gradient-to-r from-amber-600/20 via-amber-500/15 to-amber-600/20 border-b border-amber-500/30 p-6 relative overflow-hidden"
-                initial={{ y: -50, opacity: 0 }}
+                className="bg-gradient-to-r from-amber-600/10 to-amber-500/5 border-b border-amber-500/20 p-3 relative"
+                initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3, type: "spring" }}
+                transition={{ delay: 0.1 }}
               >
-                {/* Animated header background */}
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5"
-                  animate={{
-                    background: [
-                      "linear-gradient(90deg, rgba(245,158,11,0.05) 0%, rgba(0,0,0,0) 50%, rgba(245,158,11,0.05) 100%)",
-                      "linear-gradient(90deg, rgba(245,158,11,0.1) 0%, rgba(245,158,11,0.05) 50%, rgba(245,158,11,0.1) 100%)",
-                      "linear-gradient(90deg, rgba(245,158,11,0.05) 0%, rgba(0,0,0,0) 50%, rgba(245,158,11,0.05) 100%)"
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-                
-                <div className="flex items-center space-x-4 relative z-10">
+                <div className="flex items-center space-x-2">
                   <motion.div
                     variants={warningIconVariants}
-                    initial="initial"
                     animate="pulse"
-                    className="flex-shrink-0 w-14 h-14 bg-amber-500/20 rounded-full flex items-center justify-center border-2 border-amber-500/40 shadow-lg"
+                    className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30"
                   >
-                    <motion.i 
-                      className="fas fa-exclamation-triangle text-amber-400 text-2xl"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    />
+                    <i className="fas fa-exclamation-triangle text-amber-400 text-sm"></i>
                   </motion.div>
-                  <motion.div
-                    initial={{ x: 20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <h2 className="text-2xl font-bold text-amber-400 uppercase tracking-wider drop-shadow-lg">
-                      ⚠️ CRITICAL SYSTEM WARNING
-                    </h2>
-                    <p className="text-amber-300 text-sm mt-1 font-light">
-                      Your safety is our priority - Please read carefully
-                    </p>
-                  </motion.div>
+                  <div>
+                    <h2 className="text-lg font-bold text-amber-400">Important Warning</h2>
+                    <p className="text-amber-300 text-xs">Your safety is our priority</p>
+                  </div>
                 </div>
               </motion.div>
 
               {/* Modal Content */}
               <motion.div 
-                className="p-6 max-h-96 overflow-y-auto relative"
+                className="p-3 flex-1 overflow-y-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.2 }}
               >
-                <motion.div 
-                  className="space-y-4 text-amber-300"
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                >
+                <div className="space-y-3 text-amber-300">
                   {[
                     {
                       title: "MEDICAL DISCLAIMER",
-                      content: "ASH-FIT provides fitness recommendations for informational and educational purposes only. This is not medical advice. Always consult with qualified healthcare professionals, physicians, or certified fitness trainers before starting any new fitness program, especially if you have pre-existing health conditions, injuries, or concerns.",
+                      content: "ASH-FIT provides fitness recommendations for informational purposes only. This is not medical advice. Always consult healthcare professionals before starting new fitness programs.",
                       icon: "fa-heart-pulse"
                     },
                     {
                       title: "USER RESPONSIBILITY",
-                      content: "You are solely responsible for your health, safety, and well-being during workouts. Listen to your body and stop immediately if you experience any pain, dizziness, shortness of breath, or discomfort. Proper form and technique are essential to prevent injuries.",
+                      content: "You are responsible for your health and safety during workouts. Stop immediately if you experience pain, dizziness, or discomfort.",
                       icon: "fa-user-shield"
                     },
                     {
-                      title: "SYSTEM LIMITATIONS",
-                      content: "Fitness recommendations are generated algorithmically and may not account for individual physical conditions, limitations, or specific health requirements. Use professional guidance for personalized fitness plans tailored to your unique needs.",
-                      icon: "fa-robot"
-                    },
-                    {
-                      title: "ACKNOWLEDGEMENT & CONSENT",
-                      content: "By clicking 'I UNDERSTAND & ACCEPT', you acknowledge that you have read, understood, and agree to these terms. You accept full responsibility for your fitness journey and release ASH-FIT from any liability related to your use of this application.",
+                      title: "ACKNOWLEDGEMENT",
+                      content: "By clicking 'I UNDERSTAND & ACCEPT', you acknowledge these terms and accept full responsibility for your fitness journey.",
                       icon: "fa-signature"
                     }
                   ].map((section, index) => (
@@ -288,58 +230,36 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                       key={section.title}
                       custom={index}
                       variants={sectionVariants}
-                      className="bg-amber-500/10 rounded-xl p-4 border border-amber-500/20 backdrop-blur-sm hover:bg-amber-500/15 transition-all duration-300"
+                      className="bg-amber-500/10 rounded-lg p-2 border border-amber-500/20"
                     >
-                      <div className="flex items-start space-x-3">
-                        <motion.i 
-                          className={`fas ${section.icon} text-amber-400 text-lg mt-1 flex-shrink-0`}
-                          whileHover={{ scale: 1.2, rotate: 5 }}
-                        />
+                      <div className="flex items-start space-x-2">
+                        <i className={`fas ${section.icon} text-amber-400 text-xs mt-0.5 flex-shrink-0`} />
                         <div>
-                          <h3 className="text-amber-400 font-bold text-lg mb-2 flex items-center">
-                            {section.title}
-                            <motion.div
-                              className="ml-2 w-2 h-2 bg-amber-400 rounded-full"
-                              animate={{ opacity: [1, 0.3, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity, delay: index * 0.2 }}
-                            />
-                          </h3>
-                          <p className="text-sm leading-relaxed font-light">
-                            {section.content}
-                          </p>
+                          <h3 className="text-amber-400 font-bold text-xs mb-1">{section.title}</h3>
+                          <p className="text-xs leading-relaxed">{section.content}</p>
                         </div>
                       </div>
                     </motion.div>
                   ))}
-                </motion.div>
+                </div>
               </motion.div>
 
               {/* Modal Footer */}
               <motion.div 
-                className="bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-amber-600/10 border-t border-amber-500/30 p-6 relative overflow-hidden"
-                initial={{ y: 50, opacity: 0 }}
+                className="bg-gradient-to-r from-amber-600/5 to-amber-500/10 border-t border-amber-500/20 p-3"
+                initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.3 }}
               >
-                {/* Animated footer background */}
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-r from-amber-500/3 via-transparent to-amber-500/3"
-                  animate={{
-                    x: [-100, 100],
-                    opacity: [0, 1, 0]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, repeatType: "loop" }}
-                />
-                
-                <div className="flex flex-col sm:flex-row gap-4 justify-end relative z-10">
+                <div className="flex flex-col gap-2">
                   <motion.button
                     onClick={() => window.close()}
                     variants={buttonHoverVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    className="px-6 py-3 bg-gray-600/50 text-gray-300 rounded-xl border border-gray-500/30 hover:bg-gray-600/70 transition-all duration-300 font-semibold text-sm uppercase tracking-wide flex items-center justify-center min-w-[160px]"
+                    className="w-full px-3 py-2 bg-gray-600/50 text-gray-300 rounded-lg border border-gray-500/30 text-xs font-semibold"
                   >
-                    <i className="fas fa-times mr-2"></i>
+                    <i className="fas fa-times mr-1"></i>
                     Exit Application
                   </motion.button>
                   <motion.button
@@ -347,17 +267,10 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                     variants={buttonHoverVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl border border-amber-500/30 hover:from-amber-600 hover:to-amber-700 transition-all duration-300 font-bold text-sm uppercase tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center min-w-[160px] relative overflow-hidden"
+                    className="w-full px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg border border-amber-500/30 text-xs font-bold shadow-lg shadow-amber-500/20"
                   >
-                    {/* Button shine effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: "100%" }}
-                      transition={{ duration: 0.8 }}
-                    />
-                    <i className="fas fa-check-circle mr-2 relative z-10"></i>
-                    <span className="relative z-10">I Understand & Accept</span>
+                    <i className="fas fa-check-circle mr-1"></i>
+                    I Understand & Accept
                   </motion.button>
                 </div>
               </motion.div>
@@ -646,17 +559,6 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
       </motion.div>
 
       <style jsx>{`
-        @keyframes modal-appear {
-          0% {
-            opacity: 0;
-            transform: scale(0.8) translateY(-20px);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-
         @keyframes barbell-rotate {
           0%, 100% { transform: translateY(-50%) rotate(0deg); }
           25% { transform: translateY(-60%) rotate(-5deg); }
@@ -757,10 +659,6 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
         @keyframes pulse-soft {
           0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
           50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
-        }
-
-        .animate-modal-appear {
-          animation: modal-appear 0.5s ease-out forwards;
         }
         
         .animate-barbell-rotate {

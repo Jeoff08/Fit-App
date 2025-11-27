@@ -21,25 +21,23 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
       opacity: 0,
       scale: 0.8,
       y: 50,
-      rotateY: 10
     },
     visible: { 
       opacity: 1,
       scale: 1,
       y: 0,
-      rotateY: 0,
       transition: {
         type: "spring",
         damping: 30,
         stiffness: 300,
-        duration: 0.8
+        duration: 0.5
       }
     },
     exit: {
       opacity: 0,
       scale: 0.9,
       y: -30,
-      transition: { duration: 0.4 }
+      transition: { duration: 0.3 }
     }
   };
 
@@ -47,11 +45,11 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
-      transition: { duration: 0.5 }
+      transition: { duration: 0.3 }
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.2 }
     }
   };
 
@@ -60,13 +58,13 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.05
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
@@ -80,7 +78,7 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
   const checkboxVariants = {
     unchecked: { scale: 1, borderColor: "#4B5563" },
     checked: { 
-      scale: 1.1, 
+      scale: 1.05, 
       borderColor: "#10B981",
       backgroundColor: "#10B981",
       transition: { type: "spring", stiffness: 300 }
@@ -159,7 +157,7 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-green-900 opacity-90 backdrop-filter backdrop-blur-sm"></div>
       </div>
       
-      {/* Enhanced Terms and Conditions Modal with Framer Motion */}
+      {/* Mobile-Optimized Terms and Conditions Modal */}
       <AnimatePresence>
         {showTerms && (
           <motion.div
@@ -169,221 +167,92 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
             animate="visible"
             exit="exit"
           >
-            {/* Enhanced Blurry Background */}
+            {/* Blurry Background */}
             <motion.div 
-              className="absolute inset-0 bg-gradient-to-br from-black/80 via-green-900/20 to-black/80 backdrop-blur-xl"
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             />
             
-            {/* Animated Border Glow */}
+            {/* Compact Modal Container */}
             <motion.div
-              className="absolute inset-2 border-2 border-green-500/20 rounded-2xl blur-lg"
-              animate={{
-                opacity: [0.3, 0.6, 0.3],
-                borderColor: ["rgba(16, 185, 129, 0.2)", "rgba(16, 185, 129, 0.4)", "rgba(16, 185, 129, 0.2)"]
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            />
-
-            <motion.div
-              className="relative w-full max-w-4xl mx-auto bg-gradient-to-br from-gray-900/95 via-black to-green-900/10 border-2 border-green-500/30 rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col z-50 backdrop-blur-xl"
+              className="relative w-full max-w-sm mx-auto bg-gray-900/95 border border-green-500/30 rounded-xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col z-50 backdrop-blur-sm"
               variants={termsModalVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              {/* Animated Background Elements */}
-              <div className="absolute inset-0 opacity-5">
-                <motion.div
-                  className="absolute top-10 left-10 w-20 h-20 bg-green-500 rounded-full blur-xl"
-                  animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.3, 0.6, 0.3]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                />
-                <motion.div
-                  className="absolute bottom-10 right-10 w-16 h-16 bg-green-400 rounded-full blur-xl"
-                  animate={{
-                    scale: [1.5, 1, 1.5],
-                    opacity: [0.4, 0.2, 0.4]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                />
-              </div>
-
               {/* Header */}
               <motion.div 
-                className="text-center p-6 bg-gradient-to-r from-green-600/10 via-green-500/5 to-green-600/10 border-b border-green-500/30 relative overflow-hidden flex-shrink-0"
-                initial={{ y: -50, opacity: 0 }}
+                className="text-center p-3 bg-gradient-to-r from-green-600/10 to-green-500/5 border-b border-green-500/20 flex-shrink-0"
+                initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, type: "spring" }}
+                transition={{ delay: 0.1 }}
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/5 to-transparent"
-                  animate={{
-                    x: [-100, 100],
-                    opacity: [0, 1, 0]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-                
-                <div className="flex items-center justify-center space-x-4 relative z-10">
+                <div className="flex items-center justify-center space-x-2">
                   <motion.div
-                    className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/30"
-                    whileHover={{ scale: 1.1, rotate: 360 }}
-                    transition={{ duration: 0.5 }}
+                    className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/30"
+                    whileHover={{ scale: 1.1 }}
                   >
-                    <i className="fas fa-file-contract text-green-400 text-xl"></i>
+                    <i className="fas fa-file-contract text-green-400 text-sm"></i>
                   </motion.div>
                   <div>
-                    <motion.h3 
-                      className="text-2xl font-bold text-white"
-                      initial={{ scale: 0.5 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 200 }}
-                    >
-                      Terms & Conditions
-                    </motion.h3>
-                    <motion.p 
-                      className="text-green-400 text-sm mt-1"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      Legal Agreement for ASH-FIT Usage
-                    </motion.p>
+                    <h3 className="text-lg font-bold text-white">Terms & Conditions</h3>
+                    <p className="text-green-400 text-xs">Legal Agreement</p>
                   </div>
                 </div>
               </motion.div>
               
-              {/* Terms Content */}
+              {/* Terms Content - Compact */}
               <motion.div 
-                className="bg-gray-800/30 p-6 rounded-xl border border-green-500/20 m-6 flex-1 overflow-y-auto"
+                className="p-3 flex-1 overflow-y-auto"
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
               >
-                <div className="text-gray-300 text-sm leading-relaxed space-y-6">
+                <div className="text-gray-300 text-xs leading-relaxed space-y-3">
                   {[
                     {
                       title: "IMPORTANT LEGAL DISCLAIMER",
-                      content: "Please read these terms and conditions carefully before using ASH-FIT. By creating an account, you acknowledge that you have read, understood, and agree to be bound by all terms outlined below.",
+                      content: "Please read these terms carefully before using ASH-FIT. By creating an account, you agree to be bound by all terms outlined below.",
                       icon: "fa-scale-balanced",
                       emphasis: true
                     },
                     {
-                      title: "User Responsibility & Accuracy of Information",
-                      content: [
-                        "You are solely responsible for the accuracy and completeness of all personal information, health data, fitness levels, and medical history provided to ASH-FIT",
-                        "All fitness recommendations, workout plans, nutritional guidance, and health suggestions are generated based EXCLUSIVELY on the information you provide",
-                        "Any misrepresentation, omission, or false information may result in inappropriate, ineffective, or potentially harmful recommendations",
-                        "ASH-FIT cannot be held responsible for outcomes resulting from inaccurate or incomplete user-provided information"
-                      ],
+                      title: "User Responsibility",
+                      content: "You are solely responsible for the accuracy of all personal information, health data, and medical history provided to ASH-FIT.",
                       icon: "fa-user-check"
                     },
                     {
                       title: "Medical Disclaimer",
-                      content: [
-                        "ASH-FIT is NOT a medical service, healthcare provider, or substitute for professional medical advice",
-                        "You MUST consult with qualified healthcare professionals before starting any fitness or nutrition program",
-                        "If you have pre-existing medical conditions, injuries, or concerns, you are required to obtain medical clearance",
-                        "Stop exercising immediately and seek medical attention if you experience pain, dizziness, shortness of breath, or any unusual symptoms"
-                      ],
+                      content: "ASH-FIT is NOT a medical service. Consult healthcare professionals before starting any fitness program.",
                       icon: "fa-heart-pulse"
                     },
                     {
                       title: "Assumption of Risk",
-                      content: [
-                        "You voluntarily assume all risks and dangers associated with physical exercise and dietary changes",
-                        "You accept full responsibility for any injury, loss, or damage that may occur during or as a result of using ASH-FIT recommendations",
-                        "You understand that results vary based on individual factors including genetics, commitment, and adherence to programs"
-                      ],
+                      content: "You voluntarily assume all risks associated with physical exercise and dietary changes.",
                       icon: "fa-triangle-exclamation"
                     },
                     {
-                      title: "System Output Disclaimer",
-                      content: [
-                        "All recommendations, workout plans, nutritional advice, fitness assessments, and health guidance are generated SOLELY based on your personal information",
-                        "The quality, accuracy, safety, and effectiveness of ASH-FIT's output is DIRECTLY DEPENDENT on the accuracy of your provided information",
-                        "ASH-FIT functions as an information processing system - it cannot verify, validate, or confirm the truthfulness of user-provided data",
-                        "You acknowledge that system recommendations are only as reliable as the data you supply"
-                      ],
-                      icon: "fa-microchip"
-                    },
-                    {
                       title: "Liability Limitation",
-                      content: [
-                        "ASH-FIT, its developers, and affiliates shall not be liable for any direct, indirect, incidental, special, or consequential damages",
-                        "This includes but is not limited to personal injury, property damage, financial loss, or any other damages",
-                        "You agree to indemnify and hold harmless ASH-FIT from any claims resulting from your use of the service"
-                      ],
+                      content: "ASH-FIT shall not be liable for any direct, indirect, incidental, or consequential damages.",
                       icon: "fa-shield-halved"
-                    },
-                    {
-                      title: "Data Accuracy Acknowledgement",
-                      content: "SPECIFIC ACKNOWLEDGEMENT: I understand that by providing inaccurate health information or lying about my medical conditions, fitness level, or capabilities, I assume full responsibility for any negative consequences. ASH-FIT's recommendations are only as accurate as the information I provide. The system outputs exactly what it calculates from my inputs, and I accept complete responsibility for ensuring my inputs are truthful and accurate.",
-                      icon: "fa-database",
-                      warning: true
                     }
                   ].map((section, index) => (
                     <motion.div
                       key={section.title}
                       variants={itemVariants}
-                      className={`p-4 rounded-lg border ${
-                        section.warning 
-                          ? 'bg-yellow-500/10 border-yellow-500/30' 
-                          : section.emphasis
+                      className={`p-2 rounded-lg border ${
+                        section.emphasis
                           ? 'bg-green-500/10 border-green-500/30'
-                          : 'bg-gray-700/30 border-green-500/20'
-                      } backdrop-blur-sm hover:shadow-lg transition-all duration-300`}
+                          : 'bg-gray-800/30 border-green-500/20'
+                      }`}
                     >
-                      <div className="flex items-start space-x-3">
-                        <motion.i 
-                          className={`fas ${section.icon} ${
-                            section.warning ? 'text-yellow-400' : 'text-green-400'
-                          } text-lg mt-1 flex-shrink-0`}
-                          whileHover={{ scale: 1.2 }}
-                        />
+                      <div className="flex items-start space-x-2">
+                        <i className={`fas ${section.icon} text-green-400 text-xs mt-0.5 flex-shrink-0`} />
                         <div className="flex-1">
-                          <h4 className={`font-bold text-lg mb-3 ${
-                            section.warning ? 'text-yellow-400' : 'text-green-300'
-                          }`}>
-                            {section.title}
-                            <motion.span
-                              className="ml-2 text-xs"
-                              animate={{ opacity: [1, 0.5, 1] }}
-                              transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
-                            >
-                              ●
-                            </motion.span>
-                          </h4>
-                          {Array.isArray(section.content) ? (
-                            <ul className="space-y-2">
-                              {section.content.map((item, itemIndex) => (
-                                <motion.li 
-                                  key={itemIndex}
-                                  className="flex items-start space-x-2"
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.1 + itemIndex * 0.05 }}
-                                >
-                                  <span className="text-green-400 mt-1.5">•</span>
-                                  <span className="text-gray-300">{item}</span>
-                                </motion.li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <motion.p 
-                              className="text-gray-300"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: index * 0.1 }}
-                            >
-                              {section.content}
-                            </motion.p>
-                          )}
+                          <h4 className="font-bold text-green-300 text-xs mb-1">{section.title}</h4>
+                          <p className="text-gray-300">{section.content}</p>
                         </div>
                       </div>
                     </motion.div>
@@ -393,54 +262,56 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
               
               {/* Agreement Checkbox */}
               <motion.div 
-                className="flex items-start p-6 bg-gray-800/50 border-t border-green-500/20 flex-shrink-0"
-                initial={{ opacity: 0, y: 20 }}
+                className="p-3 bg-gray-800/50 border-t border-green-500/20 flex-shrink-0"
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
+                transition={{ delay: 0.3 }}
               >
-                <motion.div
-                  variants={checkboxVariants}
-                  animate={agreedToTerms ? "checked" : "unchecked"}
-                  className="flex items-start space-x-4 cursor-pointer group"
+                <div
+                  className="flex items-start space-x-2 cursor-pointer"
                   onClick={() => setAgreedToTerms(!agreedToTerms)}
                 >
-                  <div className="relative">
-                    <motion.input
+                  <motion.div
+                    variants={checkboxVariants}
+                    animate={agreedToTerms ? "checked" : "unchecked"}
+                    className="relative mt-0.5"
+                  >
+                    <input
                       type="checkbox"
                       checked={agreedToTerms}
                       onChange={() => {}}
-                      className="w-5 h-5 text-green-500 bg-gray-700 border-2 border-gray-600 rounded focus:ring-green-500 focus:ring-2 mt-1 flex-shrink-0 cursor-pointer"
-                      whileTap={{ scale: 0.9 }}
+                      className="w-4 h-4 text-green-500 bg-gray-700 border-2 border-gray-600 rounded focus:ring-green-500 cursor-pointer"
                     />
-                    <motion.div
-                      className="absolute inset-0 flex items-center justify-center"
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={agreedToTerms ? { scale: 1, rotate: 0 } : { scale: 0, rotate: 180 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    >
-                      <i className="fas fa-check text-white text-xs"></i>
-                    </motion.div>
-                  </div>
-                  <label className="text-sm text-gray-300 cursor-pointer flex-1">
-                    <span className="font-semibold text-green-400">I AGREE TO ALL TERMS:</span> I have read, understood, and agree to all terms and conditions outlined above. I accept full responsibility for my health and fitness journey and acknowledge that ASH-FIT's recommendations are based solely on the accuracy of my provided information.
+                    {agreedToTerms && (
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                      >
+                        <i className="fas fa-check text-white text-xs"></i>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                  <label className="text-xs text-gray-300 cursor-pointer flex-1">
+                    <span className="font-semibold text-green-400">I AGREE:</span> I have read and agree to all terms and conditions.
                   </label>
-                </motion.div>
+                </div>
               </motion.div>
               
               {/* Action Buttons */}
               <motion.div 
-                className="flex space-x-4 p-6 bg-gradient-to-r from-green-600/5 to-green-500/10 border-t border-green-500/20 flex-shrink-0"
-                initial={{ opacity: 0, y: 20 }}
+                className="flex space-x-2 p-3 bg-gradient-to-r from-green-600/5 to-green-500/10 border-t border-green-500/20 flex-shrink-0"
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
+                transition={{ delay: 0.4 }}
               >
                 <motion.button
                   onClick={() => setShowTerms(false)}
-                  whileHover={{ scale: 1.02, backgroundColor: "rgba(55, 65, 81, 0.8)" }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex-1 bg-gray-700/50 text-white py-4 rounded-xl font-semibold transition-all duration-300 border border-gray-600/50"
+                  className="flex-1 bg-gray-700/50 text-white py-2 rounded-lg font-semibold text-xs border border-gray-600/50"
                 >
-                  Close Terms
+                  Close
                 </motion.button>
                 <motion.button
                   onClick={() => {
@@ -450,25 +321,12 @@ const Register = ({ onToggleAuthMode, onRegisterSuccess }) => {
                       setError('Please agree to the terms to continue');
                     }
                   }}
-                  whileHover={{ 
-                    scale: 1.02, 
-                    boxShadow: "0 10px 25px rgba(16, 185, 129, 0.3)" 
-                  }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 border border-green-500/30 relative overflow-hidden"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-700 text-white py-2 rounded-lg font-semibold text-xs border border-green-500/30 disabled:opacity-50"
                   disabled={!agreedToTerms}
                 >
-                  {agreedToTerms && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12"
-                      initial={{ x: "-100%" }}
-                      animate={{ x: "100%" }}
-                      transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-                    />
-                  )}
-                  <span className="relative z-10">
-                    {agreedToTerms ? "Accept & Continue" : "Please Accept Terms"}
-                  </span>
+                  Accept & Continue
                 </motion.button>
               </motion.div>
             </motion.div>
