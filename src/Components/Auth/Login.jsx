@@ -48,7 +48,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
     }, 2000);
   };
 
-  // Framer Motion variants for mobile-optimized modal
+  // Framer Motion variants for compact modal
   const modalBackdropVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -65,7 +65,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
     hidden: { 
       opacity: 0,
       scale: 0.8,
-      y: 50,
+      y: 30,
     },
     visible: { 
       opacity: 1,
@@ -75,23 +75,23 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
         type: "spring",
         damping: 25,
         stiffness: 300,
-        duration: 0.5
+        duration: 0.4
       }
     },
     exit: {
       opacity: 0,
       scale: 0.9,
-      y: 30,
-      transition: { duration: 0.3 }
+      y: 20,
+      transition: { duration: 0.2 }
     }
   };
 
   const warningIconVariants = {
     pulse: {
-      scale: [1, 1.1, 1],
-      rotate: [0, -5, 5, 0],
+      scale: [1, 1.05, 1],
+      rotate: [0, -3, 3, 0],
       transition: {
-        duration: 2,
+        duration: 1.5,
         repeat: Infinity,
         repeatType: "reverse"
       }
@@ -99,13 +99,13 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
   };
 
   const sectionVariants = {
-    hidden: { opacity: 0, x: -10 },
+    hidden: { opacity: 0, y: 5 },
     visible: (i) => ({
       opacity: 1,
-      x: 0,
+      y: 0,
       transition: {
-        delay: i * 0.1,
-        duration: 0.4
+        delay: i * 0.08,
+        duration: 0.3
       }
     })
   };
@@ -153,7 +153,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-green-900 opacity-90 backdrop-filter backdrop-blur-sm"></div>
       </div>
       
-      {/* Mobile-Optimized Warning Modal Popup */}
+      {/* Compact Warning Modal Popup - Smaller size */}
       <AnimatePresence>
         {showWarningModal && (
           <motion.div
@@ -165,24 +165,25 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
           >
             {/* Blurry Background */}
             <motion.div 
-              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
 
-            {/* Compact Modal Content */}
+            {/* Compact Modal Content - Smaller size */}
             <motion.div
-              className="relative w-full max-w-xs mx-auto rounded-xl border border-amber-500/40 bg-gray-900/95 backdrop-filter backdrop-blur-sm shadow-2xl overflow-hidden z-50 max-h-[80vh] flex flex-col"
+              className="relative w-full max-w-xs mx-auto rounded-xl border border-amber-500/40 bg-gray-900/95 backdrop-filter backdrop-blur-sm shadow-xl overflow-hidden z-50 max-h-[70vh] flex flex-col"
               variants={modalContentVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
+              style={{ maxWidth: '320px' }} // Smaller width
             >
-              {/* Modal Header */}
+              {/* Compact Modal Header */}
               <motion.div 
                 className="bg-gradient-to-r from-amber-600/10 to-amber-500/5 border-b border-amber-500/20 p-3 relative"
-                initial={{ y: -20, opacity: 0 }}
+                initial={{ y: -10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
               >
@@ -190,39 +191,44 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                   <motion.div
                     variants={warningIconVariants}
                     animate="pulse"
-                    className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30"
+                    className="w-6 h-6 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30"
                   >
-                    <i className="fas fa-exclamation-triangle text-amber-400 text-sm"></i>
+                    <i className="fas fa-exclamation-triangle text-amber-400 text-xs"></i>
                   </motion.div>
                   <div>
-                    <h2 className="text-lg font-bold text-amber-400">Important Warning</h2>
-                    <p className="text-amber-300 text-xs">Your safety is our priority</p>
+                    <h2 className="text-sm font-bold text-amber-400">Important Notice</h2>
+                    <p className="text-amber-300 text-xs">Personalized Fitness Guidance</p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Modal Content */}
+              {/* Compact Modal Content */}
               <motion.div 
                 className="p-3 flex-1 overflow-y-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.15 }}
               >
                 <div className="space-y-3 text-amber-300">
                   {[
                     {
-                      title: "MEDICAL DISCLAIMER",
-                      content: "ASH-FIT provides fitness recommendations for informational purposes only. This is not medical advice. Always consult healthcare professionals before starting new fitness programs.",
+                      title: "PERSONALIZED CONTENT",
+                      content: "All fitness recommendations, workout plans, and nutritional guidance provided in this app are based on your profile data and information. The content is tailored specifically for you.",
+                      icon: "fa-user-circle"
+                    },
+                    {
+                      title: "MEDICAL CONSULTATION REQUIRED",
+                      content: "If you have any medical conditions, pre-existing injuries, or health concerns, please consult with your doctor or healthcare professional before starting any fitness program.",
                       icon: "fa-heart-pulse"
                     },
                     {
                       title: "USER RESPONSIBILITY",
-                      content: "You are responsible for your health and safety during workouts. Stop immediately if you experience pain, dizziness, or discomfort.",
+                      content: "You are responsible for your health and safety during workouts. Listen to your body and stop immediately if you experience pain, dizziness, or discomfort.",
                       icon: "fa-user-shield"
                     },
                     {
                       title: "ACKNOWLEDGEMENT",
-                      content: "By clicking 'I UNDERSTAND & ACCEPT', you acknowledge these terms and accept full responsibility for your fitness journey.",
+                      content: "By clicking 'I UNDERSTAND & ACCEPT', you acknowledge that all content is personalized based on your data and accept full responsibility for your fitness journey.",
                       icon: "fa-signature"
                     }
                   ].map((section, index) => (
@@ -230,7 +236,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                       key={section.title}
                       custom={index}
                       variants={sectionVariants}
-                      className="bg-amber-500/10 rounded-lg p-2 border border-amber-500/20"
+                      className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/20"
                     >
                       <div className="flex items-start space-x-2">
                         <i className={`fas ${section.icon} text-amber-400 text-xs mt-0.5 flex-shrink-0`} />
@@ -244,12 +250,12 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
                 </div>
               </motion.div>
 
-              {/* Modal Footer */}
+              {/* Compact Modal Footer */}
               <motion.div 
                 className="bg-gradient-to-r from-amber-600/5 to-amber-500/10 border-t border-amber-500/20 p-3"
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.2 }}
               >
                 <div className="flex flex-col gap-2">
                   <motion.button
@@ -411,7 +417,7 @@ const Login = ({ onToggleAuthMode, onLoginSuccess }) => {
             <div>
               <h4 className="text-yellow-400 font-bold text-xs mb-1 uppercase tracking-wide sm:text-sm">Safety Reminder</h4>
               <p className="text-yellow-300 text-xs leading-relaxed sm:text-sm">
-                Consult healthcare professionals before starting new fitness programs. You are responsible for your health and safety.
+                All content is personalized based on your profile data. Consult healthcare professionals before starting new fitness programs.
               </p>
             </div>
           </div>
